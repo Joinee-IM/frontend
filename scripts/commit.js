@@ -14,7 +14,7 @@ const confirm =
           return;
         }
         if (stderr) {
-          if (!stderr.includes('match any configured task')) console.error(`stderr: ${stderr}`);
+          if (!stderr.includes('match any configured task')) console.log(stderr);
           return;
         }
         console.log(`stdout: ${stdout}`);
