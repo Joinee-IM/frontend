@@ -35,6 +35,7 @@ module.exports = {
     'prettier',
     'simple-import-sort',
     'no-relative-import-paths',
+    'react-hooks',
   ],
   rules: {
     'prettier/prettier': 'error',
@@ -77,5 +78,7 @@ module.exports = {
       'warn',
       { allowSameFolder: true, prefix: '@' },
     ],
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'warn',
   },
 };
