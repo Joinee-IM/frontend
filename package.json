@@ -12,11 +12,19 @@
     "husky": "husky install",
     "watch": "node scripts/import"
   },
+  "resolutions": {
+    "styled-components": "^5"
+  },
   "dependencies": {
+    "antd": "^5.10.2",
+    "date-fns": "^2.30.0",
+    "dotenv": "^16.3.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "styled-components": "^6.1.0"
   },
   "devDependencies": {
+    "@types/node": "^20.8.7",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
@@ -28,7 +36,7 @@
     "eslint-plugin-no-relative-import-paths": "^1.5.2",
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-hooks": "^5.0.0-canary-9617d39ec-20231018",
     "eslint-plugin-react-refresh": "^0.4.3",
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "husky": "^8.0.3",
