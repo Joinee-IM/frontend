@@ -26,7 +26,7 @@ const importDefault = (record) => {
   log(`File ${record} has been added`);
   const [path, name] = record.match(/\/([^/]+)\.tsx$/);
   const index = record.replace(path, '/index.ts');
-  const importStatement = `import ${name} from '.${path}';\n`;
+  const importStatement = `export { default as ${name} } from '.${path}';\n`;
 
   fs.appendFile(index, importStatement, (err) => {
     if (err) {
