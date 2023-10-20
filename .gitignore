@@ -22,3 +22,5 @@ dist-ssr
 *.sw?
 
 scripts/commit.txt
+
+.env
