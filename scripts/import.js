@@ -4,16 +4,16 @@ import fs from 'fs';
 const directories = [
   'components',
   'constants',
-  'contexts',
-  'hooks',
-  'modules',
-  'services',
-  'utils',
+  // 'contexts',
+  // 'hooks',
+  // 'modules',
+  // 'services',
+  // 'utils',
 ];
 
 // Initialize watcher.
 const watcher = chokidar.watch(
-  directories.map((dir) => `src/${dir}/**/*.tsx`),
+  directories.map((dir) => `src/${dir}/**/*.{tsx,ts}`),
   {
     ignored: /(^|[/\\])\../, // ignore dotfiles
     ignoreInitial: true,
@@ -24,7 +24,8 @@ const watcher = chokidar.watch(
 const importDefault = (record) => {
   const log = console.log.bind(console);
   log(`File ${record} has been added`);
-  const [path, name] = record.match(/\/([^/]+)\.tsx$/);
+  const [path, name] = record.match(/\/([^/]+)\.tsx?$/);
+  if (name === 'index') return;
   const index = record.replace(path, '/index.ts');
   const importStatement = `export { default as ${name} } from '.${path}';\n`;
 
@@ -40,7 +41,7 @@ const log = console.log.bind(console);
 // Add event listeners.
 watcher
   .on('add', importDefault)
-  .on('change', (path) => log(`File ${path} has been changed`))
+  // .on('change', (path) => log(`File ${path} has been changed`))
   .on('unlink', (path) => log(`File ${path} has been removed`));
 
 // More possible events.
