@@ -3,10 +3,13 @@ import ReactDOM from 'react-dom/client';
 
 import '@/index.css';
 
-import App from '@/App.tsx';
+import QueryProvider from '@/provider/query';
+import RouteProvider from '@/provider/routes';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <QueryProvider>
+      <RouteProvider />
+    </QueryProvider>
   </React.StrictMode>,
 );
