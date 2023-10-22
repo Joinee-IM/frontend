@@ -76,7 +76,7 @@ module.exports = {
     ],
     'no-relative-import-paths/no-relative-import-paths': [
       'warn',
-      { allowSameFolder: true, prefix: '@' },
+      { allowSameFolder: false, prefix: '@' },
     ],
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',

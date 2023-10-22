@@ -13,5 +13,6 @@
   "stylelint.reportInvalidScopeDisables": true,
   "stylelint.reportNeedlessDisables": true,
   "stylelint.validate": ["css", "less", "postcss", "scss", "typescript", "typescriptreact"],
-  "todo-tree.regex.regex": "(?:(?://|#|<!--|;|/\\*\\*?|\\*)\\s*($TAGS)|^\\s*- \\[ \\])"
+  "todo-tree.regex.regex": "(?:(?://|#|<!--|;|/\\*\\*?|\\*)\\s*($TAGS)|^\\s*- \\[ \\])",
+  "cSpell.words": ["Zodios"]
 }
