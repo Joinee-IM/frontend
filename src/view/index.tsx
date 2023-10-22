@@ -1,6 +1,5 @@
 // This file is to render components tested. Don't move it! Just import component and use.
-import { Outlet } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import styled from 'styled-components';
 
 import routes from '@/view/route';

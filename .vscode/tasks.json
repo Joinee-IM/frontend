@@ -4,10 +4,10 @@
     {
       "label": "ignore tracking view",
       "type": "shell",
-      "command": "yarn untrack",
+      "command": "yarn untrack && yarn env",
       "group": "none",
       "presentation": {
-        "reveal": "always",
+        "reveal": "never",
         "panel": "new"
       },
       "runOptions": {
