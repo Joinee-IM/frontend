@@ -1,5 +1,9 @@
 // This file is to render components tested. Don't move it! Just import component and use.
+import { Outlet } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+
+import routes from '@/view/route';
 
 const Background = styled.div`
   max-width: 100vw;
@@ -10,12 +14,25 @@ const Background = styled.div`
   align-items: center;
 `;
 
-const Component = () => <></>;
+const List = styled.ul`
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+`;
 
 export default function View() {
   return (
     <Background>
-      <Component />
+      <List>
+        {routes.map((route, index) => (
+          <Link key={index} to={`/view/${route.path}`} relative="path">
+            {route.path}
+          </Link>
+        ))}
+      </List>
+      <Outlet />
     </Background>
   );
 }

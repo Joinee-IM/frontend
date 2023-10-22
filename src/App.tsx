@@ -5,7 +5,7 @@ import '@/App.css';
 import reactLogo from '@/assets/react.svg';
 import viteLogo from '@/assets/vite.svg';
 
-function App() {
+export default function App() {
   const [count, setCount] = useState(0);
 
   return (
@@ -29,5 +29,3 @@ function App() {
     </>
   );
 }
-
-export default App;

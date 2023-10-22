@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "commit": "node scripts/commit",
     "husky": "husky install",
-    "untrack": "git update-index --skip-worktree src/view/index.tsx",
+    "untrack": "git update-index --skip-worktree src/view/route.ts",
     "api": "yarn openapi-zod-client http://localhost:8001/openapi.json -o ./src/services/type.ts"
   },
   "resolutions": {
@@ -24,6 +24,7 @@
     "axios": "^1.5.1",
     "date-fns": "^2.30.0",
     "dotenv": "^16.3.1",
+    "framer-motion": "^10.16.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.17.0",

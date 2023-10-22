@@ -1,16 +1,24 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-import App from '@/App';
-import View from '@/view';
+import { routePath } from '@/constants';
+
+import viewPath from '@/view/route';
 
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <App />,
+    path: routePath('main'),
+    async lazy() {
+      const App = await import('@/App');
+      return { Component: App.default };
+    },
   },
   {
-    path: '/view',
-    element: <View />,
+    path: routePath('view'),
+    async lazy() {
+      const View = await import('@/view');
+      return { Component: View.default };
+    },
+    children: viewPath,
   },
 ]);
 
