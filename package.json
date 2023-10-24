@@ -12,7 +12,8 @@
     "husky": "husky install",
     "untrack": "git update-index --skip-worktree src/view/route.ts",
     "env": "node scripts/env",
-    "api": "yarn openapi-zod-client http://localhost:8001/openapi.json -o ./src/services/type.ts"
+    "api": "yarn openapi-zod-client http://localhost:8001/openapi.json -o ./src/services/type.ts",
+    "firebase": "yarn install --frozen-lockfile && yarn build"
   },
   "resolutions": {
     "styled-components": "^5"
