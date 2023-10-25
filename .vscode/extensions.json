@@ -6,7 +6,6 @@
     "streetsidesoftware.code-spell-checker",
     "styled-components.vscode-styled-components",
     "stylelint.vscode-stylelint",
-    "lokalise.i18n-ally",
-    "SonarSource.sonarlint-vscode"
+    "lokalise.i18n-ally"
   ]
 }
