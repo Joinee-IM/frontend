@@ -47,7 +47,7 @@ if (argv.l) {
         type: 'list',
         name: 'type',
         message: 'Your commit type:',
-        choices: ['feat', 'fix', 'chore', 'docs', 'style', 'refactor', 'perf'],
+        choices: ['feat', 'fix', 'chore', 'doc', 'style', 'refactor', 'perf'],
       },
       {
         type: 'input',

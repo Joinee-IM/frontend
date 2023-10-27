@@ -11,7 +11,8 @@
     "commit": "node scripts/commit",
     "untrack": "git update-index --skip-worktree src/view/route.ts",
     "schema": "node scripts/fetch",
-    "firebase": "yarn install --frozen-lockfile && yarn build"
+    "firebase": "yarn install --frozen-lockfile && yarn build",
+    "initial": "node scripts/initial"
   },
   "resolutions": {
     "styled-components": "^5"
