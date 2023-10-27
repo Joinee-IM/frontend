@@ -21,6 +21,6 @@ dist-ssr
 *.sln
 *.sw?
 
-scripts/commit.txt
+commit.txt
 src/view/components/
 .env
