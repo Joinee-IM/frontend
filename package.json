@@ -9,10 +9,8 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "commit": "node scripts/commit",
-    "husky": "husky install",
     "untrack": "git update-index --skip-worktree src/view/route.ts",
-    "env": "node scripts/env",
-    "api": "yarn openapi-zod-client http://localhost:8001/openapi.json -o ./src/services/type.ts",
+    "schema": "node scripts/fetch",
     "firebase": "yarn install --frozen-lockfile && yarn build"
   },
   "resolutions": {
@@ -29,11 +27,13 @@
     "framer-motion": "^10.16.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-dropzone": "^14.2.3",
     "react-router-dom": "^6.17.0",
     "styled-components": "^6.1.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.200",
     "@types/node": "^20.8.7",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
