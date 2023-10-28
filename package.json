@@ -9,20 +9,20 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "commit": "node scripts/commit",
-    "untrack": "git update-index --skip-worktree src/view/route.ts",
     "schema": "node scripts/fetch",
     "firebase": "yarn install --frozen-lockfile && yarn build",
-    "initial": "node scripts/initial"
+    "initial": "node scripts/initial",
+    "husky": "husky install"
   },
   "resolutions": {
     "styled-components": "^5"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.0.0",
+    "@tanstack/react-query": "4.x",
     "@zodios/core": "^10.9.6",
     "@zodios/react": "^10.4.5",
     "antd": "^5.10.2",
-    "axios": "^1.5.1",
+    "axios": "^1.6.0",
     "date-fns": "^2.30.0",
     "dotenv": "^16.3.1",
     "framer-motion": "^10.16.4",

@@ -45,13 +45,13 @@ const viewChildrenRoutes: {
       return { Component: Tag.default };
     },
   },
-  // {
-  //   path: 'test',
-  //   async lazy() {
-  //     const Test = await import('@/view/components/Test');
-  //     return { Component: Test.default };
-  //   },
-  // },
+  {
+    path: 'test',
+    async lazy() {
+      const Test = await import('@/view/components/Test');
+      return { Component: Test.default };
+    },
+  },
 ];
 
 export default viewChildrenRoutes;

@@ -22,5 +22,4 @@ dist-ssr
 *.sw?
 
 commit.txt
-src/view/components/
 .env

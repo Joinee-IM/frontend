@@ -15,7 +15,11 @@ const AddAccountInput = z
   .passthrough();
 const AddAccountOutput = z.object({ id: z.number().int() }).passthrough();
 const ValidationError = z
-  .object({ loc: z.array(z.union([z.string(), z.number()])), msg: z.string(), type: z.string() })
+  .object({
+    loc: z.array(z.union([z.string(), z.number()])),
+    msg: z.string(),
+    type: z.string(),
+  })
   .passthrough();
 const HTTPValidationError = z
   .object({ detail: z.array(ValidationError) })

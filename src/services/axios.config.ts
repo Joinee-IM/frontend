@@ -1,5 +1,5 @@
 import axios from 'axios';
-const instance = axios.create({ baseURL: String(import.meta.env.VITE_API_PORT) });
+const instance = axios.create();
 
 // Add a request interceptor
 instance.interceptors.request.use(
