@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 // import '@/App.css';
@@ -33,7 +33,7 @@ const Container = styled.div`
 `;
 
 export default function App() {
-  const [count, setCount] = useState(0);
+  const navigate = useNavigate();
   useClick();
 
   return (
@@ -48,7 +48,7 @@ export default function App() {
       </div>
       <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
+        <button onClick={() => navigate('entry')}>Click to Entry</button>
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
