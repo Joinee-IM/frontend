@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "commit": "node scripts/commit",
     "schema": "node scripts/fetch",
-    "firebase": "yarn install --frozen-lockfile && yarn build",
+    "firebase": "yarn install --frozen-lockfile && node scripts/firebase",
     "initial": "node scripts/initial",
     "husky": "husky install"
   },
