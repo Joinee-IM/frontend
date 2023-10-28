@@ -16,5 +16,5 @@
   "stylelint.reportNeedlessDisables": true,
   "stylelint.validate": ["css", "less", "postcss", "scss", "typescript", "typescriptreact"],
   "todo-tree.regex.regex": "(?:(?://|#|<!--|;|/\\*\\*?|\\*)\\s*($TAGS)|^\\s*- \\[ \\])",
-  "cSpell.words": ["Zodios"]
+  "cSpell.words": ["antd", "inee", "joinee", "Jöinee", "tanstack", "Zodios"]
 }

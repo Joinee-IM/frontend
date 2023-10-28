@@ -6,10 +6,17 @@ import viewPath from '@/view/route';
 
 const router = createBrowserRouter([
   {
-    path: routePath('main'),
+    path: routePath('index'),
     async lazy() {
       const App = await import('@/App');
       return { Component: App.default };
+    },
+  },
+  {
+    path: routePath('entry'),
+    async lazy() {
+      const Entry = await import('@/modules/entry');
+      return { Component: Entry.default };
     },
   },
   {
