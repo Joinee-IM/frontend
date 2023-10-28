@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
+import '@/provider/i18n';
+
 import '@/index.css';
 
 import QueryProvider from '@/provider/query';

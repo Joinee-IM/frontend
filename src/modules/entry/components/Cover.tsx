@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import CoverImage from '@/assets/Cover.png';
@@ -88,6 +89,8 @@ export default function Cover() {
     setRatio(img.width / img.height);
   };
 
+  const { t } = useTranslation();
+
   return (
     <Background ratio={ratio}>
       <TitleWrapper>
@@ -98,8 +101,8 @@ export default function Cover() {
           <Slogan>Jöinee, go on a journey</Slogan>
         </SloganWrapper>
         <ButtonGroup>
-          <Button>瀏覽場地</Button>
-          <Button>立即登入</Button>
+          <Button>{t('entry.button.browseStadium')}</Button>
+          <Button>{t('entry.button.login')}</Button>
         </ButtonGroup>
       </TitleWrapper>
     </Background>
