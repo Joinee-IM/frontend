@@ -1,126 +1,61 @@
 import { makeApi, Zodios, type ZodiosOptions } from '@zodios/core';
 import { z } from 'zod';
 
-const LoginInput = z.object({ username: z.string(), password: z.string() }).passthrough();
-const LoginOutput = z.object({ username: z.string(), token: z.string() }).passthrough();
+const HealthCheckOutput = z
+  .object({ health: z.union([z.string(), z.null()]).default('ok') })
+  .partial()
+  .passthrough();
+const AddAccountInput = z
+  .object({
+    username: z.string(),
+    password: z.string(),
+    real_name: z.string(),
+    student_id: z.string(),
+  })
+  .passthrough();
+const AddAccountOutput = z.object({ id: z.number().int() }).passthrough();
 const ValidationError = z
-  .object({ loc: z.array(z.string()), msg: z.string(), type: z.string() })
+  .object({
+    loc: z.array(z.union([z.string(), z.number()])),
+    msg: z.string(),
+    type: z.string(),
+  })
   .passthrough();
 const HTTPValidationError = z
   .object({ detail: z.array(ValidationError) })
   .partial()
   .passthrough();
-const AddAccountInput = z
-  .object({ username: z.string(), password: z.string(), email: z.string() })
-  .passthrough();
-const GetUserInfoOutput = z
-  .object({ id: z.number().int(), username: z.string(), email: z.string(), photo: z.string() })
-  .passthrough();
-const EditUserInput = z
-  .object({ old_password: z.string(), new_password: z.string() })
-  .partial()
-  .passthrough();
-const Body_edit_photo_account_edit_photo_put = z.object({ file: z.instanceof(File) }).passthrough();
-const AddLogoInput = z.object({ folder_id: z.number().int(), appl_no: z.string() }).passthrough();
-const ReadAllOutput = z.object({ id: z.number().int(), folder_name: z.string() }).passthrough();
+const LoginInput = z.object({ username: z.string(), password: z.string() }).passthrough();
+const LoginOutput = z.object({ account_id: z.number().int(), token: z.string() }).passthrough();
 
 export const schemas = {
-  LoginInput,
-  LoginOutput,
+  HealthCheckOutput,
+  AddAccountInput,
+  AddAccountOutput,
   ValidationError,
   HTTPValidationError,
-  AddAccountInput,
-  GetUserInfoOutput,
-  EditUserInput,
-  Body_edit_photo_account_edit_photo_put,
-  AddLogoInput,
-  ReadAllOutput,
+  LoginInput,
+  LoginOutput,
 };
 
-export const endpoints = makeApi([
+const endpoints = makeApi([
   {
     method: 'get',
-    path: '/account',
-    alias: 'get_user_info_account_get',
+    path: '/',
+    alias: 'default_page__get',
     requestFormat: 'json',
-    parameters: [
-      {
-        name: 'auth-token',
-        type: 'Header',
-        schema: z.string().optional(),
-      },
-    ],
-    response: GetUserInfoOutput,
-    errors: [
-      {
-        status: 422,
-        description: `Validation Error`,
-        schema: HTTPValidationError,
-      },
-    ],
-  },
-  {
-    method: 'patch',
-    path: '/account/edit-info',
-    alias: 'edit_account_account_edit_info_patch',
-    requestFormat: 'json',
-    parameters: [
-      {
-        name: 'body',
-        type: 'Body',
-        schema: EditUserInput,
-      },
-      {
-        name: 'auth-token',
-        type: 'Header',
-        schema: z.string().optional(),
-      },
-    ],
-    response: z.unknown(),
-    errors: [
-      {
-        status: 422,
-        description: `Validation Error`,
-        schema: HTTPValidationError,
-      },
-    ],
-  },
-  {
-    method: 'put',
-    path: '/account/edit-photo',
-    alias: 'edit_photo_account_edit_photo_put',
-    requestFormat: 'form-data',
-    parameters: [
-      {
-        name: 'body',
-        type: 'Body',
-        schema: z.object({ file: z.instanceof(File) }).passthrough(),
-      },
-      {
-        name: 'auth-token',
-        type: 'Header',
-        schema: z.string().optional(),
-      },
-    ],
-    response: z.unknown(),
-    errors: [
-      {
-        status: 422,
-        description: `Validation Error`,
-        schema: HTTPValidationError,
-      },
-    ],
+    response: z.void(),
   },
   {
     method: 'post',
-    path: '/add-logo',
-    alias: 'add_logo_add_logo_post',
+    path: '/account',
+    alias: 'add_account_account_post',
     requestFormat: 'json',
     parameters: [
       {
         name: 'body',
         type: 'Body',
-        schema: AddLogoInput,
+        schema: AddAccountInput,
       },
       {
         name: 'auth-token',
@@ -128,7 +63,7 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
     ],
-    response: z.unknown(),
+    response: z.object({ id: z.number().int() }).passthrough(),
     errors: [
       {
         status: 422,
@@ -136,6 +71,13 @@ export const endpoints = makeApi([
         schema: HTTPValidationError,
       },
     ],
+  },
+  {
+    method: 'get',
+    path: '/health',
+    alias: 'health_check_health_get',
+    requestFormat: 'json',
+    response: HealthCheckOutput,
   },
   {
     method: 'post',
@@ -155,79 +97,6 @@ export const endpoints = makeApi([
       },
     ],
     response: LoginOutput,
-    errors: [
-      {
-        status: 422,
-        description: `Validation Error`,
-        schema: HTTPValidationError,
-      },
-    ],
-  },
-  {
-    method: 'post',
-    path: '/new-folder',
-    alias: 'new_folder_new_folder_post',
-    requestFormat: 'json',
-    parameters: [
-      {
-        name: 'folder_name',
-        type: 'Query',
-        schema: z.string(),
-      },
-      {
-        name: 'auth-token',
-        type: 'Header',
-        schema: z.string().optional(),
-      },
-    ],
-    response: z.unknown(),
-    errors: [
-      {
-        status: 422,
-        description: `Validation Error`,
-        schema: HTTPValidationError,
-      },
-    ],
-  },
-  {
-    method: 'get',
-    path: '/read-all',
-    alias: 'read_all_folders_read_all_get',
-    requestFormat: 'json',
-    parameters: [
-      {
-        name: 'auth-token',
-        type: 'Header',
-        schema: z.string().optional(),
-      },
-    ],
-    response: z.array(ReadAllOutput),
-    errors: [
-      {
-        status: 422,
-        description: `Validation Error`,
-        schema: HTTPValidationError,
-      },
-    ],
-  },
-  {
-    method: 'post',
-    path: '/signin',
-    alias: 'add_account_signin_post',
-    requestFormat: 'json',
-    parameters: [
-      {
-        name: 'body',
-        type: 'Body',
-        schema: AddAccountInput,
-      },
-      {
-        name: 'auth-token',
-        type: 'Header',
-        schema: z.string().optional(),
-      },
-    ],
-    response: z.number().int(),
     errors: [
       {
         status: 422,

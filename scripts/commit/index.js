@@ -1,8 +1,8 @@
+import { exec } from 'child_process';
+import fs from 'fs';
 import inquirer from 'inquirer';
 import yargs from 'yargs';
-import fs from 'fs';
 import { hideBin } from 'yargs/helpers';
-import { exec } from 'child_process';
 
 const confirm =
   (gitMessage) =>
@@ -21,7 +21,7 @@ const confirm =
       });
   };
 
-const logPath = 'scripts/commit.txt';
+const logPath = 'scripts/commit/commit.txt';
 
 const argv = yargs(hideBin(process.argv)).argv;
 
@@ -47,7 +47,7 @@ if (argv.l) {
         type: 'list',
         name: 'type',
         message: 'Your commit type:',
-        choices: ['feat', 'fix', 'chore', 'docs', 'style', 'refactor', 'perf'],
+        choices: ['feat', 'fix', 'chore', 'doc', 'style', 'refactor', 'perf'],
       },
       {
         type: 'input',
@@ -62,7 +62,7 @@ if (argv.l) {
     ])
     .then(({ scope, message, type }) => {
       const gitMessage = type + (scope ? `(${scope})` : '') + `: ${message}`;
-      fs.writeFile('scripts/commit.txt', gitMessage, (err) => {
+      fs.writeFile(logPath, gitMessage, (err) => {
         if (err) throw err;
       });
       console.log(gitMessage);

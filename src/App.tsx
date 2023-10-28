@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import styled from 'styled-components';
 
 import '@/App.css';
 
 import reactLogo from '@/assets/react.svg';
 import viteLogo from '@/assets/vite.svg';
+import useClick from '@/view/hooks/useClick';
 
 const Container = styled.div`
   width: 100vw;
@@ -35,24 +35,7 @@ const Container = styled.div`
 
 export default function App() {
   const [count, setCount] = useState(0);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    window.addEventListener('click', (e) => {
-      if (e.detail === 5) {
-        navigate('/view');
-      }
-    });
-
-    // cleanup this component
-    return () => {
-      window.removeEventListener('click', (e) => {
-        if (e.detail === 5) {
-          navigate('/view');
-        }
-      });
-    };
-  }, [navigate]);
+  useClick();
 
   return (
     <Container>

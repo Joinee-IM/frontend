@@ -2,12 +2,12 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "ignore tracking view",
+      "label": "initial",
       "type": "shell",
-      "command": "yarn untrack && yarn env",
+      "command": "yarn initial",
       "group": "none",
       "presentation": {
-        "reveal": "never",
+        "reveal": "always",
         "panel": "new"
       },
       "runOptions": {
