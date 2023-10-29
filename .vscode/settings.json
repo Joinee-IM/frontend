@@ -1,5 +1,7 @@
 {
   "css.validate": false,
+  "i18n-ally.localesPaths": ["src/provider/i18n/locales"],
+  "i18n-ally.displayLanguage": "cn",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
     "source.organizeImports": true,
@@ -16,5 +18,5 @@
   "stylelint.reportNeedlessDisables": true,
   "stylelint.validate": ["css", "less", "postcss", "scss", "typescript", "typescriptreact"],
   "todo-tree.regex.regex": "(?:(?://|#|<!--|;|/\\*\\*?|\\*)\\s*($TAGS)|^\\s*- \\[ \\])",
-  "cSpell.words": ["Zodios"]
+  "cSpell.words": ["antd", "inee", "joinee", "Jöinee", "tanstack", "Zodios"]
 }
