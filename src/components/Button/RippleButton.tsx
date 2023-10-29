@@ -9,13 +9,15 @@ interface TapButtonProps extends ButtonProps {
 }
 
 const RippleButtonBase = styled(Button)`
-  padding: 1.8% 3.3%;
+  padding: 0.8% 3%;
   font-weight: bolder;
   font-size: 1.5vw;
-  line-height: 12px;
   border-radius: 10px;
   width: fit-content;
   white-space: nowrap;
+  box-sizing: content-box;
+  align-items: center;
+  justify-content: center;
   background-color: #5988a1;
   &:hover {
     background-color: #85bad0 !important;

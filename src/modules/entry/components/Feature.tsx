@@ -14,10 +14,13 @@ interface FeatureProps {
 
 const Background = styled.div`
   width: 100%;
-  height: 60vh;
+  min-height: 60vh;
   display: flex;
+  flex-wrap: wrap;
   > div {
-    width: 50%;
+    flex: 1;
+    flex-basis: 400px;
+    min-height: 30vh;
     img {
       width: 100%;
       height: 100%;
