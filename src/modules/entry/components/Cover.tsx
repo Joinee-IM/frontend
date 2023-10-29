@@ -9,9 +9,10 @@ import { hexToRgb } from '@/utils';
 
 const Background = styled.div<{ ratio: number }>`
   background: url(${CoverImage});
-  width: 100%;
-  aspect-ratio: ${({ ratio }) => ratio};
-  background-size: contain;
+  width: 100vw;
+  height: min(100vh, calc(100vw / ${({ ratio }) => ratio}));
+  /* aspect-ratio: ${({ ratio }) => ratio}; */
+  background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
   display: flex;
