@@ -25,4 +25,4 @@
 
 ## Testing
 
-You can click here for monkey testing in staging environment
+You can click [here](https://joinee-ee017.web.app/entry) for monkey testing in staging environment.

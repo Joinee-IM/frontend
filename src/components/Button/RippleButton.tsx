@@ -18,12 +18,13 @@ const RippleButtonBase = styled(Button)`
   box-sizing: content-box;
   align-items: center;
   justify-content: center;
-  background-color: #5988a1;
+  background-color: ${(props) => props.theme.main[500]};
+
   &:hover {
-    background-color: #85bad0 !important;
+    background-color: ${(props) => props.theme.main[300]} !important;
   }
   &:active {
-    background-color: #284b63 !important;
+    background-color: ${(props) => props.theme.main[700]} !important;
   }
 `;
 

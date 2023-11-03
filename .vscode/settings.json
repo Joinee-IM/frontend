@@ -1,7 +1,6 @@
 {
   "css.validate": false,
   "i18n-ally.localesPaths": ["src/provider/i18n/locales"],
-  "i18n-ally.displayLanguage": "cn",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
     "source.organizeImports": true,

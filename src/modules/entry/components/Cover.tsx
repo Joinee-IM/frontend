@@ -24,7 +24,7 @@ const TitleWrapper = styled.div`
   min-height: 33%;
   box-sizing: border-box;
   padding: 20px 15%;
-  background-color: ${hexToRgb('#D9E3F7', 0.48)};
+  background-color: ${({ theme: { main } }) => hexToRgb(main[100], 0.48)};
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -78,7 +78,7 @@ const ButtonGroup = styled.div`
 `;
 
 const Button = styled(TapButton)`
-  background-color: ${hexToRgb('#D9F2F7', 0.61)};
+  background-color: ${({ theme: { main } }) => hexToRgb(main[100], 0.61)};
 `;
 
 export default function Cover() {
