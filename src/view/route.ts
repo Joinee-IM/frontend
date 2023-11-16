@@ -52,6 +52,20 @@ const viewChildrenRoutes: {
       return { Component: Test.default };
     },
   },
+  {
+    path: 'form',
+    async lazy() {
+      const Form = await import('@/view/components/Form');
+      return { Component: Form.default };
+    },
+  },
+  {
+    path: 'dondondon',
+    async lazy() {
+      const Don = await import('@/view/components/Dondondon');
+      return { Component: Don.default };
+    },
+  },
 ];
 
 export default viewChildrenRoutes;

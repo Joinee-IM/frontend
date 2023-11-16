@@ -7,15 +7,15 @@ export default function Users() {
   //     error,
   //     invalidate: invalidateUsers, // zodios also provides invalidation helpers
   //   } = zodiosHooks.useQuery("/users"); // or useGetUsers();
-  const { mutate } = useLogin(); // or .useCreateUser(...);
+  const { mutate, data } = useLogin(); // or .useCreateUser(...);
 
   return (
     <>
-      <h1>Users</h1>
+      <div>{data?.data?.account_id ?? 'lichi'}</div>
       <button
         onClick={() =>
           mutate(
-            { username: 'john doe', password: '123' },
+            { email: 'b09705017@ntu.im', password: 'string' },
             {
               onSettled(data, error) {
                 console.log(data, error);
