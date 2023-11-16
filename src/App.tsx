@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-// import '@/App.css';
 import reactLogo from '@/assets/react.svg';
 import viteLogo from '@/assets/vite.svg';
 import useClick from '@/view/hooks/useClick';
