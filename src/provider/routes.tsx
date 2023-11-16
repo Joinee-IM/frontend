@@ -20,6 +20,41 @@ const router = createBrowserRouter([
     },
   },
   {
+    path: routePath('auth'),
+    async lazy() {
+      const Auth = await import('@/modules/auth');
+      return { Component: Auth.default };
+    },
+    children: [
+      {
+        path: routePath('auth.login'),
+        async lazy() {
+          const { Login: Component } = await import('@/modules/auth');
+          return { Component };
+        },
+      },
+      {
+        path: routePath('auth.signup'),
+        children: [
+          {
+            path: routePath('auth.signup.choose-role'),
+            async lazy() {
+              const { ChooseRole: Component } = await import('@/modules/auth');
+              return { Component };
+            },
+          },
+          {
+            path: routePath('auth.signup.account'),
+            async lazy() {
+              const { Signup: Component } = await import('@/modules/auth');
+              return { Component };
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
     path: routePath('view'),
     async lazy() {
       const View = await import('@/view');

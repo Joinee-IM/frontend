@@ -17,6 +17,11 @@ function search<T>(target: T, keys: string[]) {
 export const ROUTES = {
   index: '/',
   entry: '/entry',
+  auth: {
+    route: 'auth',
+    login: 'login',
+    signup: { route: 'signup', 'choose-role': 'choose-role', account: 'account' },
+  },
   view: { route: 'view' },
 } satisfies Record<string, RoutesType | string>;
 
