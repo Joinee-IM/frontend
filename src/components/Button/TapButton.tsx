@@ -1,13 +1,6 @@
 import { motion } from 'framer-motion';
 import styled from 'styled-components';
 
-import type { MotionProps } from 'framer-motion';
-import type { ReactNode } from 'react';
-
-interface TapButtonProps extends MotionProps {
-  children?: ReactNode;
-}
-
 const TapButtonBase = styled(motion.div)`
   padding: 1.8% 3.3%;
   font-weight: bolder;
@@ -16,9 +9,11 @@ const TapButtonBase = styled(motion.div)`
   border-radius: 10px;
   width: fit-content;
   white-space: nowrap;
-  cursor: pointer;
+  cursor: inherit, pointer;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 `;
+
+type TapButtonProps = React.ComponentProps<typeof TapButtonBase>;
 
 export default function TapButton({
   whileHover = { scale: 1.1 },

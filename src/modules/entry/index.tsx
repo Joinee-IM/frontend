@@ -9,12 +9,13 @@ import Feature from '@/modules/entry/components/Feature';
 const Container = styled.div`
   width: 100vw;
   min-height: 100vh;
+  overflow: hidden;
 `;
 
 export default function Entry() {
   return (
     <Container>
-      <Cover />
+      <Cover isAuth={false} />
       <Feature
         image={Badminton}
         title="幫你找到最適合的場地"
