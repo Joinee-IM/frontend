@@ -1,17 +1,18 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import CoverImage from '@/assets/Cover.png';
 import O from '@/assets/ö.png';
 import { TapButton } from '@/components';
+import useImageDimension from '@/hooks/useImageDimension';
 import { hexToRgb } from '@/utils';
 
-const Background = styled.div<{ ratio: number }>`
+export const Background = styled.div<{ ratio?: number }>`
   background: url(${CoverImage});
   width: 100vw;
-  height: min(101vh, calc(101vw / ${({ ratio }) => ratio}));
-  /* aspect-ratio: ${({ ratio }) => ratio}; */
+  height: ${({ ratio }) => (ratio ? `min(100vh, calc(101vw / ${ratio}))` : `100vh`)};
+  /* height: 101vh; */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
@@ -55,7 +56,7 @@ const SloganWrapper = styled.div`
     content: '';
     margin: auto 0px;
     flex: 1;
-    height: 1px;
+    height: 2px;
     background-color: ${hexToRgb('#FFFFFF', 0.5)};
   }
   margin: 10px 0 20px 0;
@@ -81,31 +82,29 @@ const Button = styled(TapButton)`
   background-color: ${({ theme: { main } }) => hexToRgb(main[100], 0.61)};
 `;
 
-export default function Cover() {
-  const [ratio, setRatio] = useState(0);
-  const img = new Image();
-  img.src = CoverImage;
-
-  img.onload = () => {
-    setRatio(img.width / img.height);
-  };
-
+export default function Cover({ isAuth }: { isAuth: boolean }) {
+  const { ratio } = useImageDimension(CoverImage);
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   return (
     <Background ratio={ratio}>
-      <TitleWrapper>
-        <Title>
-          J<img src={O}></img>inee
-        </Title>
-        <SloganWrapper>
-          <Slogan>Jöinee, go on a journey</Slogan>
-        </SloganWrapper>
-        <ButtonGroup>
-          <Button>{t('entry.button.browseStadium')}</Button>
-          <Button>{t('entry.button.login')}</Button>
-        </ButtonGroup>
-      </TitleWrapper>
+      {!isAuth && (
+        <TitleWrapper>
+          <Title>
+            J<img src={O}></img>inee
+          </Title>
+          <SloganWrapper>
+            <Slogan>Jöinee, go on a journey</Slogan>
+          </SloganWrapper>
+          <ButtonGroup>
+            <Button onClick={() => navigate('/auth/login')}>
+              {t('entry.button.browseStadium')}
+            </Button>
+            <Button onClick={() => navigate('/auth/login')}>{t('entry.button.login')}</Button>
+          </ButtonGroup>
+        </TitleWrapper>
+      )}
     </Background>
   );
 }

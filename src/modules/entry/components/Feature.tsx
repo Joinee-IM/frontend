@@ -1,5 +1,6 @@
 import { useInView } from 'framer-motion';
 import { ReactNode, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { RippleButton } from '@/components';
@@ -42,7 +43,7 @@ const ScrollInView = ({
   scroll: FeatureProps['scroll'];
 }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
+  const isInView = useInView(ref, { once: true, margin: '0px 0px -10px 0px' });
 
   return (
     <div ref={ref}>
@@ -50,7 +51,7 @@ const ScrollInView = ({
         style={{
           transform: isInView ? 'none' : `translateX(${scroll === 'left' ? '-' : ''}200px)`,
           opacity: isInView ? 1 : 0,
-          transition: 'all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s',
+          transition: 'all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0s',
         }}
       >
         {children}
@@ -86,6 +87,27 @@ export default function Feature({
   buttonLabel,
   scroll = 'left',
 }: FeatureProps) {
+  const navigate = useNavigate();
+
+  // function scrollTo() {
+  //   const offset = 0;
+  //   const fixedOffset = offset.toFixed();
+  //   const onScroll = function () {
+  //     if (window.scrollY.toFixed() === fixedOffset) {
+  //       window.removeEventListener('scroll', onScroll);
+  //       navigate('/auth/login');
+  //     }
+  //   };
+
+  //   window.addEventListener('scroll', onScroll);
+  //   onScroll();
+  //   window.scrollTo({
+  //     top: 0,
+  //     left: 0,
+  //     behavior: 'smooth',
+  //   });
+  // }
+
   return (
     <Background style={{ flexDirection: scroll === 'left' ? 'row' : 'row-reverse' }}>
       <ScrollInView scroll={scroll}>
@@ -95,7 +117,13 @@ export default function Feature({
         <Section>
           <Title>{title}</Title>
           <Description>{description}</Description>
-          <RippleButton>{buttonLabel}</RippleButton>
+          <RippleButton
+            onClick={() => {
+              navigate('/auth/login');
+            }}
+          >
+            {buttonLabel}
+          </RippleButton>
         </Section>
       </ScrollInView>
     </Background>
