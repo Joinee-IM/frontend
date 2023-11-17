@@ -1,16 +1,16 @@
 import { Button } from 'antd';
+import { ReactNode } from 'react';
 import styled from 'styled-components';
 
 import type { ButtonProps } from 'antd';
-import type { ReactNode } from 'react';
 
+import getTheme, { ButtonThemeProps } from '@/components/Button/theme';
 import { flexCenter } from '@/utils/css';
 
-interface TapButtonProps extends ButtonProps {
-  children?: ReactNode;
-}
+type TapButtonProps = ButtonThemeProps &
+  Omit<ButtonProps, 'type' | 'theme'> & { children?: ReactNode };
 
-const RippleButtonBase = styled(Button)`
+const RippleButtonBase = styled(Button)<ButtonThemeProps>`
   padding: 0.8% 3%;
   font-weight: bolder;
   font-size: max(1vw, 12px);
@@ -20,23 +20,10 @@ const RippleButtonBase = styled(Button)`
   box-sizing: border-box;
   align-items: center;
   justify-content: center;
-  background-color: ${(props) => props.theme.main[500]};
-  ${flexCenter}
-
-  &:not([disabled]) {
-    &:hover {
-      background-color: ${(props) => props.theme.main[300]} !important;
-    }
-    &:active {
-      background-color: ${(props) => props.theme.main[700]} !important;
-    }
-  }
+  ${flexCenter};
+  ${({ type, theme }) => getTheme({ type, theme })}
 `;
 
 export default function RippleButton({ children, ...rest }: TapButtonProps) {
-  return (
-    <RippleButtonBase type="primary" {...rest}>
-      {children}
-    </RippleButtonBase>
-  );
+  return <RippleButtonBase {...rest}>{children}</RippleButtonBase>;
 }
