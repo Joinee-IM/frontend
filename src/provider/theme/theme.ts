@@ -9,6 +9,7 @@ const theme = {
     '500': '#5988A1' as HEX,
     '700': '#284B63' as HEX,
   },
+  white: '#FFFFFF',
 } satisfies ThemeType;
 
 export type Theme = typeof theme;

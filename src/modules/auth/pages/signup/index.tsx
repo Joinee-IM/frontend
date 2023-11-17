@@ -10,6 +10,7 @@ import { RippleButton } from '@/components';
 import AuthButton from '@/components/Button/AuthButton';
 import Divider from '@/components/Divider';
 import Card from '@/modules/auth/components/Card';
+import { useSignup } from '@/modules/auth/service';
 
 interface FieldType {
   email?: string;
@@ -32,10 +33,12 @@ const tailLayout = {
 export default function Signup() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const { mutate } = useSignup();
 
   const handleButtonPress = (values: FieldType) => {
     const { email, password } = values;
-    alert(`email: ${email}, password: ${password}`);
+    if (email && password) mutate({ email, password, role: 'NORMAL' });
+    // alert(`email: ${email}, password: ${password}`);
   };
 
   const rules: Record<string, Rule[]> = {
@@ -78,12 +81,17 @@ export default function Signup() {
         </Form.Item>
         <ButtonGroup>
           <Form.Item {...tailLayout} style={{ width: '50%' }}>
-            <RippleButton onClick={() => navigate(-1)} style={{ width: '100%' }}>
+            <RippleButton
+              type="outlined"
+              theme="main"
+              onClick={() => navigate(-1)}
+              style={{ width: '100%' }}
+            >
               返回
             </RippleButton>
           </Form.Item>
           <Form.Item {...tailLayout} style={{ width: '50%' }}>
-            <RippleButton htmlType="submit" style={{ width: '100%' }}>
+            <RippleButton type="solid" theme="main" htmlType="submit" style={{ width: '100%' }}>
               下一步
             </RippleButton>
           </Form.Item>
