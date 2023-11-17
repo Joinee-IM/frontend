@@ -62,6 +62,8 @@ export default function ChooseMember() {
         </CharacterWrapper>
       </RadioGroup>
       <RippleButton
+        type="solid"
+        theme="main"
         disabled={!role}
         htmlType="submit"
         style={{ width: '100%', marginTop: '20px' }}
