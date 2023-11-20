@@ -2,10 +2,9 @@ import { motion } from 'framer-motion';
 import styled from 'styled-components';
 
 const TapButtonBase = styled(motion.div)`
-  padding: 1.8% 3.3%;
+  padding: 1% 3.3%;
   font-weight: bolder;
   font-size: 1.5vw;
-  line-height: 12px;
   border-radius: 10px;
   width: fit-content;
   white-space: nowrap;
