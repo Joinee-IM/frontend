@@ -54,14 +54,15 @@ export const buttonTheme = {
 export type ButtonThemeProps =
   | {
       type: 'outlined';
-      theme: keyof (typeof buttonTheme)['outlined'];
+      palette: keyof (typeof buttonTheme)['outlined'];
     }
-  | { type: 'solid'; theme: keyof (typeof buttonTheme)['solid'] }
-  | { type: 'link'; theme: keyof (typeof buttonTheme)['link'] };
+  | { type: 'solid'; palette: keyof (typeof buttonTheme)['solid'] }
+  | { type: 'link'; palette: keyof (typeof buttonTheme)['link'] };
 
-export default function getTheme({ type, theme }: ButtonThemeProps) {
+export default function getTheme({ type, palette }: ButtonThemeProps) {
   const base: Record<MouseEvent, { [x in Element]?: HEX | 'transparent' }> =
-    buttonTheme[type][theme];
+    buttonTheme[type][palette];
+  console.log(palette);
 
   return css`
     &:not([disabled]) {

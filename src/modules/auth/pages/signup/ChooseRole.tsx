@@ -14,7 +14,7 @@ const RadioGroup = styled.div`
   gap: 10px;
 `;
 
-const CharacterWrapper = styled.div`
+const CharacterWrapper = styled.div<{ chosen: boolean }>`
   display: flex;
   flex-direction: column;
   font-size: 12px;
@@ -22,7 +22,7 @@ const CharacterWrapper = styled.div`
   align-items: center;
   &:hover {
     img {
-      filter: brightness(100%);
+      filter: brightness(${({ chosen }) => (chosen ? '100%' : '60%')});
     }
     div {
       color: ${({ theme }) => theme.main[500]};
@@ -52,18 +52,18 @@ export default function ChooseMember() {
     <Card>
       <div>選擇你的角色</div>
       <RadioGroup>
-        <CharacterWrapper onClick={() => setRole('NORMAL')}>
+        <CharacterWrapper onClick={() => setRole('NORMAL')} chosen={role === 'NORMAL'}>
           <Character src={Player} chosen={role === 'NORMAL'} />
           <Label chosen={role === 'NORMAL'}>找運動場</Label>
         </CharacterWrapper>
-        <CharacterWrapper onClick={() => setRole('PROVIDER')}>
+        <CharacterWrapper onClick={() => setRole('PROVIDER')} chosen={role === 'PROVIDER'}>
           <Character src={Bussiness} chosen={role === 'PROVIDER'} />
           <Label chosen={role === 'PROVIDER'}>出租場地</Label>
         </CharacterWrapper>
       </RadioGroup>
       <RippleButton
         type="solid"
-        theme="main"
+        palette="main"
         disabled={!role}
         htmlType="submit"
         style={{ width: '100%', marginTop: '20px' }}

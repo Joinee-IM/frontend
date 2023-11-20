@@ -17,11 +17,10 @@ const RippleButtonBase = styled(Button)<ButtonThemeProps>`
   border-radius: 10px;
   width: fit-content;
   white-space: nowrap;
-  box-sizing: border-box;
   align-items: center;
   justify-content: center;
   ${flexCenter};
-  ${({ type, theme }) => getTheme({ type, theme })}
+  ${({ type, palette }) => getTheme({ type, palette })}
 `;
 
 export default function RippleButton({ children, ...rest }: TapButtonProps) {
