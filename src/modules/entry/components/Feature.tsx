@@ -119,7 +119,7 @@ export default function Feature({
           <Description>{description}</Description>
           <RippleButton
             type="solid"
-            theme="main"
+            palette="main"
             onClick={() => {
               navigate('/auth/login');
             }}
