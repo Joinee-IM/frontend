@@ -13,7 +13,6 @@ interface CardProps extends React.ComponentProps<typeof CardBackground> {
 const CardBackground = styled(motion.div)`
   width: 33%;
   height: fit-content;
-  min-width: max-content;
   background-color: white;
   border-radius: 0.76%/0.657%;
   box-shadow: 0px 4px 4px 0px ${hexToRgb('#000000', 0.25)};
