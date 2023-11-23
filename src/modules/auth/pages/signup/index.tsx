@@ -71,7 +71,7 @@ export default function Signup() {
   };
 
   return (
-    <Card>
+    <Card style={{ paddingBottom: '40px' }}>
       <Form
         {...layout}
         form={form}

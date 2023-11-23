@@ -62,7 +62,6 @@ export type ButtonThemeProps =
 export default function getTheme({ type, palette }: ButtonThemeProps) {
   const base: Record<MouseEvent, { [x in Element]?: HEX | 'transparent' }> =
     buttonTheme[type][palette];
-  console.log(palette);
 
   return css`
     &:not([disabled]) {

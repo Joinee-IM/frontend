@@ -7,11 +7,13 @@ import { hexToRgb } from '@/utils';
 import { flexCenter } from '@/utils/css';
 
 interface CardProps extends React.ComponentProps<typeof CardBackground> {
+  hasTitle?: boolean;
   children?: ReactNode;
 }
 
 const CardBackground = styled(motion.div)`
   width: 33%;
+  min-width: 360px;
   height: fit-content;
   background-color: white;
   border-radius: 0.76%/0.657%;
@@ -22,18 +24,17 @@ const CardBackground = styled(motion.div)`
   flex-direction: column;
 `;
 
-// const TitleWrapper = styled.div`
-//   display: flex;
-//   column-gap: 4px;
-//   font-family: 'Contrail One', sans-serif;
-//   font-size: 30px;
-//   font-weight: 400;
-//   line-height: 24px;
-//   margin-bottom: 60px;
-//   color: ${({ theme }) => theme.main[700]};
-// `;
+const TitleWrapper = styled.div`
+  display: flex;
+  column-gap: 4px;
+  font-family: 'Contrail One', sans-serif;
+  font-size: 30px;
+  font-weight: 400;
+  margin-bottom: 60px;
+  color: ${({ theme }) => theme.main[700]};
+`;
 
-export default function Card({ children, ...rest }: CardProps) {
+export default function Card({ hasTitle = true, children, ...rest }: CardProps) {
   return (
     <CardBackground
       initial={{ opacity: 0, scale: 0.5 }}
@@ -45,7 +46,7 @@ export default function Card({ children, ...rest }: CardProps) {
       }}
       {...rest}
     >
-      {/* <TitleWrapper>Jöinee</TitleWrapper> */}
+      {hasTitle && <TitleWrapper>Jöinee</TitleWrapper>}
       {children}
     </CardBackground>
   );
