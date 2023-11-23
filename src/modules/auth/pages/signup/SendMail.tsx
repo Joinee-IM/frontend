@@ -21,8 +21,9 @@ export default function SendMail() {
   const handleButtonPress = () => {
     if (email) mutate({ email });
   };
+
   return (
-    <Card style={{ padding: '50px 50px 30px' }}>
+    <Card hasTitle={false} style={{ padding: '50px 50px 30px' }}>
       <EmailIcon></EmailIcon>
       <Text>已寄發電子郵件認證信給您，請點選信件中的連結進行驗證。</Text>
       <Text>若未收到驗證信請確認垃圾郵件區或點擊下方按鈕，系統將重新發送驗證信。</Text>

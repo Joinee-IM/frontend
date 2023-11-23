@@ -15,7 +15,7 @@ export default function Success() {
     if (code) mutate({ code });
   }, [code, mutate]);
   return (
-    <Card>
+    <Card hasTitle={false}>
       <CheckCircleOutlined />
       <div>您已成功驗證您的電子郵件，歡迎加入 Joinee！請按下一步完整設定您的帳號！</div>
       <RippleButton

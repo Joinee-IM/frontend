@@ -1,6 +1,7 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Form, Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 
 import Google from '@/assets/google.png';
 import { RippleButton } from '@/components';
@@ -21,12 +22,17 @@ const tailLayout = {
   wrapperCol: { offset: 0, span: 24 },
 };
 
-// const ForgotPasswordWrapper = styled.div`
-//   width: 100%;
-//   text-align: right;
-//   display: flex;
-//   justify-content: end;
-// `;
+const ForgotPasswordWrapper = styled.div`
+  width: 100%;
+  text-align: right;
+  display: flex;
+  justify-content: end;
+`;
+
+const TESTVALUE = {
+  email: 'b09705017@ntu.edu.tw',
+  password: 'string',
+};
 
 export default function Login() {
   const [form] = Form.useForm();
@@ -36,7 +42,6 @@ export default function Login() {
   const handleButtonPress = (values: FieldType) => {
     const { email, password } = values;
     if (email && password) mutate({ email, password });
-    // alert(`${email}, ${password}`);
   };
 
   return (
@@ -48,21 +53,27 @@ export default function Login() {
         onFinish={handleButtonPress}
         size={'middle'}
         style={{ width: '100%' }}
+        initialValues={TESTVALUE}
       >
         <Form.Item name="email" rules={[{ required: true, message: '' }]}>
           <Input prefix={<UserOutlined />} placeholder="電子郵件" autoComplete="off" />
         </Form.Item>
-        <Form.Item name="password" rules={[{ required: true, message: '' }]}>
+        <Form.Item
+          extra={
+            <ForgotPasswordWrapper>
+              <RippleButton
+                type="link"
+                palette="main"
+                style={{ fontSize: '12px', fontWeight: 400, alignSelf: 'flex-end' }}
+              >
+                忘記密碼？
+              </RippleButton>
+            </ForgotPasswordWrapper>
+          }
+          name="password"
+          rules={[{ required: true, message: '' }]}
+        >
           <Input.Password prefix={<LockOutlined />} placeholder="密碼" autoComplete="off" />
-          {/* <ForgotPasswordWrapper>
-            <RippleButton
-              type="link"
-              palette="main"
-              style={{ fontSize: '12px', fontWeight: 400, alignSelf: 'flex-end' }}
-            >
-              忘記密碼？
-            </RippleButton>
-          </ForgotPasswordWrapper> */}
         </Form.Item>
         <Form.Item {...tailLayout}>
           <RippleButton type="solid" palette="main" htmlType="submit" style={{ width: '100%' }}>
