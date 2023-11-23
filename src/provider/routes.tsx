@@ -50,6 +50,20 @@ const router = createBrowserRouter([
               return { Component };
             },
           },
+          {
+            path: routePath('auth.signup.send-mail'),
+            async lazy() {
+              const { SendMail: Component } = await import('@/modules/auth');
+              return { Component };
+            },
+          },
+          {
+            path: routePath('auth.signup.success'),
+            async lazy() {
+              const { Success: Component } = await import('@/modules/auth');
+              return { Component };
+            },
+          },
         ],
       },
     ],

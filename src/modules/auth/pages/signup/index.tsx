@@ -1,6 +1,6 @@
 import { Form, Input } from 'antd';
 import Link from 'antd/es/typography/Link';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import type { Rule } from 'antd/es/form';
@@ -10,7 +10,7 @@ import { RippleButton } from '@/components';
 import AuthButton from '@/components/Button/AuthButton';
 import Divider from '@/components/Divider';
 import Card from '@/modules/auth/components/Card';
-import { useSignup } from '@/modules/auth/service';
+import { useAddAccount } from '@/modules/auth/service';
 
 interface FieldType {
   email?: string;
@@ -33,13 +33,23 @@ const tailLayout = {
 export default function Signup() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
-  const { mutate } = useSignup();
+  const { mutate } = useAddAccount();
+  const [searchParams] = useSearchParams();
+  // const { data } = useGoogleLogin();
 
   const handleButtonPress = (values: FieldType) => {
     const { email, password } = values;
-    if (email && password) mutate({ email, password, role: 'NORMAL' });
-    // alert(`email: ${email}, password: ${password}`);
+    const role = searchParams.get('role');
+    console.log(role);
+    if (email && password && (role === 'NORMAL' || role === 'PROVIDER'))
+      mutate(
+        { email, password, role },
+        { onSuccess: () => navigate('/auth/signup/send-mail', { state: { email } }) },
+      );
   };
+  // const handleGoogleClick = () => {
+  //   googleLogin({});
+  // };
 
   const rules: Record<string, Rule[]> = {
     email: [{ required: true, message: '' }],
@@ -70,7 +80,7 @@ export default function Signup() {
         size={'middle'}
         style={{ width: '100%' }}
       >
-        <Form.Item name="email" rules={rules.emial}>
+        <Form.Item name="email" rules={rules.email}>
           <Input placeholder="電子郵件" autoComplete="off" />
         </Form.Item>
         <Form.Item name="password" rules={rules.password}>

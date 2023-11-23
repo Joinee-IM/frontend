@@ -99,7 +99,20 @@ const Response_Sequence_BatchDownloadOutput__ = z
   })
   .partial()
   .passthrough();
-const city_id = z.union([z.number(), z.null()]).optional();
+const TimeRange = z
+  .object({ weekday: z.number().int(), start_time: z.string(), end_time: z.string() })
+  .passthrough();
+const StadiumSearchParameters = z
+  .object({
+    name: z.union([z.string(), z.null()]).optional(),
+    city_id: z.union([z.number(), z.null()]).optional(),
+    district_id: z.union([z.number(), z.null()]).optional(),
+    sport_id: z.union([z.number(), z.null()]).optional(),
+    time_ranges: z.union([z.array(TimeRange), z.null()]),
+    limit: z.number().int().gt(0).lt(50).optional().default(10),
+    offset: z.number().int().gte(0).optional(),
+  })
+  .passthrough();
 const PlaceType = z.enum(['STADIUM', 'VENUE']);
 const BusinessHour = z
   .object({
@@ -133,11 +146,16 @@ const Response_Sequence_ViewStadium__ = z
   })
   .partial()
   .passthrough();
+const Response_ViewStadium_ = z
+  .object({ data: z.union([ViewStadium, z.null()]), error: z.union([z.string(), z.null()]) })
+  .partial()
+  .passthrough();
 const City = z.object({ id: z.number().int(), name: z.string() }).passthrough();
 const Response_Sequence_City__ = z
   .object({ data: z.union([z.array(City), z.null()]), error: z.union([z.string(), z.null()]) })
   .partial()
   .passthrough();
+const sport_id = z.union([z.number(), z.null()]).optional();
 const is_reservable = z.union([z.boolean(), z.null()]).optional();
 const VenueAvailableSortBy = z.string();
 const sort_by = VenueAvailableSortBy.optional().default('CURRENT_USER_COUNT');
@@ -223,13 +241,16 @@ export const schemas = {
   BatchDownloadInput,
   BatchDownloadOutput,
   Response_Sequence_BatchDownloadOutput__,
-  city_id,
+  TimeRange,
+  StadiumSearchParameters,
   PlaceType,
   BusinessHour,
   ViewStadium,
   Response_Sequence_ViewStadium__,
+  Response_ViewStadium_,
   City,
   Response_Sequence_City__,
+  sport_id,
   is_reservable,
   VenueAvailableSortBy,
   sort_by,
@@ -649,39 +670,35 @@ const endpoints = makeApi([
   },
   {
     method: 'get',
-    path: '/stadium',
-    alias: 'browse_stadium_stadium_get',
+    path: '/stadium/:stadium_id',
+    alias: 'read_stadium_stadium__stadium_id__get',
     requestFormat: 'json',
     parameters: [
       {
-        name: 'name',
-        type: 'Query',
-        schema: auth_token,
+        name: 'stadium_id',
+        type: 'Path',
+        schema: z.number().int(),
       },
+    ],
+    response: Response_ViewStadium_,
+    errors: [
       {
-        name: 'city_id',
-        type: 'Query',
-        schema: city_id,
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
       },
+    ],
+  },
+  {
+    method: 'post',
+    path: '/stadium/browse',
+    alias: 'browse_stadium_stadium_browse_post',
+    requestFormat: 'json',
+    parameters: [
       {
-        name: 'district_id',
-        type: 'Query',
-        schema: city_id,
-      },
-      {
-        name: 'sport_id',
-        type: 'Query',
-        schema: city_id,
-      },
-      {
-        name: 'limit',
-        type: 'Query',
-        schema: z.number().int().optional().default(10),
-      },
-      {
-        name: 'offset',
-        type: 'Query',
-        schema: z.number().int().optional(),
+        name: 'body',
+        type: 'Body',
+        schema: StadiumSearchParameters,
       },
     ],
     response: Response_Sequence_ViewStadium__,
@@ -707,7 +724,7 @@ const endpoints = makeApi([
       {
         name: 'sport_id',
         type: 'Query',
-        schema: city_id,
+        schema: sport_id,
       },
       {
         name: 'is_reservable',
