@@ -1,7 +1,6 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Form, Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
 
 import Google from '@/assets/google.png';
 import { RippleButton } from '@/components';
@@ -22,12 +21,12 @@ const tailLayout = {
   wrapperCol: { offset: 0, span: 24 },
 };
 
-const ForgotPasswordWrapper = styled.div`
-  width: 100%;
-  text-align: right;
-  display: flex;
-  justify-content: end;
-`;
+// const ForgotPasswordWrapper = styled.div`
+//   width: 100%;
+//   text-align: right;
+//   display: flex;
+//   justify-content: end;
+// `;
 
 export default function Login() {
   const [form] = Form.useForm();
@@ -55,7 +54,7 @@ export default function Login() {
         </Form.Item>
         <Form.Item name="password" rules={[{ required: true, message: '' }]}>
           <Input.Password prefix={<LockOutlined />} placeholder="密碼" autoComplete="off" />
-          <ForgotPasswordWrapper>
+          {/* <ForgotPasswordWrapper>
             <RippleButton
               type="link"
               palette="main"
@@ -63,7 +62,7 @@ export default function Login() {
             >
               忘記密碼？
             </RippleButton>
-          </ForgotPasswordWrapper>
+          </ForgotPasswordWrapper> */}
         </Form.Item>
         <Form.Item {...tailLayout}>
           <RippleButton type="solid" palette="main" htmlType="submit" style={{ width: '100%' }}>

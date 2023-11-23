@@ -20,7 +20,14 @@ export const ROUTES = {
   auth: {
     route: 'auth',
     login: 'login',
-    signup: { route: 'signup', 'choose-role': 'choose-role', account: 'account' },
+    signup: {
+      route: 'signup',
+      'choose-role': 'choose-role',
+      account: 'account',
+      'send-mail': 'send-mail',
+      success: 'success',
+      'more-info': 'more-info',
+    },
   },
   view: { route: 'view' },
 } satisfies Record<string, RoutesType | string>;

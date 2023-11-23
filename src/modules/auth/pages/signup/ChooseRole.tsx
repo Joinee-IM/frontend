@@ -67,7 +67,7 @@ export default function ChooseMember() {
         disabled={!role}
         htmlType="submit"
         style={{ width: '100%', marginTop: '20px' }}
-        onClick={() => navigate('/auth/signup/account')}
+        onClick={() => navigate(`/auth/signup/account?role=${role}`)}
       >
         下一步
       </RippleButton>
