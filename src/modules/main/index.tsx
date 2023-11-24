@@ -53,12 +53,13 @@ const MenuWrapper = styled.div`
   width: 100px;
   display: flex;
   justify-content: end;
+  align-items: center;
   column-gap: 8px;
 `;
 
 const MenuItem = styled(RippleButton)`
   height: 100%;
-  font-size: max(14px, 1.27vw);
+  font-size: clamp(14px, 1.27vw, 20px);
   font-weight: 400;
 `;
 
@@ -88,16 +89,21 @@ export default function Main() {
       <HeaderWrapper>
         <Title style={{ fontSize: 'max(24px, 1.9vw)' }} />
         <MenuWrapper>
-          <MenuItem type="link" palette="main">
+          <MenuItem type="link" category="link" palette="main">
             尋找場地
           </MenuItem>
-          <MenuItem type="link" palette="main">
+          <MenuItem type="link" category="link" palette="main">
             尋找球友
           </MenuItem>
-          <MenuItem type="link" palette="main">
+          <MenuItem type="link" category="link" palette="main">
             <BellOutlined />
           </MenuItem>
-          <MenuItem type="link" palette="main" onClick={() => navigate('/auth/login')}>
+          <MenuItem
+            type="link"
+            category="link"
+            palette="main"
+            onClick={() => navigate('/auth/login')}
+          >
             <UserOutlined />
           </MenuItem>
         </MenuWrapper>
