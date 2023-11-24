@@ -1,16 +1,15 @@
-import { EditFilled } from '@ant-design/icons';
-import { Form } from 'antd';
 import styled from 'styled-components';
 
 import Google from '@/assets/google.png';
 import Person from '@/assets/user.png';
-import { RippleButton } from '@/components';
 import AuthButton from '@/components/Button/AuthButton';
-import GridForm from '@/components/GridForm';
+import SecuritySection from '@/modules/main/pages/SecuritySection';
+import BaseInfoSection from '@/modules/main/pages/UserInfo/BaseInfoSection';
 import Section from '@/modules/main/pages/UserInfo/components/Section';
 import { flexCenter } from '@/utils/css';
+
 const Container = styled.div`
-  padding: 60px 200px;
+  padding: 60px clamp(30px, 12.7vw, 200px);
   width: 100%;
   box-sizing: border-box;
   flex: 1;
@@ -29,7 +28,14 @@ const ContentWrapper = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   column-gap: 80px;
+  @media (max-width: 600px) {
+    flex-direction: column-reverse;
+    justify-content: flex-start;
+    align-items: start;
+    row-gap: 40px;
+  }
 `;
 
 const InformationWrapper = styled.div`
@@ -40,7 +46,7 @@ const InformationWrapper = styled.div`
 `;
 
 const ImageContainer = styled.div`
-  width: 30%;
+  width: max(30%, 200px);
   aspect-ratio: 1;
   border-radius: 50%;
   border: 1px solid gray;
@@ -55,39 +61,13 @@ const Image = styled.img`
 `;
 
 export default function UserInfo() {
-  const [form] = Form.useForm();
-
-  const BaseInfoAction = () => (
-    <RippleButton type="outlined" palette="main" icon={<EditFilled />}>
-      編輯
-    </RippleButton>
-  );
-
   return (
     <Container>
       <Title>個人檔案</Title>
       <ContentWrapper>
         <InformationWrapper>
-          <Section title="基本資料" TitleAction={BaseInfoAction}>
-            <GridForm
-              form={form}
-              columns={['email', 'nickname', 'gender']}
-              data={{
-                email: { value: 'b09705004@ntu.edu.tw', label: '電子郵件' },
-                nickname: { value: 'yclai', label: '暱稱' },
-                gender: { value: '女', label: '性別' },
-              }}
-            />
-          </Section>
-          <Section title="安全性">
-            <GridForm
-              form={form}
-              columns={['password']}
-              data={{
-                password: { value: '********', label: '密碼' },
-              }}
-            />
-          </Section>
+          <BaseInfoSection />
+          <SecuritySection />
           <Section title="第三方">
             <AuthButton style={{ width: '200px' }} image={Google}>
               與 Google 帳號連結
