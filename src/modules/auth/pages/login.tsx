@@ -57,7 +57,7 @@ export default function Login() {
           <Input.Password prefix={<LockOutlined />} placeholder="密碼" autoComplete="off" />
           <ForgotPasswordWrapper>
             <RippleButton
-              type="link"
+              category="link"
               palette="main"
               style={{ fontSize: '12px', fontWeight: 400, alignSelf: 'flex-end' }}
             >
@@ -66,7 +66,7 @@ export default function Login() {
           </ForgotPasswordWrapper>
         </Form.Item>
         <Form.Item {...tailLayout}>
-          <RippleButton type="solid" palette="main" htmlType="submit" style={{ width: '100%' }}>
+          <RippleButton category="solid" palette="main" htmlType="submit" style={{ width: '100%' }}>
             登入
           </RippleButton>
         </Form.Item>
@@ -74,7 +74,7 @@ export default function Login() {
       <Divider text="或是" />
       <AuthButton image={Google}>以 Google 帳號登入</AuthButton>
       <RippleButton
-        type="link"
+        category="link"
         palette="main"
         onClick={() => navigate('/auth/signup/choose-role')}
         style={{ fontSize: '14px', fontWeight: 400, marginTop: '50px' }}

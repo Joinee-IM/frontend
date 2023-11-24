@@ -118,7 +118,7 @@ export default function Feature({
           <Title>{title}</Title>
           <Description>{description}</Description>
           <RippleButton
-            type="solid"
+            category="solid"
             palette="main"
             onClick={() => {
               navigate('/auth/login');
