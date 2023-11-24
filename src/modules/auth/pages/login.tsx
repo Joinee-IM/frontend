@@ -1,5 +1,6 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Form, Input } from 'antd';
+import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -7,6 +8,7 @@ import Google from '@/assets/google.png';
 import { RippleButton } from '@/components';
 import AuthButton from '@/components/Button/AuthButton';
 import Divider from '@/components/Divider';
+import { useUser } from '@/contexts/useUser';
 import Card from '@/modules/auth/components/Card';
 import { useLogin } from '@/modules/auth/service';
 
@@ -38,11 +40,22 @@ export default function Login() {
   const [form] = Form.useForm();
   const { mutate } = useLogin();
   const navigate = useNavigate();
+  const { setUser } = useUser();
+  const [, setCookie] = useCookies(['auth-token']);
 
   const handleButtonPress = (values: FieldType) => {
     const { email, password } = values;
-    if (email && password) mutate({ email, password });
-    // alert(`${email}, ${password}`);
+    if (email && password)
+      mutate(
+        { email, password },
+        {
+          onSuccess({ data }) {
+            setUser({ accountId: String(data?.account_id) });
+            setCookie('auth-token', data?.token);
+            navigate(`/user-info/${data?.account_id}`);
+          },
+        },
+      );
   };
 
   return (

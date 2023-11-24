@@ -1,5 +1,6 @@
 import { message, Modal, Upload } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import Google from '@/assets/google.png';
@@ -12,7 +13,7 @@ import Divider from '@/components/Divider';
 import BaseInfoSection from '@/modules/main/pages/UserInfo/BaseInfoSection';
 import Section from '@/modules/main/pages/UserInfo/components/Section';
 import SecuritySection from '@/modules/main/pages/UserInfo/SecuritySection';
-import { useEditAvatar } from '@/modules/main/pages/UserInfo/services';
+import { useEditAvatar, useUserInfo } from '@/modules/main/pages/UserInfo/services';
 import { flexCenter } from '@/utils/css';
 const Container = styled.div`
   padding: 60px clamp(30px, 12.7vw, 200px);
@@ -77,7 +78,13 @@ const UploadContainer = styled.div`
 
 export default function UserInfo() {
   const [imageModal, setImageModal] = useState(false);
-  const { mutate } = useEditAvatar(1);
+  const { account_id } = useParams();
+  const { data } = useUserInfo(Number(account_id));
+  const { mutate } = useEditAvatar(Number(account_id));
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
 
   return (
     <Container>
