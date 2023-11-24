@@ -9,32 +9,12 @@ import useClick from '@/view/hooks/useClick';
 
 const Container = styled.div`
   width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.react:hover {
-    filter: drop-shadow(0 0 2em #61dafbaa);
-  }
-  .card {
-    padding: 2em;
-  }
-
-  .read-the-docs {
-    color: #888;
-  }
 `;
 
 const HeaderWrapper = styled.div`
-  z-index: 10000;
   height: 80px;
   width: 100%;
   border-bottom: 1px solid ${({ theme }) => theme.main[500]};
@@ -67,6 +47,7 @@ const ContentContainer = styled.div`
   flex: 1;
   width: 100%;
   position: relative;
+  overflow: scroll;
   &::before {
     content: '';
     background-image: url(${Background});
@@ -78,6 +59,11 @@ const ContentContainer = styled.div`
     opacity: 0.5;
     z-index: -1;
   }
+`;
+
+const ScrollContainer = styled.div`
+  height: 100%;
+  overflow: scroll;
 `;
 
 export default function Main() {
@@ -109,7 +95,9 @@ export default function Main() {
         </MenuWrapper>
       </HeaderWrapper>
       <ContentContainer>
-        <Outlet />
+        <ScrollContainer>
+          <Outlet />
+        </ScrollContainer>
       </ContentContainer>
     </Container>
   );

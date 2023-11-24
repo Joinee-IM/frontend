@@ -29,6 +29,11 @@ const ForgotPasswordWrapper = styled.div`
   justify-content: end;
 `;
 
+const TEST_DATA = {
+  email: 'b09705017@ntu.im',
+  password: 'string',
+};
+
 export default function Login() {
   const [form] = Form.useForm();
   const { mutate } = useLogin();
@@ -49,24 +54,35 @@ export default function Login() {
         onFinish={handleButtonPress}
         size={'middle'}
         style={{ width: '100%' }}
+        initialValues={TEST_DATA}
       >
         <Form.Item name="email" rules={[{ required: true, message: '' }]}>
           <Input prefix={<UserOutlined />} placeholder="電子郵件" autoComplete="off" />
         </Form.Item>
-        <Form.Item name="password" rules={[{ required: true, message: '' }]}>
+        <Form.Item
+          extra={
+            <ForgotPasswordWrapper>
+              <RippleButton
+                category="link"
+                palette="main"
+                style={{ fontSize: '12px', fontWeight: 400, alignSelf: 'flex-end' }}
+              >
+                忘記密碼？
+              </RippleButton>
+            </ForgotPasswordWrapper>
+          }
+          name="password"
+          rules={[{ required: true, message: '' }]}
+        >
           <Input.Password prefix={<LockOutlined />} placeholder="密碼" autoComplete="off" />
-          <ForgotPasswordWrapper>
-            <RippleButton
-              category="link"
-              palette="main"
-              style={{ fontSize: '12px', fontWeight: 400, alignSelf: 'flex-end' }}
-            >
-              忘記密碼？
-            </RippleButton>
-          </ForgotPasswordWrapper>
         </Form.Item>
         <Form.Item {...tailLayout}>
-          <RippleButton category="solid" palette="main" htmlType="submit" style={{ width: '100%' }}>
+          <RippleButton
+            category="solid"
+            palette="main"
+            htmlType="submit"
+            style={{ width: '100%', boxSizing: 'border-box' }}
+          >
             登入
           </RippleButton>
         </Form.Item>

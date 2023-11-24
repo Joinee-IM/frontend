@@ -1,13 +1,19 @@
+import { message, Modal, Upload } from 'antd';
+import { useState } from 'react';
 import styled from 'styled-components';
 
 import Google from '@/assets/google.png';
+import ImageIcon from '@/assets/icons/Image';
+import UploadIcon from '@/assets/icons/Upload';
 import Person from '@/assets/user.png';
+import { RippleButton } from '@/components';
 import AuthButton from '@/components/Button/AuthButton';
-import SecuritySection from '@/modules/main/pages/SecuritySection';
+import Divider from '@/components/Divider';
 import BaseInfoSection from '@/modules/main/pages/UserInfo/BaseInfoSection';
 import Section from '@/modules/main/pages/UserInfo/components/Section';
+import SecuritySection from '@/modules/main/pages/UserInfo/SecuritySection';
+import { useEditAvatar } from '@/modules/main/pages/UserInfo/services';
 import { flexCenter } from '@/utils/css';
-
 const Container = styled.div`
   padding: 60px clamp(30px, 12.7vw, 200px);
   width: 100%;
@@ -28,39 +34,51 @@ const ContentWrapper = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  column-gap: 80px;
-  @media (max-width: 600px) {
-    flex-direction: column-reverse;
-    justify-content: flex-start;
-    align-items: start;
-    row-gap: 40px;
-  }
+  justify-content: center;
+  gap: 40px 80px;
+  flex-wrap: wrap-reverse;
 `;
 
 const InformationWrapper = styled.div`
-  width: 50%;
+  flex: 1;
   display: flex;
   flex-direction: column;
   row-gap: 40px;
 `;
 
 const ImageContainer = styled.div`
-  width: max(30%, 200px);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  border: 1px solid gray;
-  padding: 1;
-  background-color: white;
+  flex: 0.5;
+  flex-direction: column;
+  row-gap: 30px;
   ${flexCenter}
 `;
 
 const Image = styled.img`
-  width: 90%;
-  height: 90%;
+  width: max(25%, 200px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid gray;
+`;
+
+const ModalTitle = styled.div`
+  font-size: 18px;
+  font-weight: 500;
+  border-bottom: 1px solid ${({ theme }) => theme.gray[300]};
+`;
+
+const UploadContainer = styled.div`
+  color: ${({ theme }) => theme.main[500]};
+  height: 400px;
+  box-sizing: border-box;
+  padding: 0 10%;
+  ${flexCenter}
+  flex-direction: column;
 `;
 
 export default function UserInfo() {
+  const [imageModal, setImageModal] = useState(false);
+  const { mutate } = useEditAvatar(1);
+
   return (
     <Container>
       <Title>個人檔案</Title>
@@ -76,8 +94,50 @@ export default function UserInfo() {
         </InformationWrapper>
         <ImageContainer>
           <Image src={Person} />
+          <RippleButton
+            icon={<ImageIcon style={{ fontSize: '1.5em' }} />}
+            category="outlined"
+            palette="main"
+            onClick={() => setImageModal(true)}
+          >
+            上傳圖片
+          </RippleButton>
         </ImageContainer>
       </ContentWrapper>
+      <Modal
+        title={<ModalTitle>上傳圖片</ModalTitle>}
+        centered
+        open={imageModal}
+        footer={null}
+        // onOk={() => setModal2Open(false)}
+        onCancel={() => setImageModal(false)}
+      >
+        <UploadContainer>
+          <UploadIcon style={{ fontSize: 'clamp(100px, 25vw, 200px)' }} />
+          將檔案拖曳至此
+          <Divider text="或是"></Divider>
+          <Upload
+            // action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+            // headers={{ authorization: 'authorization-text' }}
+            customRequest={({ file }) => {
+              if (file instanceof File) mutate({ image: file });
+            }}
+            maxCount={1}
+            accept=".jpg,.jpeg,.png"
+            onChange={(info) => {
+              if (info.file.status === 'done') {
+                void message.success(`${info.file.name} 上傳成功！！`);
+              } else if (info.file.status === 'error') {
+                void message.error(`${info.file.name} 上傳失敗 😖`);
+              }
+            }}
+          >
+            <RippleButton category="solid" palette="main">
+              從電腦上傳檔案
+            </RippleButton>
+          </Upload>
+        </UploadContainer>
+      </Modal>
     </Container>
   );
 }

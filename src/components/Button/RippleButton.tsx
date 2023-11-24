@@ -18,7 +18,7 @@ function ThemeButton<T extends ButtonType>(props: RippleButtonProps<T>) {
 const RippleButtonBase = styled(ThemeButton)`
   padding: 0.44vw 1vw;
   font-weight: bolder;
-  font-size: clamp(12px, 1vw, 1px);
+  font-size: clamp(12px, 1vw, 16px);
   border-radius: 10px;
   width: fit-content;
   height: fit-content;
