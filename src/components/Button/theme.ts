@@ -88,7 +88,6 @@ export default function getTheme<T extends ButtonType>({
   category: T;
   palette: PaletteType<T>;
 }) {
-  console.log('Hi', category, buttonTheme[category]);
   const base = buttonTheme[category][palette] as Record<
     MouseEvent,
     { [x in Element]?: HEX | 'transparent' }
