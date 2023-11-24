@@ -17,6 +17,14 @@ export const buttonTheme = {
       hover: { background: ColorTheme.main[300] },
       active: { background: ColorTheme.main[700] },
     },
+    gray: {
+      normal: {
+        background: ColorTheme.main[500],
+        text: ColorTheme.white,
+      },
+      hover: { background: ColorTheme.main[300] },
+      active: { background: ColorTheme.main[700] },
+    },
   },
   outlined: {
     main: {
@@ -30,6 +38,19 @@ export const buttonTheme = {
       },
       active: {
         background: ColorTheme.main[300],
+      },
+    },
+    gray: {
+      normal: {
+        background: 'transparent',
+        border: ColorTheme.gray[700],
+        text: ColorTheme.gray[700],
+      },
+      hover: {
+        background: ColorTheme.gray[100],
+      },
+      active: {
+        background: ColorTheme.gray[300],
       },
     },
   },
@@ -52,17 +73,26 @@ export const buttonTheme = {
   Record<string, Record<MouseEvent, { [x in Element]?: HEX | 'transparent' }>>
 >;
 
-export type ButtonThemeProps =
-  | {
-      type: 'outlined';
-      palette: keyof (typeof buttonTheme)['outlined'];
-    }
-  | { type: 'solid'; palette: keyof (typeof buttonTheme)['solid'] }
-  | { type: 'link'; palette: keyof (typeof buttonTheme)['link'] };
+export type ButtonType = keyof typeof buttonTheme;
+export type PaletteType<T extends ButtonType> = keyof (typeof buttonTheme)[T];
 
-export default function getTheme({ type, palette }: ButtonThemeProps) {
-  const base: Record<MouseEvent, { [x in Element]?: HEX | 'transparent' }> =
-    buttonTheme[type][palette];
+export interface ButtonThemeProps<T extends ButtonType> {
+  category: T;
+  palette: PaletteType<T>;
+}
+
+export default function getTheme<T extends ButtonType>({
+  category,
+  palette,
+}: {
+  category: T;
+  palette: PaletteType<T>;
+}) {
+  console.log('Hi', category, buttonTheme[category]);
+  const base = buttonTheme[category][palette] as Record<
+    MouseEvent,
+    { [x in Element]?: HEX | 'transparent' }
+  >;
 
   return css`
     &:not([disabled]) {

@@ -70,7 +70,7 @@ export default function ChooseMember() {
         </CharacterWrapper>
       </RadioGroup>
       <RippleButton
-        type="solid"
+        category="solid"
         palette="main"
         disabled={!role}
         htmlType="submit"
