@@ -5,6 +5,7 @@ import '@/provider/i18n';
 
 import '@/index.css';
 
+import { UserProvider } from '@/contexts/useUser';
 import CookieProvider from '@/provider/cookie';
 import QueryProvider from '@/provider/query';
 import RouteProvider from '@/provider/routes';
@@ -15,7 +16,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <CookieProvider>
       <QueryProvider>
         <ThemeProvider>
-          <RouteProvider />
+          <UserProvider>
+            <RouteProvider />
+          </UserProvider>
         </ThemeProvider>
       </QueryProvider>
     </CookieProvider>
