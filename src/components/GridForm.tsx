@@ -3,12 +3,12 @@ import { Fragment } from 'react';
 import styled from 'styled-components';
 
 import type { FormInstance } from 'antd';
+import type { ReactNode } from 'react';
 
-type DataProps = Record<string, { value: string; label: string }>;
+type DataProps = Record<string, ReactNode | string>;
 
 interface GridFormProps<T extends DataProps> {
   form: FormInstance;
-  columns: (keyof T)[];
   data: T;
 }
 
@@ -24,18 +24,21 @@ const Label = styled.div`
   font-weight: 600;
 `;
 
-const FormItem = styled(Form.Item)`
+const ItemWrapper = styled.div`
   grid-column: 2 / 3;
-  margin: 0;
+  &,
+  * {
+    margin: 0;
+  }
 `;
 
-export default function GridForm<T extends DataProps>({ form, columns, data }: GridFormProps<T>) {
+export default function GridForm<T extends DataProps>({ form, data }: GridFormProps<T>) {
   return (
     <GridFormWrapper form={form} style={{ width: '100%' }}>
-      {columns.map((column, index) => (
+      {Object.keys(data).map((column, index) => (
         <Fragment key={index}>
-          <Label>{data[column].label}</Label>
-          <FormItem name={column}>{data[column].value}</FormItem>
+          <Label>{String(column)}</Label>
+          <ItemWrapper>{data[column]}</ItemWrapper>
         </Fragment>
       ))}
     </GridFormWrapper>
