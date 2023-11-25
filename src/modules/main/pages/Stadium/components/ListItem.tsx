@@ -7,6 +7,7 @@ const ListItemWrapper = styled.div`
   width: 100%;
   padding: 8px 0px 8px 8px;
   display: flex;
+  box-sizing: border-box;
   column-gap: 10px;
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.gray[300]};
