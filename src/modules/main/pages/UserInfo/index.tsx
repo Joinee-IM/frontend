@@ -1,4 +1,5 @@
 import { message, Modal, Upload, UploadProps } from 'antd';
+import { motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -16,6 +17,7 @@ import SecuritySection from '@/modules/main/pages/UserInfo/SecuritySection';
 import { useEditAvatar, useUserInfo } from '@/modules/main/pages/UserInfo/services';
 import { flexCenter } from '@/utils/css';
 import toGender from '@/utils/function/toGender';
+
 const Container = styled.div`
   padding: 60px clamp(30px, 12.7vw, 200px);
   width: 100%;
@@ -32,7 +34,7 @@ const Title = styled.div`
   letter-spacing: 1.8px;
 `;
 
-const ContentWrapper = styled.div`
+const ContentWrapper = styled(motion.div)`
   width: 100%;
   display: flex;
   align-items: center;
@@ -138,7 +140,14 @@ export default function UserInfo() {
     <Container>
       <Title>個人檔案</Title>
       {data?.data && (
-        <ContentWrapper>
+        <ContentWrapper
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{
+            duration: 0.1,
+            ease: 'linear',
+          }}
+        >
           <InformationWrapper>
             <BaseInfoSection
               gender={toGender(data.data.gender)}
