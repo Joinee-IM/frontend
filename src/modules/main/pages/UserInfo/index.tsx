@@ -123,6 +123,7 @@ export default function UserInfo() {
             {
               onSuccess: () => {
                 uploadSuccess?.(file);
+                setImageModal(false);
               },
               onError: uploadError,
             },
@@ -169,7 +170,6 @@ export default function UserInfo() {
         centered
         open={imageModal}
         footer={null}
-        // onOk={() => setModal2Open(false)}
         onCancel={() => setImageModal(false)}
       >
         <UploadContainer>
