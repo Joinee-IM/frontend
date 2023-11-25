@@ -48,7 +48,7 @@ const ContentContainer = styled.div<{ hasBackground?: boolean }>`
   width: 100%;
   position: relative;
   overflow: scroll;
-  ${({ hasBackground = true }) =>
+  ${({ hasBackground = false }) =>
     hasBackground &&
     css`
       &::before {
