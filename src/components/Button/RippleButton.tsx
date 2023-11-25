@@ -8,6 +8,7 @@ import getTheme, { ButtonThemeProps, ButtonType } from '@/components/Button/them
 import { flexCenter } from '@/utils/css';
 
 interface RippleButtonProps<T extends ButtonType> extends ButtonThemeProps<T>, ButtonProps {
+  borderBox?: boolean;
   children?: ReactNode;
 }
 
@@ -15,7 +16,7 @@ function ThemeButton<T extends ButtonType>(props: RippleButtonProps<T>) {
   return <Button {...props} />;
 }
 
-const RippleButtonBase = styled(ThemeButton)`
+const RippleButtonBase = styled(ThemeButton)<{ borderBox?: boolean }>`
   padding: 0.44vw 1vw;
   font-weight: bolder;
   font-size: clamp(12px, 1vw, 16px);
@@ -25,7 +26,7 @@ const RippleButtonBase = styled(ThemeButton)`
   white-space: nowrap;
   align-items: center;
   justify-content: center;
-  box-sizing: content-box;
+  box-sizing: ${({ borderBox }) => (borderBox ? 'border-box' : 'content-box')};
   ${flexCenter};
   ${({ category, palette }) => getTheme({ category, palette })}
 `;

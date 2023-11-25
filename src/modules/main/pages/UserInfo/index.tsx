@@ -1,5 +1,5 @@
-import { message, Modal, Upload } from 'antd';
-import { useEffect, useState } from 'react';
+import { message, Modal, Upload, UploadProps } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -15,6 +15,7 @@ import Section from '@/modules/main/pages/UserInfo/components/Section';
 import SecuritySection from '@/modules/main/pages/UserInfo/SecuritySection';
 import { useEditAvatar, useUserInfo } from '@/modules/main/pages/UserInfo/services';
 import { flexCenter } from '@/utils/css';
+import toGender from '@/utils/function/toGender';
 const Container = styled.div`
   padding: 60px clamp(30px, 12.7vw, 200px);
   width: 100%;
@@ -80,37 +81,89 @@ export default function UserInfo() {
   const [imageModal, setImageModal] = useState(false);
   const { account_id } = useParams();
   const { data } = useUserInfo(Number(account_id));
-  const { mutate } = useEditAvatar(Number(account_id));
+  const { mutate, isLoading } = useEditAvatar(Number(account_id));
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    console.log(data);
-  }, [data]);
+    console.log(progress);
+  }, [progress]);
+
+  const props: UploadProps = useMemo(
+    () => ({
+      name: '123x',
+      maxCount: 1,
+      accept: '.jpg,.jpeg,.png',
+      onChange: (info) => {
+        if (info.file.status === 'done') {
+          void message.success(`${info.file.name} 上傳成功！！`);
+        } else if (info.file.status === 'error') {
+          void message.error(`${info.file.name} 上傳失敗 😖`);
+        }
+      },
+      customRequest: ({
+        file,
+        onError: uploadError,
+        onProgress: uploadProgress,
+        onSuccess: uploadSuccess,
+      }) => {
+        if (isLoading) {
+          console.log('Hiii');
+          let width = 0;
+          const clear = setInterval(() => {
+            if (width >= 99) {
+              clearInterval(clear);
+            } else width += 10;
+          }, 10);
+          uploadProgress?.({ percent: progress });
+        }
+        if (file instanceof File) {
+          uploadProgress?.({ percent: 50 });
+          mutate(
+            { image: file },
+            {
+              onSuccess: () => {
+                uploadSuccess?.(file);
+              },
+              onError: uploadError,
+            },
+          );
+        }
+      },
+    }),
+    [isLoading, mutate, progress],
+  );
 
   return (
     <Container>
       <Title>個人檔案</Title>
-      <ContentWrapper>
-        <InformationWrapper>
-          <BaseInfoSection />
-          <SecuritySection />
-          <Section title="第三方">
-            <AuthButton style={{ width: '200px' }} image={Google}>
-              與 Google 帳號連結
-            </AuthButton>
-          </Section>
-        </InformationWrapper>
-        <ImageContainer>
-          <Image src={Person} />
-          <RippleButton
-            icon={<ImageIcon style={{ fontSize: '1.5em' }} />}
-            category="outlined"
-            palette="main"
-            onClick={() => setImageModal(true)}
-          >
-            上傳圖片
-          </RippleButton>
-        </ImageContainer>
-      </ContentWrapper>
+      {data?.data && (
+        <ContentWrapper>
+          <InformationWrapper>
+            <BaseInfoSection
+              gender={toGender(data.data.gender)}
+              nickname={data.data.nickname}
+              email={data.data.email}
+            />
+            <SecuritySection />
+            <Section title="第三方">
+              <AuthButton style={{ width: '200px' }} image={Google}>
+                與 Google 帳號連結
+              </AuthButton>
+            </Section>
+          </InformationWrapper>
+          <ImageContainer>
+            <Image src={Person} />
+            <RippleButton
+              icon={<ImageIcon style={{ fontSize: '1.5em' }} />}
+              category="outlined"
+              palette="main"
+              onClick={() => setImageModal(true)}
+            >
+              上傳圖片
+            </RippleButton>
+          </ImageContainer>
+        </ContentWrapper>
+      )}
       <Modal
         title={<ModalTitle>上傳圖片</ModalTitle>}
         centered
@@ -124,22 +177,36 @@ export default function UserInfo() {
           將檔案拖曳至此
           <Divider text="或是"></Divider>
           <Upload
-            // action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-            // headers={{ authorization: 'authorization-text' }}
-            customRequest={({ file }) => {
-              if (file instanceof File) mutate({ image: file });
-            }}
-            maxCount={1}
-            accept=".jpg,.jpeg,.png"
-            onChange={(info) => {
-              if (info.file.status === 'done') {
-                void message.success(`${info.file.name} 上傳成功！！`);
-              } else if (info.file.status === 'error') {
-                void message.error(`${info.file.name} 上傳失敗 😖`);
-              }
+            {...props}
+            onChange={() => {
+              const clear = setInterval(
+                () =>
+                  setProgress((prev) => {
+                    if (prev >= 99) {
+                      clearInterval(clear);
+                    }
+                    return prev + 10;
+                  }),
+                5000,
+              );
             }}
           >
-            <RippleButton category="solid" palette="main">
+            <RippleButton
+              category="solid"
+              palette="main"
+              onClick={() => {
+                const clear = setInterval(
+                  () =>
+                    setProgress((prev) => {
+                      if (prev >= 99) {
+                        clearInterval(clear);
+                      }
+                      return prev + 10;
+                    }),
+                  10,
+                );
+              }}
+            >
               從電腦上傳檔案
             </RippleButton>
           </Upload>

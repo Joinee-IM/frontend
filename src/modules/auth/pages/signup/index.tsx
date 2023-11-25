@@ -83,6 +83,7 @@ export default function Signup() {
           <Form.Item {...tailLayout} style={{ width: '50%' }}>
             <RippleButton
               category="outlined"
+              borderBox={true}
               palette="main"
               onClick={() => navigate(-1)}
               style={{ width: '100%' }}
@@ -92,6 +93,7 @@ export default function Signup() {
           </Form.Item>
           <Form.Item {...tailLayout} style={{ width: '50%' }}>
             <RippleButton
+              borderBox={true}
               category="solid"
               palette="main"
               htmlType="submit"
