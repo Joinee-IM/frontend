@@ -17,3 +17,8 @@ export const percentageOfFigma = (number: number) => {
     max: `max(${vw}, ${vh})`,
   };
 };
+
+export const fullChild = css`
+  width: 100%;
+  height: 100%;
+`;
