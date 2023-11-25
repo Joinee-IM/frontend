@@ -21,7 +21,6 @@ const Container = styled.div`
   padding: 60px clamp(30px, 12.7vw, 200px);
   width: 100%;
   box-sizing: border-box;
-  flex: 1;
   display: flex;
   flex-direction: column;
   row-gap: 40px;
