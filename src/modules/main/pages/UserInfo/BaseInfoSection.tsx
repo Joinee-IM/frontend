@@ -19,7 +19,7 @@ const ButtonWrapper = styled.div`
   column-gap: 8px;
 `;
 
-export default function BaseInfoSection() {
+export default function BaseInfoSection(props: InfoProps) {
   const [form] = Form.useForm<InfoProps>();
   const [isEdit, setIsEdit] = useState(false);
 
@@ -64,28 +64,28 @@ export default function BaseInfoSection() {
   const baseInfo = useMemo(() => {
     return {
       電子郵件: isEdit ? (
-        <Form.Item name="email" initialValue="b09705017@ntu.im">
+        <Form.Item name="email" initialValue={props.email}>
           <Input />
         </Form.Item>
       ) : (
-        'b09705017@ntu.im'
+        props.email
       ),
       暱稱: isEdit ? (
-        <Form.Item name="nickname" initialValue="yclai">
+        <Form.Item name="nickname" initialValue={props.nickname}>
           <Input />
         </Form.Item>
       ) : (
-        'yclai'
+        props.nickname
       ),
       性別: isEdit ? (
-        <Form.Item name="gender" initialValue="女">
+        <Form.Item name="gender" initialValue={props.gender}>
           <Input />
         </Form.Item>
       ) : (
-        '女'
+        props.gender
       ),
     };
-  }, [isEdit]);
+  }, [isEdit, props.email, props.gender, props.nickname]);
 
   return (
     <Section title="基本資料" TitleAction={BaseInfoAction}>

@@ -1,6 +1,5 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Form, Input } from 'antd';
-import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -41,7 +40,6 @@ export default function Login() {
   const { mutate } = useLogin();
   const navigate = useNavigate();
   const { setUser } = useUser();
-  const [, setCookie] = useCookies(['auth-token']);
 
   const handleButtonPress = (values: FieldType) => {
     const { email, password } = values;
@@ -51,7 +49,6 @@ export default function Login() {
         {
           onSuccess({ data }) {
             setUser({ accountId: String(data?.account_id) });
-            setCookie('auth-token', data?.token);
             navigate(`/user-info/${data?.account_id}`);
           },
         },
@@ -94,7 +91,8 @@ export default function Login() {
             category="solid"
             palette="main"
             htmlType="submit"
-            style={{ width: '100%', boxSizing: 'border-box' }}
+            borderBox={true}
+            style={{ width: '100%' }}
           >
             登入
           </RippleButton>

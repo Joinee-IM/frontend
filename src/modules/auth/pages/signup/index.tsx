@@ -95,6 +95,7 @@ export default function Signup() {
           <ButtonGroup>
             <Form.Item style={{ width: '50%' }}>
               <RippleButton
+                borderBox={true}
                 category="outlined"
                 palette="main"
                 onClick={() => navigate(-1)}
@@ -105,6 +106,7 @@ export default function Signup() {
             </Form.Item>
             <Form.Item style={{ width: '50%' }}>
               <RippleButton
+                borderBox={true}
                 category="solid"
                 palette="main"
                 htmlType="submit"
