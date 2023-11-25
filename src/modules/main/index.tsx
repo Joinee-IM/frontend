@@ -1,6 +1,6 @@
 import { BellOutlined, UserOutlined } from '@ant-design/icons';
 import { Outlet, useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import Background from '@/assets/background.jpg';
 import { RippleButton } from '@/components';
@@ -43,22 +43,26 @@ const MenuItem = styled(RippleButton)`
   font-weight: 400;
 `;
 
-const ContentContainer = styled.div`
+const ContentContainer = styled.div<{ hasBackground?: boolean }>`
   flex: 1;
   width: 100%;
   position: relative;
   overflow: scroll;
-  &::before {
-    content: '';
-    background-image: url(${Background});
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
-    position: absolute;
-    inset: 0;
-    opacity: 0.5;
-    z-index: -1;
-  }
+  ${({ hasBackground = true }) =>
+    hasBackground &&
+    css`
+      &::before {
+        content: '';
+        background-image: url(${Background});
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        position: absolute;
+        inset: 0;
+        opacity: 0.5;
+        z-index: -1;
+      }
+    `}
 `;
 
 const ScrollContainer = styled.div`
