@@ -37,7 +37,7 @@ const TEST_DATA = {
 
 export default function Login() {
   const [form] = Form.useForm();
-  const { mutate } = useLogin();
+  const { mutate, isLoading } = useLogin();
   const navigate = useNavigate();
   const { setUser } = useUser();
 
@@ -93,6 +93,7 @@ export default function Login() {
             htmlType="submit"
             borderBox={true}
             style={{ width: '100%' }}
+            loading={isLoading}
           >
             登入
           </RippleButton>
