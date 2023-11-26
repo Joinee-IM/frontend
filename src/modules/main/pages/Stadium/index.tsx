@@ -3,17 +3,8 @@ import { range } from 'lodash';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 
-import { PageTitle } from '@/components/Title';
+import { Container, PageTitle } from '@/modules/main/components';
 import ListItem from '@/modules/main/pages/Stadium/components/ListItem';
-
-const Container = styled.div`
-  padding: 60px clamp(30px, 12.7vw, 200px);
-  width: 100%;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  row-gap: 40px;
-`;
 
 const ContentContainer = styled.div`
   width: 100%;

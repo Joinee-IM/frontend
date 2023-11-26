@@ -76,6 +76,7 @@ export default function Login() {
           extra={
             <ForgotPasswordWrapper>
               <RippleButton
+                type="link"
                 category="link"
                 palette="main"
                 style={{ fontSize: '12px', fontWeight: 400, alignSelf: 'flex-end' }}
@@ -105,6 +106,7 @@ export default function Login() {
       <RippleButton
         category="link"
         palette="main"
+        type="link"
         onClick={() => navigate('/auth/signup/choose-role')}
         style={{ fontSize: '14px', fontWeight: 400, marginTop: '50px' }}
       >
