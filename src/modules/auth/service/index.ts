@@ -1,4 +1,4 @@
-import { queryKey } from '@/constants';
+import { ENV, queryKey } from '@/constants';
 
 import api from '@/services';
 
@@ -6,7 +6,7 @@ export const useLogin = () => api.usePost('/login', undefined, { mutationKey: qu
 
 export const useGoogleLogin = (role?: string) => {
   const googleLogin = () => {
-    window.open(`${String(import.meta.env.VITE_API_PORT)}/google-login?role=${role}`, '_self');
+    window.open(`${ENV.baseURL}/google-login?role=${role}`, '_self');
   };
   return { googleLogin };
 };
