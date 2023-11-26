@@ -1,6 +1,11 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import { z } from 'zod';
 
 import { ENV } from '@/constants';
+
+import { schemas } from '@/services/type';
+
+type Response = z.infer<(typeof schemas)['Response']>;
 
 const instance = axios.create({ baseURL: ENV.baseURL });
 
@@ -18,8 +23,8 @@ instance.interceptors.request.use(
 );
 
 instance.interceptors.response.use(
-  function (response) {
-    console.log(response);
+  function (response: AxiosResponse<Response>) {
+    if (response.data.error) throw new Error(response.data.error);
     return response;
   },
   function (error) {
