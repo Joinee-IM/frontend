@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { z } from 'zod';
 
 import Bussiness from '@/assets/business.png';
 import Player from '@/assets/player.png';
 import { RippleButton } from '@/components';
 import Card from '@/modules/auth/components/Card';
+import { schemas } from '@/services/type';
 
 const RadioGroup = styled.div`
   display: flex;
@@ -42,7 +44,7 @@ const Character = styled.img<{ chosen: boolean }>`
   cursor: pointer;
 `;
 
-type Role = 'PROVIDER' | 'NORMAL' | undefined;
+type Role = z.infer<(typeof schemas)['RoleType']> | undefined;
 
 export default function ChooseMember() {
   const [role, setRole] = useState<Role>(undefined);

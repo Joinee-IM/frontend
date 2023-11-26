@@ -1,4 +1,4 @@
-export { default as Login } from './pages/login';
+export { default as Login } from './pages/Login';
 export { default as Signup } from './pages/signup';
 export { default as ChooseRole } from './pages/signup/ChooseRole';
 export { default as SendMail } from './pages/signup/SendMail';

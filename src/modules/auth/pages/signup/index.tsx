@@ -46,9 +46,6 @@ export default function Signup() {
         { onSuccess: () => navigate('/auth/signup/send-mail', { state: { email } }) },
       );
   };
-  // const handleGoogleClick = () => {
-  //   googleLogin({});
-  // };
 
   const rules: Record<string, Rule[]> = {
     email: [{ required: true, message: '' }],
