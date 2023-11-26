@@ -1,13 +1,12 @@
 import { queryKey } from '@/constants';
 
 import api from '@/services';
-import instance from '@/services/axios.config';
 
 export const useLogin = () => api.usePost('/login', undefined, { mutationKey: queryKey.login });
 
 export const useGoogleLogin = (role?: string) => {
   const googleLogin = () => {
-    void instance.get('/google-login', { params: { role } });
+    window.open(`${String(import.meta.env.VITE_API_PORT)}/google-login?role=${role}`, '_self');
   };
   return { googleLogin };
 };

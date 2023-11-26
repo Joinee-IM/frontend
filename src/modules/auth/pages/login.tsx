@@ -39,7 +39,6 @@ export default function Login() {
   const { mutate: login } = useLogin();
   const { googleLogin } = useGoogleLogin();
   const navigate = useNavigate();
-
   const handleButtonPress = (values: FieldType) => {
     const { email, password } = values;
     if (email && password) login({ email, password });
