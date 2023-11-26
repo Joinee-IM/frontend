@@ -4,7 +4,7 @@ const instance = axios.create({ withCredentials: true });
 // Add a request interceptor
 instance.interceptors.request.use(
   function (config) {
-    console.log(config);
+    console.log('req:', `${config.baseURL}${config.url}`);
     return config;
   },
   function (error) {
@@ -12,9 +12,14 @@ instance.interceptors.request.use(
   },
 );
 
+interface Data {
+  data: Record<string, string>;
+}
+
 instance.interceptors.response.use(
   function (response) {
-    console.log(response);
+    const data = response.data as Data;
+    console.table(data.data);
     return response;
   },
   function (error) {
