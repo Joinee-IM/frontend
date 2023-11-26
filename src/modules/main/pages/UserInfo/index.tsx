@@ -1,20 +1,19 @@
-import { message, Modal, Upload, UploadProps } from 'antd';
+import { Modal } from 'antd';
 import { motion } from 'framer-motion';
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import Google from '@/assets/google.png';
 import ImageIcon from '@/assets/icons/Image';
-import UploadIcon from '@/assets/icons/Upload';
 import Person from '@/assets/user.png';
 import { RippleButton } from '@/components';
 import AuthButton from '@/components/Button/AuthButton';
-import Divider from '@/components/Divider';
 import BaseInfoSection from '@/modules/main/pages/UserInfo/BaseInfoSection';
 import Section from '@/modules/main/pages/UserInfo/components/Section';
+import Upload from '@/modules/main/pages/UserInfo/components/Upload';
 import SecuritySection from '@/modules/main/pages/UserInfo/SecuritySection';
-import { useEditAvatar, useUserInfo } from '@/modules/main/pages/UserInfo/services';
+import { useUserInfo } from '@/modules/main/pages/UserInfo/services';
 import { flexCenter } from '@/utils/css';
 import toGender from '@/utils/function/toGender';
 
@@ -62,6 +61,7 @@ const Image = styled.img`
   aspect-ratio: 1;
   border-radius: 50%;
   border: 1px solid gray;
+  object-fit: cover;
 `;
 
 const ModalTitle = styled.div`
@@ -70,71 +70,15 @@ const ModalTitle = styled.div`
   border-bottom: 1px solid ${({ theme }) => theme.gray[300]};
 `;
 
-const UploadContainer = styled.div`
-  color: ${({ theme }) => theme.main[500]};
-  height: 400px;
-  box-sizing: border-box;
-  padding: 0 10%;
-  ${flexCenter}
-  flex-direction: column;
-`;
-
 export default function UserInfo() {
   const [imageModal, setImageModal] = useState(false);
   const { account_id } = useParams();
-  const { data } = useUserInfo(Number(account_id));
-  const { mutate, isLoading } = useEditAvatar(Number(account_id));
-  const [progress, setProgress] = useState(0);
+  const { data, refetch } = useUserInfo(Number(account_id));
 
-  useEffect(() => {
-    console.log(progress);
-  }, [progress]);
-
-  const props: UploadProps = useMemo(
-    () => ({
-      name: '123x',
-      maxCount: 1,
-      accept: '.jpg,.jpeg,.png',
-      onChange: (info) => {
-        if (info.file.status === 'done') {
-          void message.success(`${info.file.name} 上傳成功！！`);
-        } else if (info.file.status === 'error') {
-          void message.error(`${info.file.name} 上傳失敗 😖`);
-        }
-      },
-      customRequest: ({
-        file,
-        onError: uploadError,
-        onProgress: uploadProgress,
-        onSuccess: uploadSuccess,
-      }) => {
-        if (isLoading) {
-          console.log('Hiii');
-          let width = 0;
-          const clear = setInterval(() => {
-            if (width >= 99) {
-              clearInterval(clear);
-            } else width += 10;
-          }, 10);
-          uploadProgress?.({ percent: progress });
-        }
-        if (file instanceof File) {
-          uploadProgress?.({ percent: 50 });
-          mutate(
-            { image: file },
-            {
-              onSuccess: () => {
-                uploadSuccess?.(file);
-                setImageModal(false);
-              },
-              onError: uploadError,
-            },
-          );
-        }
-      },
-    }),
-    [isLoading, mutate, progress],
-  );
+  const handleUploadSuccess = () => {
+    void refetch();
+    setImageModal(false);
+  };
 
   return (
     <Container>
@@ -162,7 +106,7 @@ export default function UserInfo() {
             </Section>
           </InformationWrapper>
           <ImageContainer>
-            <Image src={Person} />
+            <Image src={data.data.image_url ?? Person} />
             <RippleButton
               icon={<ImageIcon style={{ fontSize: '1.5em' }} />}
               category="outlined"
@@ -181,45 +125,7 @@ export default function UserInfo() {
         footer={null}
         onCancel={() => setImageModal(false)}
       >
-        <UploadContainer>
-          <UploadIcon style={{ fontSize: 'clamp(100px, 25vw, 200px)' }} />
-          將檔案拖曳至此
-          <Divider text="或是"></Divider>
-          <Upload
-            {...props}
-            onChange={() => {
-              const clear = setInterval(
-                () =>
-                  setProgress((prev) => {
-                    if (prev >= 99) {
-                      clearInterval(clear);
-                    }
-                    return prev + 10;
-                  }),
-                5000,
-              );
-            }}
-          >
-            <RippleButton
-              category="solid"
-              palette="main"
-              onClick={() => {
-                const clear = setInterval(
-                  () =>
-                    setProgress((prev) => {
-                      if (prev >= 99) {
-                        clearInterval(clear);
-                      }
-                      return prev + 10;
-                    }),
-                  10,
-                );
-              }}
-            >
-              從電腦上傳檔案
-            </RippleButton>
-          </Upload>
-        </UploadContainer>
+        <Upload handleUploadSuccess={handleUploadSuccess} />
       </Modal>
     </Container>
   );
