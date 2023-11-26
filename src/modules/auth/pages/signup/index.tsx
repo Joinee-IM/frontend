@@ -10,7 +10,7 @@ import { RippleButton } from '@/components';
 import AuthButton from '@/components/Button/AuthButton';
 import Divider from '@/components/Divider';
 import Card from '@/modules/auth/components/Card';
-import { useAddAccount } from '@/modules/auth/service';
+import { useAddAccount, useGoogleLogin } from '@/modules/auth/service';
 
 interface FieldType {
   email?: string;
@@ -35,12 +35,11 @@ export default function Signup() {
   const navigate = useNavigate();
   const { mutate } = useAddAccount();
   const [searchParams] = useSearchParams();
-  // const { data } = useGoogleLogin();
+  const role = searchParams.get('role');
+  const { googleLogin } = useGoogleLogin(role ?? '');
 
   const handleButtonPress = (values: FieldType) => {
     const { email, password } = values;
-    const role = searchParams.get('role');
-    console.log(role);
     if (email && password && (role === 'NORMAL' || role === 'PROVIDER'))
       mutate(
         { email, password, role },
@@ -108,7 +107,9 @@ export default function Signup() {
         </ButtonGroup>
       </Form>
       <Divider text="或是" />
-      <AuthButton image={Google}>以 Google 帳號登入</AuthButton>
+      <AuthButton image={Google} onClick={() => googleLogin()}>
+        以 Google 帳號登入
+      </AuthButton>
     </Card>
   );
 }

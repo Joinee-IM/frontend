@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import EmailIcon from '@/assets/icons/Email';
 import { RippleButton } from '@/components';
 import Card from '@/modules/auth/components/Card';
-import { useResendEmailVerification } from '@/modules/auth/service';
+import { useForgetPassword } from '@/modules/auth/service';
 
 const TextBox = styled.div`
   margin-top: 10px;
@@ -18,7 +18,7 @@ export default function SendMail() {
   const location = useLocation();
   const { state = { email: '12345' } } = location as { state: { email: string } };
 
-  const { mutate } = useResendEmailVerification();
+  const { mutate } = useForgetPassword();
   const handleButtonPress = () => {
     if (state.email) mutate({ email: state.email });
   };
@@ -27,10 +27,9 @@ export default function SendMail() {
     <Card hasTitle={false} style={{ padding: '50px 50px 30px' }}>
       <EmailIcon fontSize="80px"></EmailIcon>
       <TextBox>
-        <Text>已寄發電子郵件認證信給您，請點選信件中的連結進行驗證。</Text>
-        <Text>若未收到驗證信請確認垃圾郵件區或點擊下方按鈕，系統將重新發送驗證信。</Text>
+        <Text>已寄發電子郵件給您，請點選信件中的連結重設密碼。</Text>
+        <Text>若未收到請確認垃圾郵件區或點擊下方按鈕，系統將重新發送電子郵件。</Text>
       </TextBox>
-
       <RippleButton
         type="solid"
         palette="main"

@@ -8,7 +8,7 @@ import { RippleButton } from '@/components';
 import AuthButton from '@/components/Button/AuthButton';
 import Divider from '@/components/Divider';
 import Card from '@/modules/auth/components/Card';
-import { useLogin } from '@/modules/auth/service';
+import { useGoogleLogin, useLogin } from '@/modules/auth/service';
 
 interface FieldType {
   email?: string;
@@ -36,12 +36,13 @@ const TESTVALUE = {
 
 export default function Login() {
   const [form] = Form.useForm();
-  const { mutate } = useLogin();
+  const { mutate: login } = useLogin();
+  const { googleLogin } = useGoogleLogin();
   const navigate = useNavigate();
 
   const handleButtonPress = (values: FieldType) => {
     const { email, password } = values;
-    if (email && password) mutate({ email, password });
+    if (email && password) login({ email, password });
   };
 
   return (
@@ -82,7 +83,9 @@ export default function Login() {
         </Form.Item>
       </Form>
       <Divider text="或是" />
-      <AuthButton image={Google}>以 Google 帳號登入</AuthButton>
+      <AuthButton image={Google} onClick={() => googleLogin()}>
+        以 Google 帳號登入
+      </AuthButton>
       <RippleButton
         type="link"
         palette="main"
