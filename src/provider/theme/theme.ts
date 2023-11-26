@@ -16,6 +16,19 @@ const theme = {
     '700': '#858585' as HEX,
     '900': '#353535' as HEX,
   },
+  sub: {
+    '100': '#E0F7F1' as HEX,
+    '300': '#98D4CD' as HEX,
+    '500': '#6EA9A8' as HEX,
+    '700': '#3C6E71' as HEX,
+  },
+  red: {
+    '100': '#FCE3D6' as HEX,
+    '300': '#EE9684' as HEX,
+    '500': '#DE6D62' as HEX,
+    '700': '#C83434' as HEX,
+  },
+
   white: '#FFFFFF',
 } satisfies ThemeType;
 

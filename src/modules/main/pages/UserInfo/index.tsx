@@ -10,21 +10,12 @@ import Person from '@/assets/user.png';
 import { RippleButton } from '@/components';
 import AuthButton from '@/components/Button/AuthButton';
 import Divider from '@/components/Divider';
-import { PageTitle } from '@/components/Title';
+import { Container, PageTitle } from '@/modules/main/components';
 import BaseInfoSection from '@/modules/main/pages/UserInfo/BaseInfoSection';
 import Section from '@/modules/main/pages/UserInfo/components/Section';
 import SecuritySection from '@/modules/main/pages/UserInfo/SecuritySection';
 import { useEditAvatar, useUserInfo } from '@/modules/main/pages/UserInfo/services';
 import { flexCenter } from '@/utils/css';
-
-const Container = styled.div`
-  padding: 60px clamp(30px, 12.7vw, 200px);
-  width: 100%;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  row-gap: 40px;
-`;
 
 const ContentWrapper = styled.div`
   width: 100%;

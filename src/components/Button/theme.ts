@@ -67,6 +67,29 @@ export const buttonTheme = {
         text: ColorTheme.main[700],
       },
     },
+    gray: {
+      normal: {
+        background: 'transparent',
+        text: ColorTheme.gray[500],
+      },
+      hover: {
+        text: ColorTheme.gray[300],
+      },
+      active: {
+        text: ColorTheme.gray[700],
+      },
+    },
+    table: {
+      normal: {
+        background: 'transparent',
+        text: ColorTheme.gray[900],
+      },
+      hover: {
+        background: ColorTheme.main[300],
+        text: ColorTheme.main[100],
+      },
+      active: {},
+    },
   },
 } satisfies Record<
   'solid' | 'outlined' | 'link',
@@ -97,7 +120,7 @@ export default function getTheme<T extends ButtonType>({
     &:not([disabled]) {
       background-color: ${base.normal.background} !important;
       color: ${base.normal.text} !important;
-      border-color: ${base.normal?.border ?? 'transparent'} !important;
+      ${base.normal?.border && `border-color: ${base.normal.border} !important;`}
       &:hover {
         background-color: ${base.hover.background} !important;
         color: ${base.hover.text} !important;

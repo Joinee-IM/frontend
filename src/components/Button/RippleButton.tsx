@@ -32,7 +32,13 @@ const RippleButtonBase = styled(ThemeButton)`
 
 export default function RippleButton<T extends ButtonType>({
   children,
+  palette = 'main',
+  category,
   ...rest
 }: RippleButtonProps<T>) {
-  return <RippleButtonBase {...rest}>{children}</RippleButtonBase>;
+  return (
+    <RippleButtonBase category={category} palette={palette} {...rest}>
+      {children}
+    </RippleButtonBase>
+  );
 }
