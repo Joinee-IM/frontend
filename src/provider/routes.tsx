@@ -66,7 +66,42 @@ const router = createBrowserRouter([
           },
         ],
       },
+      {
+        path: routePath('auth.forgetPassword'),
+        children: [
+          {
+            index: true,
+            async lazy() {
+              const ForgetPassword = await import('@/modules/auth/pages/forgetPassword');
+              return { Component: ForgetPassword.default };
+            },
+          },
+          {
+            path: routePath('auth.forgetPassword.send-mail'),
+            async lazy() {
+              const SendMail = await import('@/modules/auth/pages/forgetPassword/SendMail');
+              return { Component: SendMail.default };
+            },
+          },
+          {
+            path: routePath('auth.forgetPassword.reset-password'),
+            async lazy() {
+              const ResetPassword = await import(
+                '@/modules/auth/pages/forgetPassword/ResetPassword'
+              );
+              return { Component: ResetPassword.default };
+            },
+          },
+        ],
+      },
     ],
+  },
+  {
+    path: routePath('notFound'),
+    async lazy() {
+      const NotFound = await import('@/modules/notFound');
+      return { Component: NotFound.default };
+    },
   },
   {
     path: routePath('view'),

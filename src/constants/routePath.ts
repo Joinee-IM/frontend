@@ -28,7 +28,13 @@ export const ROUTES = {
       success: 'success',
       'more-info': 'more-info',
     },
+    forgetPassword: {
+      route: 'forget-password',
+      'send-mail': 'send-mail',
+      'reset-password': 'reset-password',
+    },
   },
+  notFound: '*',
   view: { route: 'view' },
 } satisfies Record<string, RoutesType | string>;
 
