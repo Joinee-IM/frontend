@@ -99,7 +99,7 @@ const router = createBrowserRouter([
   {
     path: routePath('notFound'),
     async lazy() {
-      const NotFound = await import('@/modules/notFound');
+      const NotFound = await import('@/modules/404');
       return { Component: NotFound.default };
     },
   },

@@ -13,7 +13,7 @@ type TapButtonProps = ButtonThemeProps &
 const RippleButtonBase = styled(Button)<ButtonThemeProps>`
   padding: 0.8% 3%;
   font-weight: bolder;
-  font-size: max(1vw, 12px);
+  font-size: max(1vmin, 12px);
   border-radius: 10px;
   width: fit-content;
   white-space: nowrap;

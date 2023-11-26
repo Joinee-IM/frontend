@@ -57,7 +57,7 @@ const Response = z
   .passthrough();
 const ResetPasswordInput = z.object({ code: z.string(), password: z.string() }).passthrough();
 const auth_token = z.union([z.string(), z.null()]).optional();
-const Account = z
+const ReadAccountOutput = z
   .object({
     id: z.number().int(),
     email: z.string().email(),
@@ -67,10 +67,11 @@ const Account = z
     role: RoleType,
     is_verified: z.boolean(),
     is_google_login: z.boolean(),
+    image_url: z.union([z.string(), z.null()]),
   })
   .passthrough();
-const Response_Account_ = z
-  .object({ data: z.union([Account, z.null()]), error: z.union([z.string(), z.null()]) })
+const Response_ReadAccountOutput_ = z
+  .object({ data: z.union([ReadAccountOutput, z.null()]), error: z.union([z.string(), z.null()]) })
   .partial()
   .passthrough();
 const EditAccountInput = z
@@ -84,6 +85,23 @@ const Response_bool_ = z
 const Body_upload_account_image_account__account_id__upload_patch = z
   .object({ image: z.instanceof(File) })
   .passthrough();
+const Account = z
+  .object({
+    id: z.number().int(),
+    email: z.string().email(),
+    nickname: z.string(),
+    gender: GenderType,
+    image_uuid: z.union([z.string(), z.null()]),
+    role: RoleType,
+    is_verified: z.boolean(),
+    is_google_login: z.boolean(),
+  })
+  .passthrough();
+const Response_Sequence_Account__ = z
+  .object({ data: z.union([z.array(Account), z.null()]), error: z.union([z.string(), z.null()]) })
+  .partial()
+  .passthrough();
+const role = z.union([RoleType, z.null()]).optional();
 const Response_str_ = z
   .object({ data: z.union([z.string(), z.null()]), error: z.union([z.string(), z.null()]) })
   .partial()
@@ -265,6 +283,34 @@ const Response_Sequence_Reservation__ = z
   })
   .partial()
   .passthrough();
+const ViewMyReservationSortBy = z.enum([
+  'time',
+  'stadium_name',
+  'venue_name',
+  'is_manager',
+  'vacancy',
+  'status',
+]);
+const sort_by__2 = ViewMyReservationSortBy.optional().default('time');
+const ReservationStatus = z.enum(['IN_PROGRESS', 'CANCELLED', 'FINISHED']);
+const ViewMyReservation = z
+  .object({
+    start_time: z.string().datetime({ offset: true }),
+    end_time: z.string().datetime({ offset: true }),
+    stadium_name: z.string(),
+    venue_name: z.string(),
+    is_manager: z.boolean(),
+    vacancy: z.number().int(),
+    status: ReservationStatus,
+  })
+  .passthrough();
+const Response_Sequence_ViewMyReservation__ = z
+  .object({
+    data: z.union([z.array(ViewMyReservation), z.null()]),
+    error: z.union([z.string(), z.null()]),
+  })
+  .partial()
+  .passthrough();
 const Response_Reservation_ = z
   .object({ data: z.union([Reservation, z.null()]), error: z.union([z.string(), z.null()]) })
   .partial()
@@ -278,14 +324,13 @@ const app__processor__http__court__BrowseReservationParameters = z
   .passthrough();
 const AddReservationInput = z
   .object({
-    court_id: z.number().int(),
     start_time: z.string().datetime({ offset: true }),
     end_time: z.string().datetime({ offset: true }),
     technical_level: z.array(TechnicalType).optional().default([]),
     remark: z.union([z.string(), z.null()]),
     member_count: z.number().int(),
     vacancy: z.number().int().optional().default(-1),
-    member_id: z.array(z.number()).optional().default([]),
+    member_ids: z.array(z.number()).optional().default([]),
   })
   .passthrough();
 const AddReservationOutput = z.object({ id: z.number().int() }).passthrough();
@@ -325,11 +370,14 @@ export const schemas = {
   Response,
   ResetPasswordInput,
   auth_token,
-  Account,
-  Response_Account_,
+  ReadAccountOutput,
+  Response_ReadAccountOutput_,
   EditAccountInput,
   Response_bool_,
   Body_upload_account_image_account__account_id__upload_patch,
+  Account,
+  Response_Sequence_Account__,
+  role,
   Response_str_,
   BatchDownloadInput,
   BatchDownloadOutput,
@@ -368,6 +416,11 @@ export const schemas = {
   app__processor__http__reservation__BrowseReservationParameters,
   Reservation,
   Response_Sequence_Reservation__,
+  ViewMyReservationSortBy,
+  sort_by__2,
+  ReservationStatus,
+  ViewMyReservation,
+  Response_Sequence_ViewMyReservation__,
   Response_Reservation_,
   app__processor__http__court__BrowseReservationParameters,
   AddReservationInput,
@@ -422,7 +475,7 @@ const endpoints = makeApi([
         schema: auth_token,
       },
     ],
-    response: Response_Account_,
+    response: Response_ReadAccountOutput_,
     errors: [
       {
         status: 422,
@@ -485,6 +538,32 @@ const endpoints = makeApi([
       },
     ],
     response: Response_bool_,
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
+  },
+  {
+    method: 'get',
+    path: '/account/search',
+    alias: 'search_account_account_search_get',
+    requestFormat: 'json',
+    parameters: [
+      {
+        name: 'query',
+        type: 'Query',
+        schema: z.string(),
+      },
+      {
+        name: 'auth-token',
+        type: 'Header',
+        schema: auth_token,
+      },
+    ],
+    response: Response_Sequence_Account__,
     errors: [
       {
         status: 422,
@@ -564,6 +643,11 @@ const endpoints = makeApi([
         name: 'body',
         type: 'Body',
         schema: AddReservationInput,
+      },
+      {
+        name: 'court_id',
+        type: 'Path',
+        schema: z.number().int(),
       },
       {
         name: 'auth-token',
@@ -772,7 +856,21 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
     path: '/google-login',
     alias: 'google_login_google_login_get',
     requestFormat: 'json',
+    parameters: [
+      {
+        name: 'role',
+        type: 'Query',
+        schema: role,
+      },
+    ],
     response: z.unknown(),
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
   },
   {
     method: 'get',
@@ -815,6 +913,27 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
       },
     ],
     response: Response_Reservation_,
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
+  },
+  {
+    method: 'post',
+    path: '/reservation/code/:invitation_code',
+    alias: 'join_reservation_reservation_code__invitation_code__post',
+    requestFormat: 'json',
+    parameters: [
+      {
+        name: 'invitation_code',
+        type: 'Path',
+        schema: z.string(),
+      },
+    ],
+    response: Response_bool_,
     errors: [
       {
         status: 422,
@@ -999,6 +1118,52 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
       },
     ],
     response: Response_Sequence_Reservation__,
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
+  },
+  {
+    method: 'get',
+    path: '/view/reservation',
+    alias: 'view_my_reservation_view_reservation_get',
+    requestFormat: 'json',
+    parameters: [
+      {
+        name: 'account_id',
+        type: 'Query',
+        schema: z.number().int(),
+      },
+      {
+        name: 'sort_by',
+        type: 'Query',
+        schema: sort_by__2,
+      },
+      {
+        name: 'order',
+        type: 'Query',
+        schema: order,
+      },
+      {
+        name: 'limit',
+        type: 'Query',
+        schema: z.number().int().optional().default(10),
+      },
+      {
+        name: 'offset',
+        type: 'Query',
+        schema: z.number().int().optional(),
+      },
+      {
+        name: 'auth-token',
+        type: 'Header',
+        schema: auth_token,
+      },
+    ],
+    response: Response_Sequence_ViewMyReservation__,
     errors: [
       {
         status: 422,
