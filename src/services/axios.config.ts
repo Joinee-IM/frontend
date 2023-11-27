@@ -7,7 +7,7 @@ import { schemas } from '@/services/type';
 
 type Response = z.infer<(typeof schemas)['Response']>;
 
-const instance = axios.create({ baseURL: ENV.baseURL });
+const instance = axios.create({ baseURL: ENV.baseURL, withCredentials: true });
 
 // Add a request interceptor
 instance.interceptors.request.use(
