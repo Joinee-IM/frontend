@@ -1,6 +1,6 @@
 import { Modal } from 'antd';
-import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { motion, useAnimationControls } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -56,12 +56,14 @@ const ImageContainer = styled.div`
   ${flexCenter}
 `;
 
-const Image = styled.img`
+const Image = styled(motion.img)<{ change?: boolean }>`
   width: max(25%, 200px);
   aspect-ratio: 1;
   border-radius: 50%;
   border: 1px solid gray;
   object-fit: cover;
+  transform: ${({ change }) => (change ? 'scale(1.2)' : 'scale(1)')};
+  transition: all 0.1s ease-in-out;
 `;
 
 const ModalTitle = styled.div`
@@ -74,11 +76,16 @@ export default function UserInfo() {
   const [imageModal, setImageModal] = useState(false);
   const { account_id } = useParams();
   const { data, refetch } = useUserInfo(Number(account_id));
+  const controls = useAnimationControls();
 
   const handleUploadSuccess = () => {
     void refetch();
     setImageModal(false);
   };
+
+  useEffect(() => {
+    if (!imageModal) void controls.start({ opacity: 1, scale: [2, 1] });
+  }, [controls, imageModal]);
 
   return (
     <Container>
@@ -106,7 +113,21 @@ export default function UserInfo() {
             </Section>
           </InformationWrapper>
           <ImageContainer>
-            <Image src={data.data.image_url ?? Person} />
+            <Image
+              src={data.data.image_url ?? Person}
+              initial={{ opacity: 1, scale: 1 }}
+              animate={controls}
+              transition={{
+                duration: 0.3,
+                ease: [0, 0.71, 0.2, 1.01],
+                scale: {
+                  type: 'spring',
+                  damping: 5,
+                  stiffness: 100,
+                  restDelta: 0.001,
+                },
+              }}
+            />
             <RippleButton
               icon={<ImageIcon style={{ fontSize: '1.5em' }} />}
               category="outlined"
