@@ -1,6 +1,5 @@
-import { Form, Input, message } from 'antd';
+import { Form, Input } from 'antd';
 import Link from 'antd/es/typography/Link';
-import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -10,6 +9,7 @@ import Google from '@/assets/google.png';
 import { RippleButton } from '@/components';
 import AuthButton from '@/components/Button/AuthButton';
 import Divider from '@/components/Divider';
+import useError from '@/hooks/useError';
 import Card from '@/modules/auth/components/Card';
 import { useAddAccount, useGoogleLogin } from '@/modules/auth/service';
 
@@ -24,13 +24,6 @@ const ButtonGroup = styled(Link)`
   gap: 8px;
 `;
 
-const layout = {
-  wrapperCol: { span: 32 },
-};
-const tailLayout = {
-  wrapperCol: { offset: 0, span: 24 },
-};
-
 const TEST_VALUE = {
   email: 'b09705017@ntu.im',
   password: '1234',
@@ -44,26 +37,8 @@ export default function Signup() {
   const [searchParams] = useSearchParams();
   const role = searchParams.get('role');
   const { googleLogin } = useGoogleLogin(role ?? '');
-  const [messageApi, contextHolder] = message.useMessage();
 
-  useEffect(() => {
-    switch (error?.message) {
-      case 'EmailExists':
-        void messageApi.open({
-          type: 'error',
-          content: '此電子郵件已註冊！',
-        });
-        break;
-      case "Zodios: Invalid Body parameter 'body'":
-        void messageApi.open({
-          type: 'error',
-          content: '請輸入正確格式的電子郵件！',
-        });
-        break;
-      default:
-        break;
-    }
-  }, [error, messageApi]);
+  const { context } = useError(error);
 
   const handleButtonPress = (values: FieldType) => {
     const { email, password } = values;
@@ -72,14 +47,6 @@ export default function Signup() {
         { email, password, role },
         {
           onSuccess: () => navigate('/auth/signup/send-mail', { state: { email } }),
-          // onError(error) {
-          //   if (error.message === 'EmailExists') {
-          //     void messageApi.open({
-          //       type: 'error',
-          //       content: '此電子郵件已註冊！',
-          //     });
-          //   }
-          // },
         },
       );
   };
@@ -105,12 +72,10 @@ export default function Signup() {
 
   return (
     <>
-      {contextHolder}
-      <Card style={{ paddingBottom: '40px' }}>
+      {context}
+      <Card>
         <Form
-          {...layout}
           form={form}
-          name="control-hooks"
           onFinish={handleButtonPress}
           size={'middle'}
           style={{ width: '100%' }}
@@ -126,7 +91,7 @@ export default function Signup() {
             <Input.Password placeholder="再次輸入密碼" autoComplete="off" />
           </Form.Item>
           <ButtonGroup>
-            <Form.Item {...tailLayout} style={{ width: '50%' }}>
+            <Form.Item style={{ width: '50%' }}>
               <RippleButton
                 type="outlined"
                 palette="main"
@@ -136,7 +101,7 @@ export default function Signup() {
                 返回
               </RippleButton>
             </Form.Item>
-            <Form.Item {...tailLayout} style={{ width: '50%' }}>
+            <Form.Item style={{ width: '50%' }}>
               <RippleButton type="solid" palette="main" htmlType="submit" style={{ width: '100%' }}>
                 下一步
               </RippleButton>

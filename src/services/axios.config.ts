@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { z } from 'zod';
 
 import { ENV } from '@/constants';
@@ -27,8 +27,9 @@ instance.interceptors.response.use(
     if (response.data.error) throw new Error(response.data.error);
     return response;
   },
-  function (error) {
-    return Promise.reject(error);
+  function ({ response }: AxiosError<Response>) {
+    console.error(response?.status, response?.data.error);
+    return Promise.reject(new Error(response?.data.error ?? undefined));
   },
 );
 
