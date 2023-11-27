@@ -36,7 +36,7 @@ export default function ForgetPassword() {
       );
   };
 
-  const rules: Record<string, Rule[]> = {
+  const rules: Record<keyof FieldType, Rule[]> = {
     email: [{ required: true, message: '' }],
   };
 

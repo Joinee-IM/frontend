@@ -3,6 +3,7 @@ import Link from 'antd/es/typography/Link';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 
+import type { Role } from '@/modules/auth/pages/signup/ChooseRole';
 import type { Rule } from 'antd/es/form';
 
 import Google from '@/assets/google.png';
@@ -16,6 +17,7 @@ import { useAddAccount, useGoogleLogin } from '@/modules/auth/service';
 interface FieldType {
   email?: string;
   password?: string;
+  confirm?: string;
 }
 
 const ButtonGroup = styled(Link)`
@@ -35,7 +37,7 @@ export default function Signup() {
   const navigate = useNavigate();
   const { mutate, error } = useAddAccount();
   const [searchParams] = useSearchParams();
-  const role = searchParams.get('role');
+  const role = searchParams.get('role') as Role;
   const { googleLogin } = useGoogleLogin(role ?? '');
 
   const { context } = useError(error);
@@ -51,7 +53,7 @@ export default function Signup() {
       );
   };
 
-  const rules: Record<string, Rule[]> = {
+  const rules: Record<keyof FieldType, Rule[]> = {
     email: [{ required: true, message: '' }],
     password: [{ required: true, message: '' }],
     confirm: [
