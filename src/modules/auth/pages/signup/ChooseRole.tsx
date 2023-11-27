@@ -16,7 +16,9 @@ const RadioGroup = styled.div`
   gap: 10px;
 `;
 
-const CharacterWrapper = styled.div<{ chosen: boolean }>`
+const CharacterWrapper = styled.div.withConfig({
+  shouldForwardProp: (prop) => !['chosen'].includes(prop),
+})<{ chosen: boolean }>`
   display: flex;
   flex-direction: column;
   font-size: 12px;
@@ -32,11 +34,15 @@ const CharacterWrapper = styled.div<{ chosen: boolean }>`
   }
 `;
 
-const Label = styled.div<{ chosen: boolean }>`
+const Label = styled.div.withConfig({
+  shouldForwardProp: (prop) => !['chosen'].includes(prop),
+})<{ chosen: boolean }>`
   color: ${({ theme, chosen }) => (chosen ? theme.main[500] : 'black')};
 `;
 
-const Character = styled.img<{ chosen: boolean }>`
+const Character = styled.img.withConfig({
+  shouldForwardProp: (prop) => !['chosen'].includes(prop),
+})<{ chosen: boolean }>`
   filter: brightness(${({ chosen }) => (chosen ? '100%' : '20%')});
   width: 100px;
   height: 120px;
