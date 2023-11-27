@@ -65,6 +65,7 @@ export default function Login() {
                 type="link"
                 palette="main"
                 style={{ fontSize: '12px', fontWeight: 400, alignSelf: 'flex-end' }}
+                onClick={() => navigate('/auth/forget-password')}
               >
                 忘記密碼？
               </RippleButton>

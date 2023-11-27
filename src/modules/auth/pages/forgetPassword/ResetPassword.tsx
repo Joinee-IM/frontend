@@ -21,7 +21,7 @@ const Text = styled.div`
   margin-bottom: 25px;
 `;
 
-export default function ForgetPassword() {
+export default function ResetPassword() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const { mutate } = useResetPassword();
