@@ -1,4 +1,4 @@
-import { HEX } from '@/utils/color/types';
+import type { HEX } from '@/utils/color/types';
 
 type ThemeType = { [K in string]: HEX | ThemeType };
 

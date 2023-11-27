@@ -1,4 +1,4 @@
-import { NestedKeys } from '@/utils/type';
+import type { NestedKeys } from '@/utils/type';
 
 interface Path {
   route: string;

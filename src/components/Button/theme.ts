@@ -1,7 +1,8 @@
 import { css } from 'styled-components';
 
+import type { HEX } from '@/utils/color/types';
+
 import ColorTheme from '@/provider/theme/theme';
-import { HEX } from '@/utils/color/types';
 type Element = 'background' | 'border' | 'text';
 
 type MouseEvent = 'normal' | 'hover' | 'active';

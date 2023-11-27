@@ -50,7 +50,7 @@ const Character = styled.img.withConfig({
   cursor: pointer;
 `;
 
-type Role = z.infer<(typeof schemas)['RoleType']> | undefined;
+export type Role = z.infer<(typeof schemas)['RoleType']> | undefined;
 
 export default function ChooseMember() {
   const [role, setRole] = useState<Role>(undefined);

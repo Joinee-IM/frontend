@@ -1,7 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import { routePath } from '@/constants';
-
 import viewPath from '@/view/route';
 
 const router = createBrowserRouter([
