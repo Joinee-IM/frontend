@@ -81,13 +81,7 @@ export interface ButtonThemeProps<T extends ButtonType> {
   palette: PaletteType<T>;
 }
 
-export default function getTheme<T extends ButtonType>({
-  category,
-  palette,
-}: {
-  category: T;
-  palette: PaletteType<T>;
-}) {
+export default function getTheme<T extends ButtonType>({ category, palette }: ButtonThemeProps<T>) {
   const base = buttonTheme[category][palette] as Record<
     MouseEvent,
     { [x in Element]?: HEX | 'transparent' }
