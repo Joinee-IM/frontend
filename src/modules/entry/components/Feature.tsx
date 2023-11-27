@@ -1,7 +1,9 @@
 import { useInView } from 'framer-motion';
-import { ReactNode, useRef } from 'react';
+import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+
+import type { ReactNode } from 'react';
 
 import { RippleButton } from '@/components';
 
@@ -118,6 +120,8 @@ export default function Feature({
           <Title>{title}</Title>
           <Description>{description}</Description>
           <RippleButton
+            type="solid"
+            palette="main"
             onClick={() => {
               navigate('/auth/login');
             }}

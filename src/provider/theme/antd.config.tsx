@@ -1,5 +1,6 @@
 import { ConfigProvider } from 'antd';
-import { ReactNode } from 'react';
+
+import type { ReactNode } from 'react';
 
 export default function AntdProvider({ children }: { children: ReactNode }) {
   return (

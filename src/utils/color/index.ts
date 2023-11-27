@@ -1,4 +1,4 @@
-import { HEX } from '@/utils/color/types';
+import type { HEX } from '@/utils/color/types';
 
 export function hexToRgb(hex: HEX, alpha = 1) {
   if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
