@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
-import Badminton from '@/assets/badminton.png';
-import Net from '@/assets/net.png';
-import PingPong from '@/assets/pingpong.png';
+import Net from '@/assets/coin-flip.gif';
+import Field from '@/assets/field.gif';
+import Friend from '@/assets/sport-friend.gif';
 import Cover from '@/modules/entry/components/Cover';
 import Feature from '@/modules/entry/components/Feature';
 
@@ -17,13 +17,13 @@ export default function Entry() {
     <Container>
       <Cover isAuth={false} />
       <Feature
-        image={Badminton}
+        image={Field}
         title="幫你找到最適合的場地"
         description="台灣各地任您挑選，想打球時隨時預約"
         buttonLabel="立即預約"
       />
       <Feature
-        image={PingPong}
+        image={Friend}
         title="幫您找到最適合的球友"
         description="總是一個人打球嗎？Jöinee 幫您及時找到適合的球友"
         buttonLabel="尋找球友"
