@@ -64,7 +64,7 @@ export default function ResetPassword() {
         </Form.Item>
         <Form.Item style={{ width: '100%' }}>
           <RippleButton
-            type="solid"
+            category="solid"
             palette="main"
             htmlType="submit"
             style={{ width: '100%', marginTop: '20px' }}

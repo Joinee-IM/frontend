@@ -26,7 +26,7 @@ export default function Success() {
           <Text>立即登入享受您的運動之旅！</Text>
         </TextWrapper>
         <RippleButton
-          type="solid"
+          category="solid"
           palette="main"
           htmlType="submit"
           style={{ width: '100%' }}
