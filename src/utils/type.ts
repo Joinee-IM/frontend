@@ -1,3 +1,5 @@
+import { JSXElementConstructor } from 'react';
+
 export type NestedKeys<T> = T extends Record<string | number, object | string>
   ? {
       [K in keyof T]: K extends 'route' // Check if K is "route"
@@ -11,3 +13,7 @@ export type AllKeys<T> = T extends Record<string | number, unknown>
       [K in keyof T]: K extends 'route' ? never : Extract<K, string | number> | AllKeys<T[K]>;
     }[keyof T]
   : never;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Type<T extends keyof JSX.IntrinsicElements | JSXElementConstructor<any>> =
+  React.ComponentProps<T>;
