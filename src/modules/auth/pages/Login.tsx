@@ -112,6 +112,7 @@ export default function Login() {
           以 Google 帳號登入
         </AuthButton>
         <RippleButton
+          type="link"
           category="link"
           palette="main"
           onClick={() => navigate('/auth/signup/choose-role')}

@@ -16,7 +16,9 @@ function ThemeButton<T extends ButtonType>(props: RippleButtonProps<T>) {
   return <Button {...props} />;
 }
 
-const RippleButtonBase = styled(ThemeButton)<{ borderBox?: boolean }>`
+const RippleButtonBase = styled(ThemeButton).withConfig({
+  shouldForwardProp: (prop) => !['borderBox'].includes(prop),
+})<{ borderBox?: boolean }>`
   padding: 0.44vw 1vw;
   font-weight: bolder;
   font-size: clamp(12px, 1vw, 16px);
