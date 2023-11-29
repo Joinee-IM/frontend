@@ -56,7 +56,7 @@ export default function ForgetPassword() {
           </Form.Item>
           <Form.Item>
             <RippleButton
-              type="solid"
+              category="solid"
               palette="main"
               htmlType="submit"
               style={{ padding: '0 10px', marginTop: '10px' }}

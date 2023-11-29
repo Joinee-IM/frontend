@@ -4,25 +4,38 @@ import styled from 'styled-components';
 import type { ButtonProps } from 'antd';
 import type { ReactNode } from 'react';
 
-import getTheme, { ButtonThemeProps } from '@/components/Button/theme';
+import getTheme, { ButtonThemeProps, ButtonType } from '@/components/Button/theme';
 import { flexCenter } from '@/utils/css';
 
-type TapButtonProps = ButtonThemeProps &
-  Omit<ButtonProps, 'type' | 'theme'> & { children?: ReactNode };
+interface RippleButtonProps<T extends ButtonType> extends ButtonThemeProps<T>, ButtonProps {
+  borderBox?: boolean;
+  children?: ReactNode;
+}
 
-const RippleButtonBase = styled(Button)<ButtonThemeProps>`
-  padding: 0.8% 3%;
+function ThemeButton<T extends ButtonType>(props: RippleButtonProps<T>) {
+  return <Button {...props} />;
+}
+
+const RippleButtonBase = styled(ThemeButton).withConfig({
+  shouldForwardProp: (prop) => !['borderBox'].includes(prop),
+})<{ borderBox?: boolean }>`
+  padding: 0.44vw 1vw;
   font-weight: bolder;
-  font-size: max(1vw, 12px);
+  font-size: clamp(12px, 1vw, 16px);
   border-radius: 10px;
   width: fit-content;
+  height: fit-content;
   white-space: nowrap;
   align-items: center;
   justify-content: center;
+  box-sizing: ${({ borderBox }) => (borderBox ? 'border-box' : 'content-box')};
   ${flexCenter};
-  ${({ type, palette }) => getTheme({ type, palette })}
+  ${({ category, palette }) => getTheme({ category, palette })}
 `;
 
-export default function RippleButton({ children, ...rest }: TapButtonProps) {
+export default function RippleButton<T extends ButtonType>({
+  children,
+  ...rest
+}: RippleButtonProps<T>) {
   return <RippleButtonBase {...rest}>{children}</RippleButtonBase>;
 }

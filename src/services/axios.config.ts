@@ -8,12 +8,9 @@ type Response = z.infer<(typeof schemas)['Response']>;
 
 const instance = axios.create({ baseURL: ENV.baseURL, withCredentials: true });
 
-// Add a request interceptor
 instance.interceptors.request.use(
   function (config) {
-    // const [cookies] = useCookies<string, { token?: string }>(['token']);
-    // config.headers.Authorization = cookies.token;
-    console.log(config);
+    console.log('req:', `${config.baseURL}${config.url}`);
     return config;
   },
   function (error) {
@@ -23,7 +20,11 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   function (response: AxiosResponse<Response>) {
-    if (response.data.error) throw new Error(response.data.error);
+    const {
+      data: { data, error },
+    } = response;
+    if (error) throw new Error(error);
+    console.table(data);
     return response;
   },
   function ({ response }: AxiosError<Response>) {

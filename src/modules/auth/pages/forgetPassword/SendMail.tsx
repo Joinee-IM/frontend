@@ -31,7 +31,7 @@ export default function SendMail() {
         <Text>若未收到請確認垃圾郵件區或點擊下方按鈕，系統將重新發送電子郵件。</Text>
       </TextBox>
       <RippleButton
-        type="solid"
+        category="solid"
         palette="main"
         htmlType="submit"
         style={{ width: '100%', marginTop: '15px' }}

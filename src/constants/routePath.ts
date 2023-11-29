@@ -15,7 +15,7 @@ function search<T>(target: T, keys: string[]) {
 }
 
 export const ROUTES = {
-  index: '/',
+  index: { route: '/', 'user-info': 'user-info/:account_id' },
   entry: '/entry',
   auth: {
     route: 'auth',

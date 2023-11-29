@@ -27,7 +27,7 @@ export default function SendMail() {
         </TextWrapper>
 
         <RippleButton
-          type="solid"
+          category="solid"
           palette="main"
           htmlType="submit"
           style={{ width: '100%', marginTop: '15px' }}

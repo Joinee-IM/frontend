@@ -30,7 +30,7 @@ const TESTVALUE = {
 
 export default function Login() {
   const [form] = Form.useForm();
-  const { mutate: login, error } = useLogin();
+  const { mutate: login, error, isLoading } = useLogin();
   const { googleLogin } = useGoogleLogin();
 
   const navigate = useNavigate();
@@ -80,7 +80,7 @@ export default function Login() {
             extra={
               <ForgotPasswordWrapper>
                 <RippleButton
-                  type="link"
+                  category="link"
                   palette="main"
                   style={{ fontSize: '12px', fontWeight: 400, alignSelf: 'flex-end' }}
                   onClick={() => navigate('/auth/forget-password')}
@@ -95,7 +95,14 @@ export default function Login() {
             <Input.Password prefix={<LockOutlined />} placeholder="密碼" autoComplete="off" />
           </Form.Item>
           <Form.Item>
-            <RippleButton type="solid" palette="main" htmlType="submit" style={{ width: '100%' }}>
+            <RippleButton
+              category="solid"
+              palette="main"
+              htmlType="submit"
+              borderBox={true}
+              style={{ width: '100%' }}
+              loading={isLoading}
+            >
               登入
             </RippleButton>
           </Form.Item>
@@ -106,6 +113,7 @@ export default function Login() {
         </AuthButton>
         <RippleButton
           type="link"
+          category="link"
           palette="main"
           onClick={() => navigate('/auth/signup/choose-role')}
           style={{ fontSize: '14px', fontWeight: 400, marginTop: '50px' }}

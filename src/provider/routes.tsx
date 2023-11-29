@@ -1,15 +1,25 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import { routePath } from '@/constants';
+import Loading from '@/utils/components/loading';
 import viewPath from '@/view/route';
 
 const router = createBrowserRouter([
   {
     path: routePath('index'),
     async lazy() {
-      const App = await import('@/App');
-      return { Component: App.default };
+      const Main = await import('@/modules/main');
+      return { Component: Main.default };
     },
+    children: [
+      {
+        path: routePath('index.user-info'),
+        async lazy() {
+          const { UserInfo } = await import('@/modules/main/pages');
+          return { Component: () => <Loading Component={UserInfo} /> };
+        },
+      },
+    ],
   },
   {
     path: routePath('entry'),
