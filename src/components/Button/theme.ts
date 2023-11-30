@@ -17,6 +17,14 @@ export const buttonTheme = {
       hover: { background: ColorTheme.main[300] },
       active: { background: ColorTheme.main[700] },
     },
+    sub: {
+      normal: {
+        background: ColorTheme.sub[500],
+        text: ColorTheme.white,
+      },
+      hover: { background: ColorTheme.sub[300] },
+      active: { background: ColorTheme.sub[700] },
+    },
     gray: {
       normal: {
         background: ColorTheme.main[500],
@@ -38,6 +46,19 @@ export const buttonTheme = {
       },
       active: {
         background: ColorTheme.main[300],
+      },
+    },
+    sub: {
+      normal: {
+        background: 'transparent',
+        border: ColorTheme.sub[500],
+        text: ColorTheme.sub[500],
+      },
+      hover: {
+        background: ColorTheme.sub[100],
+      },
+      active: {
+        background: ColorTheme.sub[300],
       },
     },
     gray: {
