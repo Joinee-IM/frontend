@@ -15,22 +15,22 @@ interface ListItemProps extends Type<typeof InfoWrapper> {
   times?: Time[];
   tags?: string[] | null;
   stadium_id: number;
+  markerFocus: boolean;
+  handleMouseEnter: () => void;
+  handleMouseLeave: () => void;
 }
 
 const ListItemWrapper = styled.div.withConfig({
-  shouldForwardProp: (prop) => !['degree', 'hover'].includes(prop),
-})<{ degree: number; hover: boolean }>`
+  shouldForwardProp: (prop) => !['degree', 'animated'].includes(prop),
+})<{ degree: number; animated: boolean }>`
   width: 100%;
   display: flex;
   box-sizing: border-box;
   column-gap: 10px;
   cursor: pointer;
-  /* &:not(:last-child) {
-    border-bottom: 1px solid ${({ theme }) => theme.gray[300]};
-  } */
   border: 8px solid transparent;
-  ${({ hover, degree, theme }) =>
-    hover &&
+  ${({ animated, degree, theme }) =>
+    animated &&
     css`
       border-image: conic-gradient(
           from ${degree}deg,
@@ -40,6 +40,7 @@ const ListItemWrapper = styled.div.withConfig({
           rgba(255, 225, 238, 0.1) 0.25turn
         )
         10;
+      /* background-color: ${theme.gray[100]}; */
     `}
 `;
 
@@ -70,13 +71,13 @@ const StadiumInfo = styled.div`
   color: ${({ theme }) => theme.gray[700]};
 `;
 
-const TagWrapper = styled.div`
+export const TagWrapper = styled.div`
   display: flex;
   column-gap: 4px;
   overflow: hidden;
 `;
 
-const Tag = styled.div`
+export const Tag = styled.div`
   ${flexCenter}
   height: 30px;
   padding: 0 12px;
@@ -92,37 +93,51 @@ export default function ListItem({
   times,
   tags,
   stadium_id,
+  markerFocus,
+  handleMouseEnter,
+  handleMouseLeave,
   ...rest
 }: ListItemProps) {
   const { data } = useAlbum(stadium_id, 'STADIUM');
-  const [hover, setHover] = useState(false);
   const [degree, setDegree] = useState(0);
   const element = useRef<HTMLDivElement>(null);
+  const scrollIntoViewRef = useRef<HTMLDivElement>(null);
 
   const allowChildNum = useAllowChildren(element);
 
   useEffect(() => {
-    if (hover) {
-      //Implementing the setInterval method
+    if (markerFocus) {
       const interval = setInterval(() => {
         setDegree((prev) => {
           if (prev === 360) return 0;
           else return prev + 14.4;
         });
       }, 50);
-
-      //Clearing the interval
       return () => clearInterval(interval);
     } else setDegree(0);
-  }, [hover]);
+  }, [markerFocus]);
+
+  useEffect(() => {
+    const { current } = scrollIntoViewRef;
+    if (markerFocus && current) {
+      current.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+    }
+  }, [markerFocus]);
 
   return (
     <ListItemWrapper
+      ref={scrollIntoViewRef}
       {...rest}
       degree={degree}
-      hover={hover}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
+      animated={markerFocus}
+      onMouseEnter={() => {
+        // setHover(true);
+        handleMouseEnter();
+      }}
+      onMouseLeave={() => {
+        // setHover(false);
+        handleMouseLeave();
+      }}
     >
       <DemoImage src={data?.data?.urls?.[0]} style={{ height: '100px' }} />
       <InfoWrapper>
