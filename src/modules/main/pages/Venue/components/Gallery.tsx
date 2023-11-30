@@ -1,14 +1,11 @@
+import { Pagination } from 'antd';
 import { motion } from 'framer-motion';
 import { range } from 'lodash';
-import { useState } from 'react';
 import styled from 'styled-components';
 
-import { LeftArrowIcon, RightArrowIcon } from '@/assets/icons/Arrow';
-import FilterIcon from '@/assets/icons/Filter';
-import SearchIcon from '@/assets/icons/Search';
 import Image from '@/assets/stadium.jpeg';
-import { RippleButton } from '@/components/Button';
-import theme from '@/provider/theme/theme';
+import Select from '@/components/Select';
+import Filter from '@/modules/main/components/Filter';
 type GalleryProps = React.ComponentProps<typeof GalleryWrapper>;
 
 const GalleryWrapper = styled.div`
@@ -19,37 +16,10 @@ const GalleryWrapper = styled.div`
   row-gap: 10px;
 `;
 
-const ToolBar = styled.div`
-  width: 100%;
-  align-self: flex-end;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  column-gap: 7px;
-  svg {
-    color: ${({ theme }) => theme.main[500]};
-  }
-`;
-
-// const FilterOptionsWrapper = styled.div`
-//   display: flex;
-//   align-items: center;
-// `;
-
-const PageWrapper = styled.div`
-  align-self: flex-end;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  column-gap: 7px;
-  margin-top: 10px;
-`;
-
 const GalleryContent = styled.div`
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  overflow: scroll;
+  grid-template-columns: repeat(auto-fit, minmax(min(40%, max(200px, 30%)), 1fr));
   gap: 8px;
 `;
 
@@ -64,12 +34,12 @@ const Item = styled.div`
   overflow: hidden;
   cursor: pointer;
   .gallery_item_info {
-    transform: translate(0, 22px);
+    /* transform: translate(0, 22px); */
     transition: all 0.3s ease-in-out;
   }
   &:hover {
     & .gallery_item_info {
-      transform: translate(0, 0px);
+      /* transform: translate(0, 0px); */
       background-color: ${({ theme }) => theme.main[300]};
     }
   }
@@ -106,13 +76,18 @@ const ItemInfoContent = styled.div`
 `;
 
 export default function Gallery({ children }: GalleryProps) {
-  const [page, setPage] = useState(1);
   return (
-    <GalleryWrapper>
-      <ToolBar>
-        <FilterIcon fontSize="20px" />
-        <SearchIcon fontSize="24px" />
-      </ToolBar>
+    <Filter
+      filters={
+        <>
+          <Select title={'排序'} items={[]}></Select>
+          {' · '}
+          <Select title={'運動項目'} items={[]}></Select>
+          <Select title={'容納人數'} items={[]}></Select>
+          <Select title={'開放預約'} items={[]}></Select>
+        </>
+      }
+    >
       <GalleryContent>
         {range(9).map((m) => (
           <Item key={m}>
@@ -125,29 +100,12 @@ export default function Gallery({ children }: GalleryProps) {
         ))}
       </GalleryContent>
       {children}
-      <PageWrapper>
-        <RippleButton type="link" category="link" palette="gray">
-          <LeftArrowIcon fontSize={12} />
-        </RippleButton>
-
-        {range(1, 6).map((m) => (
-          <RippleButton
-            onClick={() => setPage(m)}
-            type="link"
-            category="link"
-            palette="table"
-            key={m}
-            style={{
-              border: page === m ? `2px solid ${theme.main[500]}` : '2px solid transparent',
-            }}
-          >
-            {m}
-          </RippleButton>
-        ))}
-        <RippleButton type="link" category="link" palette="gray">
-          <RightArrowIcon fontSize={12} />
-        </RippleButton>
-      </PageWrapper>
-    </GalleryWrapper>
+      <Pagination
+        style={{ alignSelf: 'flex-end' }}
+        total={85}
+        pageSize={1}
+        showSizeChanger={false}
+      />
+    </Filter>
   );
 }

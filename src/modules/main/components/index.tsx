@@ -7,10 +7,12 @@ export const PageTitle = styled.div`
 `;
 
 export const Container = styled.div`
-  padding: 60px clamp(30px, 12.7vw, 200px);
+  padding: 6vh clamp(30px, 12.7vw, 200px);
   width: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  row-gap: 4%;
+  min-height: 100%;
+  row-gap: 15px;
+  justify-content: space-evenly;
 `;
