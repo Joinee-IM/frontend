@@ -1,9 +1,9 @@
 import { eachHourOfInterval, format, getHours, parse, setDay, startOfToday } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 import { isEqual } from 'lodash';
-import { z } from 'zod';
 
-import { schemas } from '@/services/type';
+import type { schemas } from '@/services/type';
+import type { z } from 'zod';
 
 export type Time = z.infer<(typeof schemas)['BusinessHour']>;
 

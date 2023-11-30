@@ -1,4 +1,4 @@
-import { JSXElementConstructor } from 'react';
+import type { JSXElementConstructor } from 'react';
 
 export type NestedKeys<T> = T extends Record<string | number, object | string>
   ? {

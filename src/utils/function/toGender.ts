@@ -1,6 +1,5 @@
-import { z } from 'zod';
-
-import { schemas } from '@/services/type';
+import type { schemas } from '@/services/type';
+import type { z } from 'zod';
 
 type GenderType = z.infer<(typeof schemas)['GenderType']>;
 

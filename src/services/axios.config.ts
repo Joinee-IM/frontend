@@ -1,16 +1,20 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
-import { z } from 'zod';
+import axios from 'axios';
+
+import type { schemas } from '@/services/type';
+import type { AxiosError, AxiosResponse } from 'axios';
+import type { z } from 'zod';
 
 import { ENV } from '@/constants';
-import { schemas } from '@/services/type';
 
 type Response = z.infer<(typeof schemas)['Response']>;
 
 const instance = axios.create({ baseURL: ENV.baseURL, withCredentials: true });
+const ignorePath = ['/album'];
 
 instance.interceptors.request.use(
   function (config) {
-    console.log('req:', `${config.baseURL}${config.url}`);
+    if (!ignorePath.includes(config.url ?? ''))
+      console.log('req:', `${config.baseURL}${config.url}`);
     return config;
   },
   function (error) {
@@ -24,7 +28,7 @@ instance.interceptors.response.use(
       data: { data, error },
     } = response;
     if (error) throw new Error(error);
-    console.table(data);
+    if (!ignorePath.includes(response.config.url ?? '')) console.table(data);
     return response;
   },
   function ({ response }: AxiosError<Response>) {

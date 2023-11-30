@@ -1,7 +1,8 @@
-import { z } from 'zod';
+import { type z } from 'zod';
+
+import type { schemas } from '@/services/type';
 
 import api from '@/services';
-import { schemas } from '@/services/type';
 
 type PlaceType = z.infer<(typeof schemas)['PlaceType']>;
 

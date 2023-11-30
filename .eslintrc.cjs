@@ -6,6 +6,7 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended-type-checked',
+    'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
     'plugin:@typescript-eslint/stylistic-type-checked',
     'plugin:react/jsx-runtime',
@@ -80,5 +81,6 @@ module.exports = {
     ],
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
+    '@typescript-eslint/consistent-type-imports': 'error',
   },
 };

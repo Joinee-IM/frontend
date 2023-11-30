@@ -1,10 +1,11 @@
 import { Button } from 'antd';
 import styled from 'styled-components';
 
+import type { ButtonThemeProps, ButtonType } from '@/components/Button/theme';
 import type { ButtonProps } from 'antd';
 import type { ReactNode } from 'react';
 
-import getTheme, { ButtonThemeProps, ButtonType } from '@/components/Button/theme';
+import getTheme from '@/components/Button/theme';
 import { flexCenter } from '@/utils/css';
 
 interface RippleButtonProps<T extends ButtonType> extends ButtonThemeProps<T>, ButtonProps {
