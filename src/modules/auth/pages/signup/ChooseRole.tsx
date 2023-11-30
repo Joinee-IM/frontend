@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { z } from 'zod';
+
+import type { schemas } from '@/services/type';
+import type { z } from 'zod';
 
 import Bussiness from '@/assets/leaser.jpg';
 import Player from '@/assets/player.jpg';
 import { RippleButton } from '@/components';
 import Card from '@/modules/auth/components/Card';
-import { schemas } from '@/services/type';
 import { percentageOfFigma } from '@/utils/css';
 
 const RadioGroup = styled.div`

@@ -9,10 +9,12 @@ import { ENV } from '@/constants';
 type Response = z.infer<(typeof schemas)['Response']>;
 
 const instance = axios.create({ baseURL: ENV.baseURL, withCredentials: true });
+const ignorePath = ['/album'];
 
 instance.interceptors.request.use(
   function (config) {
-    console.log(config.method, `${config.baseURL}${config.url}`, 'data', config.data);
+    if (!ignorePath.includes(config.url ?? ''))
+      console.log('req:', `${config.baseURL}${config.url}`);
     return config;
   },
   function (error) {
@@ -26,7 +28,7 @@ instance.interceptors.response.use(
       data: { data, error },
     } = response;
     if (error) throw new Error(error);
-    console.table(data);
+    if (!ignorePath.includes(response.config.url ?? '')) console.table(data);
     return response;
   },
   function ({ response }: AxiosError<Response>) {

@@ -6,6 +6,7 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended-type-checked',
+    'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
     'plugin:@typescript-eslint/stylistic-type-checked',
     'plugin:react/jsx-runtime',
@@ -86,5 +87,6 @@ module.exports = {
         checksVoidReturn: false,
       },
     ],
+    '@typescript-eslint/consistent-type-imports': 'error',
   },
 };

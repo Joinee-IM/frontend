@@ -1,7 +1,7 @@
-import { z } from 'zod';
+import type { schemas } from '@/services/type';
+import type { z } from 'zod';
 
 import api from '@/services';
-import { schemas } from '@/services/type';
 
 type BrowseParamsProps = Exclude<
   z.infer<(typeof schemas)['StadiumSearchParameters']>,
@@ -23,14 +23,6 @@ export const useBrowseStadium = (params: BrowseParamsProps) => {
           };
       } else return undefined;
     },
-    // Number(last.data?.offset) + Number(last.data?.limit) >= last.data?.total_count
-    //   ? {
-    //       body: {
-    //         ...params,
-    //         offset: Number(last.data?.offset) + Number(last.data?.limit),
-    //       },
-    //     }
-    //   : undefined,
   });
   return { stadiums: data?.pages.flatMap((page) => page.data?.data ?? []), ...rest };
 };
