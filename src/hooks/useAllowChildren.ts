@@ -1,4 +1,4 @@
-import { throttle } from 'lodash';
+import { debounce } from 'lodash';
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 
 import type { RefObject } from 'react';
@@ -10,7 +10,7 @@ export default function useAllowChildren(element: RefObject<HTMLDivElement>) {
 
   const handleResizeWindow = useMemo(
     () =>
-      throttle(() => {
+      debounce(() => {
         const { current } = element;
         if (current && scrollWidth) {
           const styles = getComputedStyle(current);
@@ -21,7 +21,7 @@ export default function useAllowChildren(element: RefObject<HTMLDivElement>) {
           const allow = Math.floor((containerWidth + gap) / (childWidth + gap));
           setAllowChildren(allow === children ? undefined : allow);
         }
-      }, 300),
+      }, 100),
     [children, element, scrollWidth],
   );
 
