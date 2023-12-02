@@ -5,14 +5,32 @@ const HealthCheckOutput = z
   .object({ health: z.union([z.string(), z.null()]).default('ok') })
   .partial()
   .passthrough();
+const ErrorMessage = z.enum([
+  'AckException',
+  'NotFound',
+  'UniqueViolationError',
+  'LoginExpired',
+  'LoginFailed',
+  'NoPermission',
+  'EmailExists',
+  'IllegalInput',
+  'CourtReserved',
+  'ReservationFull',
+  'WrongPassword',
+  'VenueUnreservable',
+  'CourtUnreservable',
+]);
 const Response_HealthCheckOutput_ = z
-  .object({ data: z.union([HealthCheckOutput, z.null()]), error: z.union([z.string(), z.null()]) })
+  .object({
+    data: z.union([HealthCheckOutput, z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
+  })
   .partial()
   .passthrough();
 const LoginInput = z.object({ email: z.string().email(), password: z.string() }).passthrough();
 const LoginOutput = z.object({ account_id: z.number().int(), token: z.string() }).passthrough();
 const Response_LoginOutput_ = z
-  .object({ data: z.union([LoginOutput, z.null()]), error: z.union([z.string(), z.null()]) })
+  .object({ data: z.union([LoginOutput, z.null()]), error: z.union([ErrorMessage, z.null()]) })
   .partial()
   .passthrough();
 const ValidationError = z
@@ -20,6 +38,10 @@ const ValidationError = z
   .passthrough();
 const HTTPValidationError = z
   .object({ detail: z.array(ValidationError) })
+  .partial()
+  .passthrough();
+const Response = z
+  .object({ data: z.union([z.unknown(), z.null()]), error: z.union([ErrorMessage, z.null()]) })
   .partial()
   .passthrough();
 const EmailVerificationInput = z.object({ code: z.string().uuid() }).passthrough();
@@ -30,7 +52,7 @@ const EmailVerificationOutput = z
 const Response_EmailVerificationOutput_ = z
   .object({
     data: z.union([EmailVerificationOutput, z.null()]),
-    error: z.union([z.string(), z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
   })
   .partial()
   .passthrough();
@@ -40,21 +62,17 @@ const AddAccountInput = z
   .object({
     email: z.string().email(),
     password: z.string(),
-    gender: z.union([GenderType, z.null()]).optional().default('UNREVEALED'),
+    gender: z.union([GenderType, z.null()]).optional(),
     role: RoleType,
   })
   .passthrough();
 const AddAccountOutput = z.object({ id: z.number().int() }).passthrough();
 const Response_AddAccountOutput_ = z
-  .object({ data: z.union([AddAccountOutput, z.null()]), error: z.union([z.string(), z.null()]) })
+  .object({ data: z.union([AddAccountOutput, z.null()]), error: z.union([ErrorMessage, z.null()]) })
   .partial()
   .passthrough();
 const ResendEmailVerificationInput = z.object({ email: z.string().email() }).passthrough();
 const ForgetPasswordInput = z.object({ email: z.string().email() }).passthrough();
-const Response = z
-  .object({ data: z.union([z.unknown(), z.null()]), error: z.union([z.string(), z.null()]) })
-  .partial()
-  .passthrough();
 const ResetPasswordInput = z.object({ code: z.string(), password: z.string() }).passthrough();
 const auth_token = z.union([z.string(), z.null()]).optional();
 const ReadAccountOutput = z
@@ -62,7 +80,7 @@ const ReadAccountOutput = z
     id: z.number().int(),
     email: z.string().email(),
     nickname: z.string(),
-    gender: GenderType,
+    gender: z.union([GenderType, z.null()]),
     image_uuid: z.union([z.string(), z.null()]),
     role: RoleType,
     is_verified: z.boolean(),
@@ -71,7 +89,10 @@ const ReadAccountOutput = z
   })
   .passthrough();
 const Response_ReadAccountOutput_ = z
-  .object({ data: z.union([ReadAccountOutput, z.null()]), error: z.union([z.string(), z.null()]) })
+  .object({
+    data: z.union([ReadAccountOutput, z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
+  })
   .partial()
   .passthrough();
 const EditAccountInput = z
@@ -79,7 +100,7 @@ const EditAccountInput = z
   .partial()
   .passthrough();
 const Response_bool_ = z
-  .object({ data: z.union([z.boolean(), z.null()]), error: z.union([z.string(), z.null()]) })
+  .object({ data: z.union([z.boolean(), z.null()]), error: z.union([ErrorMessage, z.null()]) })
   .partial()
   .passthrough();
 const Body_upload_account_image_account__account_id__upload_patch = z
@@ -90,7 +111,7 @@ const Account = z
     id: z.number().int(),
     email: z.string().email(),
     nickname: z.string(),
-    gender: GenderType,
+    gender: z.union([GenderType, z.null()]),
     image_uuid: z.union([z.string(), z.null()]),
     role: RoleType,
     is_verified: z.boolean(),
@@ -98,7 +119,7 @@ const Account = z
   })
   .passthrough();
 const Response_Sequence_Account__ = z
-  .object({ data: z.union([z.array(Account), z.null()]), error: z.union([z.string(), z.null()]) })
+  .object({ data: z.union([z.array(Account), z.null()]), error: z.union([ErrorMessage, z.null()]) })
   .partial()
   .passthrough();
 const EditPasswordInput = z
@@ -106,7 +127,7 @@ const EditPasswordInput = z
   .passthrough();
 const role = z.union([RoleType, z.null()]).optional();
 const Response_str_ = z
-  .object({ data: z.union([z.string(), z.null()]), error: z.union([z.string(), z.null()]) })
+  .object({ data: z.union([z.string(), z.null()]), error: z.union([ErrorMessage, z.null()]) })
   .partial()
   .passthrough();
 const BatchDownloadInput = z.object({ file_uuids: z.array(z.string()) }).passthrough();
@@ -116,7 +137,7 @@ const BatchDownloadOutput = z
 const Response_Sequence_BatchDownloadOutput__ = z
   .object({
     data: z.union([z.array(BatchDownloadOutput), z.null()]),
-    error: z.union([z.string(), z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
   })
   .partial()
   .passthrough();
@@ -175,12 +196,12 @@ const BrowseStadiumOutput = z
 const Response_BrowseStadiumOutput_ = z
   .object({
     data: z.union([BrowseStadiumOutput, z.null()]),
-    error: z.union([z.string(), z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
   })
   .partial()
   .passthrough();
 const Response_ViewStadium_ = z
-  .object({ data: z.union([ViewStadium, z.null()]), error: z.union([z.string(), z.null()]) })
+  .object({ data: z.union([ViewStadium, z.null()]), error: z.union([ErrorMessage, z.null()]) })
   .partial()
   .passthrough();
 const EditStadiumInput = z
@@ -195,7 +216,7 @@ const EditStadiumInput = z
   .passthrough();
 const City = z.object({ id: z.number().int(), name: z.string() }).passthrough();
 const Response_Sequence_City__ = z
-  .object({ data: z.union([z.array(City), z.null()]), error: z.union([z.string(), z.null()]) })
+  .object({ data: z.union([z.array(City), z.null()]), error: z.union([ErrorMessage, z.null()]) })
   .partial()
   .passthrough();
 const stadium_id = z.union([z.number(), z.null()]).optional();
@@ -218,7 +239,7 @@ const Venue = z
     fee_type: z.union([FeeType, z.null()]),
     area: z.number().int(),
     current_user_count: z.number().int(),
-    capability: z.number().int(),
+    capacity: z.number().int(),
     sport_equipments: z.union([z.string(), z.null()]),
     facilities: z.union([z.string(), z.null()]),
     court_count: z.number().int(),
@@ -236,35 +257,70 @@ const BrowseVenueOutput = z
   })
   .passthrough();
 const Response_BrowseVenueOutput_ = z
-  .object({ data: z.union([BrowseVenueOutput, z.null()]), error: z.union([z.string(), z.null()]) })
+  .object({
+    data: z.union([BrowseVenueOutput, z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
+  })
   .partial()
   .passthrough();
 const Response_Venue_ = z
-  .object({ data: z.union([Venue, z.null()]), error: z.union([z.string(), z.null()]) })
+  .object({ data: z.union([Venue, z.null()]), error: z.union([ErrorMessage, z.null()]) })
+  .partial()
+  .passthrough();
+const EditVenueInput = z
+  .object({
+    name: z.union([z.string(), z.null()]),
+    floor: z.union([z.string(), z.null()]),
+    area: z.union([z.number(), z.null()]),
+    capacity: z.union([z.number(), z.null()]),
+    sport_id: z.union([z.number(), z.null()]),
+    is_reservable: z.union([z.boolean(), z.null()]),
+    reservation_interval: z.union([z.number(), z.null()]),
+    is_chargeable: z.union([z.boolean(), z.null()]),
+    fee_rate: z.union([z.number(), z.null()]),
+    fee_type: z.union([FeeType, z.null()]),
+    sport_equipments: z.union([z.string(), z.null()]),
+    facilities: z.union([z.string(), z.null()]),
+    court_type: z.union([z.string(), z.null()]),
+  })
   .partial()
   .passthrough();
 const Court = z
-  .object({ id: z.number().int(), venue_id: z.number().int(), is_published: z.boolean() })
+  .object({
+    id: z.number().int(),
+    venue_id: z.number().int(),
+    number: z.number().int(),
+    is_published: z.boolean(),
+  })
   .passthrough();
 const Response_Sequence_Court__ = z
-  .object({ data: z.union([z.array(Court), z.null()]), error: z.union([z.string(), z.null()]) })
+  .object({ data: z.union([z.array(Court), z.null()]), error: z.union([ErrorMessage, z.null()]) })
   .partial()
   .passthrough();
 const District = z
   .object({ id: z.number().int(), name: z.string(), city_id: z.number().int() })
   .passthrough();
 const Response_Sequence_District__ = z
-  .object({ data: z.union([z.array(District), z.null()]), error: z.union([z.string(), z.null()]) })
+  .object({
+    data: z.union([z.array(District), z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
+  })
   .partial()
   .passthrough();
 const BrowseAlbumOutput = z.object({ urls: z.array(z.string()) }).passthrough();
 const Response_BrowseAlbumOutput_ = z
-  .object({ data: z.union([BrowseAlbumOutput, z.null()]), error: z.union([z.string(), z.null()]) })
+  .object({
+    data: z.union([BrowseAlbumOutput, z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
+  })
   .partial()
+  .passthrough();
+const Body_batch_add_album_album_post = z
+  .object({ files: z.array(z.instanceof(File)) })
   .passthrough();
 const Sport = z.object({ id: z.number().int(), name: z.string() }).passthrough();
 const Response_Sequence_Sport__ = z
-  .object({ data: z.union([z.array(Sport), z.null()]), error: z.union([z.string(), z.null()]) })
+  .object({ data: z.union([z.array(Sport), z.null()]), error: z.union([ErrorMessage, z.null()]) })
   .partial()
   .passthrough();
 const DateTimeRange = z
@@ -318,7 +374,7 @@ const BrowseReservationOutput = z
 const Response_BrowseReservationOutput_ = z
   .object({
     data: z.union([BrowseReservationOutput, z.null()]),
-    error: z.union([z.string(), z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
   })
   .partial()
   .passthrough();
@@ -355,12 +411,12 @@ const ViewMyReservationOutput = z
 const Response_ViewMyReservationOutput_ = z
   .object({
     data: z.union([ViewMyReservationOutput, z.null()]),
-    error: z.union([z.string(), z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
   })
   .partial()
   .passthrough();
 const Response_Reservation_ = z
-  .object({ data: z.union([Reservation, z.null()]), error: z.union([z.string(), z.null()]) })
+  .object({ data: z.union([Reservation, z.null()]), error: z.union([ErrorMessage, z.null()]) })
   .partial()
   .passthrough();
 const EditReservationInput = z
@@ -396,26 +452,120 @@ const AddReservationOutput = z.object({ id: z.number().int() }).passthrough();
 const Response_AddReservationOutput_ = z
   .object({
     data: z.union([AddReservationOutput, z.null()]),
-    error: z.union([z.string(), z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
   })
   .partial()
   .passthrough();
 const Response_Sequence_BusinessHour__ = z
   .object({
     data: z.union([z.array(BusinessHour), z.null()]),
-    error: z.union([z.string(), z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
+  })
+  .partial()
+  .passthrough();
+const ViewProviderStadiumSortBy = z.enum([
+  'district_name',
+  'stadium_name',
+  'venue_count',
+  'is_published',
+]);
+const sort_by__3 = ViewProviderStadiumSortBy.optional().default('district_name');
+const order__2 = Sorter.optional().default('ASC');
+const ViewProviderStadium = z
+  .object({
+    stadium_id: z.number().int(),
+    city_name: z.string(),
+    district_name: z.string(),
+    stadium_name: z.string(),
+    venue_count: z.number().int(),
+    is_published: z.boolean(),
+  })
+  .passthrough();
+const ViewProviderStadiumOutput = z
+  .object({
+    data: z.array(ViewProviderStadium),
+    total_count: z.number().int(),
+    limit: z.number().int(),
+    offset: z.number().int(),
+  })
+  .passthrough();
+const Response_ViewProviderStadiumOutput_ = z
+  .object({
+    data: z.union([ViewProviderStadiumOutput, z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
+  })
+  .partial()
+  .passthrough();
+const ViewProviderVenueSortBy = z.enum([
+  'stadium_name',
+  'venue_name',
+  'court_count',
+  'area',
+  'is_published',
+]);
+const sort_by__4 = ViewProviderVenueSortBy.optional().default('stadium_name');
+const ViewProviderVenue = z
+  .object({
+    venue_id: z.number().int(),
+    stadium_name: z.string(),
+    venue_name: z.string(),
+    court_count: z.number().int(),
+    area: z.number().int(),
+    is_published: z.boolean(),
+  })
+  .passthrough();
+const ViewProviderVenueOutput = z
+  .object({
+    data: z.array(ViewProviderVenue),
+    total_count: z.number().int(),
+    limit: z.union([z.number(), z.null()]),
+    offset: z.union([z.number(), z.null()]),
+  })
+  .passthrough();
+const Response_ViewProviderVenueOutput_ = z
+  .object({
+    data: z.union([ViewProviderVenueOutput, z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
+  })
+  .partial()
+  .passthrough();
+const ViewProviderCourtSortBy = z.enum(['stadium_name', 'venue_name', 'number', 'is_published']);
+const sort_by__5 = ViewProviderCourtSortBy.optional().default('stadium_name');
+const ViewProviderCourt = z
+  .object({
+    court_id: z.number().int(),
+    stadium_name: z.string(),
+    venue_name: z.string(),
+    court_number: z.number().int(),
+    is_published: z.boolean(),
+  })
+  .passthrough();
+const ViewProviderCourtOutput = z
+  .object({
+    data: z.array(ViewProviderCourt),
+    total_count: z.number().int(),
+    limit: z.union([z.number(), z.null()]),
+    offset: z.union([z.number(), z.null()]),
+  })
+  .passthrough();
+const Response_ViewProviderCourtOutput_ = z
+  .object({
+    data: z.union([ViewProviderCourtOutput, z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
   })
   .partial()
   .passthrough();
 
 export const schemas = {
   HealthCheckOutput,
+  ErrorMessage,
   Response_HealthCheckOutput_,
   LoginInput,
   LoginOutput,
   Response_LoginOutput_,
   ValidationError,
   HTTPValidationError,
+  Response,
   EmailVerificationInput,
   EmailVerificationOutput,
   Response_EmailVerificationOutput_,
@@ -426,7 +576,6 @@ export const schemas = {
   Response_AddAccountOutput_,
   ResendEmailVerificationInput,
   ForgetPasswordInput,
-  Response,
   ResetPasswordInput,
   auth_token,
   ReadAccountOutput,
@@ -464,12 +613,14 @@ export const schemas = {
   BrowseVenueOutput,
   Response_BrowseVenueOutput_,
   Response_Venue_,
+  EditVenueInput,
   Court,
   Response_Sequence_Court__,
   District,
   Response_Sequence_District__,
   BrowseAlbumOutput,
   Response_BrowseAlbumOutput_,
+  Body_batch_add_album_album_post,
   Sport,
   Response_Sequence_Sport__,
   DateTimeRange,
@@ -492,6 +643,22 @@ export const schemas = {
   AddReservationOutput,
   Response_AddReservationOutput_,
   Response_Sequence_BusinessHour__,
+  ViewProviderStadiumSortBy,
+  sort_by__3,
+  order__2,
+  ViewProviderStadium,
+  ViewProviderStadiumOutput,
+  Response_ViewProviderStadiumOutput_,
+  ViewProviderVenueSortBy,
+  sort_by__4,
+  ViewProviderVenue,
+  ViewProviderVenueOutput,
+  Response_ViewProviderVenueOutput_,
+  ViewProviderCourtSortBy,
+  sort_by__5,
+  ViewProviderCourt,
+  ViewProviderCourtOutput,
+  Response_ViewProviderCourtOutput_,
 };
 
 const endpoints = makeApi([
@@ -686,6 +853,37 @@ const endpoints = makeApi([
       },
     ],
     response: Response_BrowseAlbumOutput_,
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
+  },
+  {
+    method: 'post',
+    path: '/album',
+    alias: 'batch_add_album_album_post',
+    requestFormat: 'form-data',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: Body_batch_add_album_album_post,
+      },
+      {
+        name: 'place_type',
+        type: 'Query',
+        schema: z.enum(['STADIUM', 'VENUE']),
+      },
+      {
+        name: 'place_id',
+        type: 'Query',
+        schema: z.number().int(),
+      },
+    ],
+    response: z.unknown(),
     errors: [
       {
         status: 422,
@@ -1002,6 +1200,13 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
     ],
   },
   {
+    method: 'post',
+    path: '/logout',
+    alias: 'logout_logout_post',
+    requestFormat: 'json',
+    response: Response,
+  },
+  {
     method: 'get',
     path: '/reservation/:reservation_id',
     alias: 'read_reservation_reservation__reservation_id__get',
@@ -1310,6 +1515,37 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
     ],
   },
   {
+    method: 'patch',
+    path: '/venue/:venue_id',
+    alias: 'edit_venue_venue__venue_id__patch',
+    requestFormat: 'json',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: EditVenueInput,
+      },
+      {
+        name: 'venue_id',
+        type: 'Path',
+        schema: z.number().int(),
+      },
+      {
+        name: 'auth-token',
+        type: 'Header',
+        schema: auth_token,
+      },
+    ],
+    response: Response,
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
+  },
+  {
     method: 'get',
     path: '/venue/:venue_id/court',
     alias: 'browse_court_by_venue_id_venue__venue_id__court_get',
@@ -1322,6 +1558,62 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
       },
     ],
     response: Response_Sequence_Court__,
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
+  },
+  {
+    method: 'get',
+    path: '/view/court/provider',
+    alias: 'view_provider_court_view_court_provider_get',
+    requestFormat: 'json',
+    parameters: [
+      {
+        name: 'stadium_id',
+        type: 'Query',
+        schema: stadium_id,
+      },
+      {
+        name: 'venue_id',
+        type: 'Query',
+        schema: stadium_id,
+      },
+      {
+        name: 'is_published',
+        type: 'Query',
+        schema: is_reservable,
+      },
+      {
+        name: 'sort_by',
+        type: 'Query',
+        schema: sort_by__5,
+      },
+      {
+        name: 'order',
+        type: 'Query',
+        schema: order__2,
+      },
+      {
+        name: 'limit',
+        type: 'Query',
+        schema: stadium_id,
+      },
+      {
+        name: 'offset',
+        type: 'Query',
+        schema: stadium_id,
+      },
+      {
+        name: 'auth-token',
+        type: 'Header',
+        schema: auth_token,
+      },
+    ],
+    response: Response_ViewProviderCourtOutput_,
     errors: [
       {
         status: 422,
@@ -1389,6 +1681,113 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
       },
     ],
     response: Response_ViewMyReservationOutput_,
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
+  },
+  {
+    method: 'get',
+    path: '/view/stadium/provider',
+    alias: 'view_provider_stadium_view_stadium_provider_get',
+    requestFormat: 'json',
+    parameters: [
+      {
+        name: 'city_id',
+        type: 'Query',
+        schema: stadium_id,
+      },
+      {
+        name: 'district_id',
+        type: 'Query',
+        schema: stadium_id,
+      },
+      {
+        name: 'is_published',
+        type: 'Query',
+        schema: is_reservable,
+      },
+      {
+        name: 'sort_by',
+        type: 'Query',
+        schema: sort_by__3,
+      },
+      {
+        name: 'order',
+        type: 'Query',
+        schema: order__2,
+      },
+      {
+        name: 'limit',
+        type: 'Query',
+        schema: z.number().int().optional(),
+      },
+      {
+        name: 'offset',
+        type: 'Query',
+        schema: z.number().int().optional(),
+      },
+      {
+        name: 'auth-token',
+        type: 'Header',
+        schema: auth_token,
+      },
+    ],
+    response: Response_ViewProviderStadiumOutput_,
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
+  },
+  {
+    method: 'get',
+    path: '/view/venue/provider',
+    alias: 'view_provider_venue_view_venue_provider_get',
+    requestFormat: 'json',
+    parameters: [
+      {
+        name: 'stadium_id',
+        type: 'Query',
+        schema: stadium_id,
+      },
+      {
+        name: 'is_published',
+        type: 'Query',
+        schema: is_reservable,
+      },
+      {
+        name: 'sort_by',
+        type: 'Query',
+        schema: sort_by__4,
+      },
+      {
+        name: 'order',
+        type: 'Query',
+        schema: order__2,
+      },
+      {
+        name: 'limit',
+        type: 'Query',
+        schema: stadium_id,
+      },
+      {
+        name: 'offset',
+        type: 'Query',
+        schema: stadium_id,
+      },
+      {
+        name: 'auth-token',
+        type: 'Header',
+        schema: auth_token,
+      },
+    ],
+    response: Response_ViewProviderVenueOutput_,
     errors: [
       {
         status: 422,

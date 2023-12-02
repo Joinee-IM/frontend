@@ -1,6 +1,6 @@
 import { Modal } from 'antd';
 import { motion, useAnimationControls } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -9,13 +9,13 @@ import ImageIcon from '@/assets/icons/Image';
 import Person from '@/assets/user.png';
 import { RippleButton } from '@/components';
 import AuthButton from '@/components/Button/AuthButton';
+import { useGoogleLogin } from '@/modules/auth/service';
 import BaseInfoSection from '@/modules/main/pages/UserInfo/BaseInfoSection';
 import Section from '@/modules/main/pages/UserInfo/components/Section';
 import Upload from '@/modules/main/pages/UserInfo/components/Upload';
 import SecuritySection from '@/modules/main/pages/UserInfo/SecuritySection';
 import { useUserInfo } from '@/modules/main/pages/UserInfo/services';
 import { flexCenter } from '@/utils/css';
-import toGender from '@/utils/function/toGender';
 
 const Container = styled.div`
   padding: 60px clamp(30px, 12.7vw, 200px);
@@ -60,7 +60,7 @@ const Image = styled(motion.img)<{ change?: boolean }>`
   width: max(25%, 200px);
   aspect-ratio: 1;
   border-radius: 50%;
-  border: 1px solid gray;
+  border: 3px solid ${({ theme }) => theme.main[500]};
   object-fit: cover;
   transform: ${({ change }) => (change ? 'scale(1.2)' : 'scale(1)')};
   transition: all 0.1s ease-in-out;
@@ -77,15 +77,13 @@ export default function UserInfo() {
   const { account_id } = useParams();
   const { data, refetch } = useUserInfo(Number(account_id));
   const controls = useAnimationControls();
+  const { googleLogin } = useGoogleLogin();
 
-  const handleUploadSuccess = () => {
-    void refetch();
+  const handleUploadSuccess = async () => {
     setImageModal(false);
+    await refetch();
+    await controls.start({ opacity: 1, scale: [2, 1] });
   };
-
-  useEffect(() => {
-    if (!imageModal) void controls.start({ opacity: 1, scale: [2, 1] });
-  }, [controls, imageModal]);
 
   return (
     <Container>
@@ -101,13 +99,13 @@ export default function UserInfo() {
         >
           <InformationWrapper>
             <BaseInfoSection
-              gender={toGender(data.data.gender)}
+              gender={data.data.gender}
               nickname={data.data.nickname}
               email={data.data.email}
             />
             <SecuritySection />
             <Section title="第三方">
-              <AuthButton style={{ width: '200px' }} image={Google}>
+              <AuthButton style={{ width: '200px' }} image={Google} onClick={() => googleLogin()}>
                 與 Google 帳號連結
               </AuthButton>
             </Section>

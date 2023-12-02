@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import Background from '@/assets/background.jpg';
 import { RippleButton } from '@/components';
 import Title from '@/components/Title';
+import { useUser } from '@/contexts/useUser';
 import useClick from '@/view/hooks/useClick';
 
 const Container = styled.div`
@@ -68,6 +69,7 @@ const ScrollContainer = styled.div`
 
 export default function Main() {
   const navigate = useNavigate();
+  const { user } = useUser();
   useClick();
 
   return (
@@ -88,7 +90,9 @@ export default function Main() {
             type="link"
             category="link"
             palette="main"
-            onClick={() => navigate('/auth/login')}
+            onClick={() => {
+              user?.accountId ? navigate(`/user-info/${user?.accountId}`) : navigate('/auth/login');
+            }}
           >
             <UserOutlined />
           </MenuItem>
