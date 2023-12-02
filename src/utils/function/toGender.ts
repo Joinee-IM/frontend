@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { schemas } from '@/services/type';
 
-export type GenderType = z.infer<(typeof schemas)['GenderType']>;
+export type GenderType = z.infer<(typeof schemas)['GenderType']> | null;
 
 export default function toGender(gender: GenderType) {
   switch (gender) {
