@@ -1,7 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import { routePath } from '@/constants';
-import Loading from '@/utils/components/loading';
 import viewPath from '@/view/route';
 
 const router = createBrowserRouter([
@@ -16,7 +15,7 @@ const router = createBrowserRouter([
         path: routePath('index.user-info'),
         async lazy() {
           const { UserInfo } = await import('@/modules/main/pages');
-          return { Component: () => <Loading Component={UserInfo} /> };
+          return { Component: UserInfo };
         },
       },
     ],
