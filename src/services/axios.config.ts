@@ -10,7 +10,7 @@ const instance = axios.create({ baseURL: ENV.baseURL, withCredentials: true });
 
 instance.interceptors.request.use(
   function (config) {
-    console.log('req:', `${config.baseURL}${config.url}`);
+    console.log(config.method, `${config.baseURL}${config.url}`, 'data', config.data);
     return config;
   },
   function (error) {

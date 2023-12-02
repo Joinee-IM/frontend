@@ -1,11 +1,16 @@
 import { EditFilled } from '@ant-design/icons';
 import { Form, Input } from 'antd';
 import { useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+
+import type { Rule } from 'antd/es/form';
 
 import { RippleButton } from '@/components';
 import GridForm from '@/components/GridForm';
+import useError from '@/hooks/useError';
 import Section from '@/modules/main/pages/UserInfo/components/Section';
+import { useEditPassword } from '@/modules/main/pages/UserInfo/services';
 
 interface InfoProps {
   original_password: string;
@@ -21,13 +26,37 @@ const ButtonWrapper = styled.div`
 
 export default function SecuritySection() {
   const [form] = Form.useForm<InfoProps>();
+  const { account_id } = useParams();
   const [isEdit, setIsEdit] = useState(false);
+  const rules: Record<keyof InfoProps, Rule[]> = {
+    original_password: [{ required: true, message: '' }],
+    new_password: [{ required: true, message: '' }],
+    confirm_password: [
+      {
+        required: true,
+        message: 'Please confirm your password!',
+      },
+      ({ getFieldValue }) => ({
+        validator(_, value) {
+          if (!value || getFieldValue('new_password') === value) {
+            return Promise.resolve();
+          }
+          return Promise.reject(new Error('密碼不相符'));
+        },
+      }),
+    ],
+  };
+  const { mutate, error } = useEditPassword(Number(account_id));
+  const { context } = useError(error, undefined);
 
   const SecurityInfoAction = useMemo(() => {
     return function SecurityInfoAction() {
       const handleEditPassword = () => {
         const info = form.getFieldsValue();
-        alert(`${info.original_password}, ${info.new_password}, ${info.confirm_password}`);
+        mutate(
+          { old_password: info.original_password, new_password: info.new_password },
+          { onSuccess: () => setIsEdit(false), onSettled: () => form.resetFields() },
+        );
       };
 
       return isEdit ? (
@@ -60,35 +89,38 @@ export default function SecuritySection() {
         </RippleButton>
       );
     };
-  }, [form, isEdit]);
+  }, [form, isEdit, mutate]);
 
   const securityInfo = useMemo(() => {
     return isEdit
       ? {
           原密碼: (
-            <Form.Item name="original_password">
-              <Input />
+            <Form.Item name="original_password" rules={rules.original_password}>
+              <Input.Password />
             </Form.Item>
           ),
           新密碼: (
-            <Form.Item name="new_password">
-              <Input />
+            <Form.Item name="new_password" rules={rules.new_password}>
+              <Input.Password />
             </Form.Item>
           ),
           再次輸入新密碼: (
-            <Form.Item name="confirm_password">
-              <Input />
+            <Form.Item name="confirm_password" rules={rules.confirm_password}>
+              <Input.Password />
             </Form.Item>
           ),
         }
       : {
           密碼: '**********',
         };
-  }, [isEdit]);
+  }, [isEdit, rules.confirm_password, rules.new_password, rules.original_password]);
 
   return (
-    <Section title="安全性" TitleAction={SecurityInfoAction}>
-      <GridForm form={form} data={securityInfo} />
-    </Section>
+    <>
+      {context}
+      <Section title="安全性" TitleAction={SecurityInfoAction}>
+        <GridForm form={form} data={securityInfo} />
+      </Section>
+    </>
   );
 }
