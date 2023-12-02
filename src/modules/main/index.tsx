@@ -8,6 +8,7 @@ import Background from '@/assets/background.jpg';
 import { RippleButton } from '@/components';
 import Title from '@/components/Title';
 import { useUser } from '@/contexts/useUser';
+import { backgroundCenter } from '@/utils/css';
 import useClick from '@/view/hooks/useClick';
 
 const Container = styled.div`
@@ -57,9 +58,7 @@ const ContentContainer = styled.div<{ hasBackground?: boolean }>`
       &::before {
         content: '';
         background-image: url(${Background});
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: cover;
+        ${backgroundCenter}
         position: absolute;
         inset: 0;
         opacity: 0.5;

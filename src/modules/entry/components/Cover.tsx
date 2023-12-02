@@ -7,7 +7,7 @@ import { TapButton } from '@/components';
 import { MOBILE_WITH } from '@/constants/rwd';
 import useImageDimension from '@/hooks/useImageDimension';
 import { hexToRgb } from '@/utils';
-import { percentageOfFigma } from '@/utils/css';
+import { backgroundCenter, percentageOfFigma } from '@/utils/css';
 
 export const Background = styled.div.withConfig({
   shouldForwardProp: (prop) => !['ratio'].includes(prop),
@@ -15,10 +15,7 @@ export const Background = styled.div.withConfig({
   background: url(${CoverImage});
   width: 100vw;
   height: 100vh;
-  /* height: ${({ ratio }) => (ratio ? `min(100vh, calc(101vw / ${ratio}))` : `100vh`)}; */
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center center;
+  ${backgroundCenter}
   display: flex;
   align-items: center;
 `;
