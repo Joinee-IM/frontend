@@ -1,8 +1,10 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
-import { z } from 'zod';
+import axios from 'axios';
+
+import type { schemas } from '@/services/type';
+import type { AxiosError, AxiosResponse } from 'axios';
+import type { z } from 'zod';
 
 import { ENV } from '@/constants';
-import { schemas } from '@/services/type';
 
 type Response = z.infer<(typeof schemas)['Response']>;
 

@@ -4,7 +4,8 @@ import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-import type { UploadFile, UploadProps as AntdUploadProps } from 'antd';
+import type { UploadFile } from 'antd';
+import type { UploadProps as AntdUploadProps } from 'antd/es/upload';
 
 import UploadIcon from '@/assets/icons/Upload';
 import { RippleButton } from '@/components';
@@ -95,7 +96,6 @@ export default function Upload({ handleUploadSuccess, uploadConfig }: UploadProp
       <Dragger
         {...baseUploadProps}
         beforeUpload={(file) => {
-          console.log(file);
           const isImage = ['image/jpeg', 'image/png'].includes(file.type);
           if (!isImage) {
             void message.error(`${file.name} 非圖片檔`);
