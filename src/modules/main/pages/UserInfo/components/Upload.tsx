@@ -4,7 +4,8 @@ import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-import type { UploadFile, UploadProps as AntdUploadProps } from 'antd';
+import type { UploadFile } from 'antd';
+import type { UploadProps as AntdUploadProps } from 'antd/es/upload';
 
 import UploadIcon from '@/assets/icons/Upload';
 import { RippleButton } from '@/components';
