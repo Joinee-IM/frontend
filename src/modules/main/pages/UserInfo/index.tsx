@@ -1,6 +1,6 @@
 import { Modal } from 'antd';
 import { motion, useAnimationControls } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -70,14 +70,11 @@ export default function UserInfo() {
   const controls = useAnimationControls();
   const { googleLogin } = useGoogleLogin();
 
-  const handleUploadSuccess = () => {
-    void refetch({});
+  const handleUploadSuccess = async () => {
     setImageModal(false);
+    await refetch();
+    await controls.start({ opacity: 1, scale: [2, 1] });
   };
-
-  useEffect(() => {
-    if (data?.data?.image_uuid) void controls.start({ opacity: 1, scale: [2, 1] });
-  }, [controls, data?.data?.image_uuid]);
 
   return (
     <Container>
