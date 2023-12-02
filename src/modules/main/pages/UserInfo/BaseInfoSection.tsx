@@ -36,9 +36,9 @@ export default function BaseInfoSection(props: InfoProps) {
         mutate(
           { nickname: info.nickname, gender: info.gender },
           {
-            onSuccess: () => {
+            onSuccess: async () => {
+              await refetch();
               setIsEdit(false);
-              void refetch();
             },
           },
         );

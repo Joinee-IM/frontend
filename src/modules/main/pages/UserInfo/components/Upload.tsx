@@ -79,7 +79,7 @@ export default function Upload({ handleUploadSuccess, uploadConfig }: UploadProp
               onSuccess: () => {
                 uploadSuccess?.(file);
                 handleUploadSuccess?.();
-                setFileList([]);
+                setTimeout(() => setFileList([]), 1000);
               },
               onError: uploadError,
             },
