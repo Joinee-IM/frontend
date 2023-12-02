@@ -73,12 +73,10 @@ export default function UserInfo() {
   const handleUploadSuccess = () => {
     void refetch({});
     setImageModal(false);
-    // void controls.start({ opacity: 1, scale: [2, 1] });
   };
 
   useEffect(() => {
     if (data?.data?.image_uuid) void controls.start({ opacity: 1, scale: [2, 1] });
-    console.log('uuid:', data?.data?.image_uuid);
   }, [controls, data?.data?.image_uuid]);
 
   return (
