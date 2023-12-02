@@ -7,6 +7,7 @@ import O from '@/assets/ö.png';
 import { TapButton } from '@/components';
 import useImageDimension from '@/hooks/useImageDimension';
 import { hexToRgb } from '@/utils';
+import { backgroundCenter } from '@/utils/css';
 
 export const Background = styled.div.withConfig({
   shouldForwardProp: (prop) => !['ratio'].includes(prop),
@@ -14,9 +15,7 @@ export const Background = styled.div.withConfig({
   background: url(${CoverImage});
   width: 100vw;
   height: ${({ ratio }) => (ratio ? `min(100vh, calc(101vw / ${ratio}))` : `100vh`)};
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center center;
+  ${backgroundCenter}
   display: flex;
   align-items: center;
 `;

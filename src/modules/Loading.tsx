@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import LoadingBackground from '@/assets/loading3.gif';
-import { flexCenter } from '@/utils/css';
+import { backgroundCenter, flexCenter } from '@/utils/css';
 
 const LoadingWrapper = styled(motion.div)`
   width: 100vw;
@@ -11,10 +11,9 @@ const LoadingWrapper = styled(motion.div)`
   z-index: 1000000;
   position: absolute;
   background-image: url(${LoadingBackground});
+  ${backgroundCenter}
   background-position-x: center;
   background-position-y: -200px;
-  background-repeat: no-repeat;
-  background-size: cover;
   display: flex;
   ${flexCenter}
 `;
