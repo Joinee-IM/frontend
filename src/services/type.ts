@@ -315,6 +315,9 @@ const Response_BrowseAlbumOutput_ = z
   })
   .partial()
   .passthrough();
+const Body_batch_add_album_album_post = z
+  .object({ files: z.array(z.instanceof(File)) })
+  .passthrough();
 const Sport = z.object({ id: z.number().int(), name: z.string() }).passthrough();
 const Response_Sequence_Sport__ = z
   .object({ data: z.union([z.array(Sport), z.null()]), error: z.union([ErrorMessage, z.null()]) })
@@ -617,6 +620,7 @@ export const schemas = {
   Response_Sequence_District__,
   BrowseAlbumOutput,
   Response_BrowseAlbumOutput_,
+  Body_batch_add_album_album_post,
   Sport,
   Response_Sequence_Sport__,
   DateTimeRange,
@@ -849,6 +853,37 @@ const endpoints = makeApi([
       },
     ],
     response: Response_BrowseAlbumOutput_,
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
+  },
+  {
+    method: 'post',
+    path: '/album',
+    alias: 'batch_add_album_album_post',
+    requestFormat: 'form-data',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: Body_batch_add_album_album_post,
+      },
+      {
+        name: 'place_type',
+        type: 'Query',
+        schema: z.enum(['STADIUM', 'VENUE']),
+      },
+      {
+        name: 'place_id',
+        type: 'Query',
+        schema: z.number().int(),
+      },
+    ],
+    response: z.unknown(),
     errors: [
       {
         status: 422,
