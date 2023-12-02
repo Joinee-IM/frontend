@@ -89,7 +89,6 @@ export default function Upload({ handleUploadSuccess, uploadConfig }: UploadProp
       <Dragger
         {...baseUploadProps}
         beforeUpload={(file) => {
-          console.log(file);
           const isImage = ['image/jpeg', 'image/png'].includes(file.type);
           if (!isImage) {
             void message.error(`${file.name} 非圖片檔`);
