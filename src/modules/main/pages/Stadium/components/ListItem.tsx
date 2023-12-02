@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 
-import type { Time } from '@/utils/function';
+import type { Time } from '@/utils/function/time';
 import type { Type } from '@/utils/type';
 
 import useAllowChildren from '@/hooks/useAllowChildren';
 import { useAlbum } from '@/services/useAlbum';
 import { flexCenter } from '@/utils/css';
-import { findLatestTime } from '@/utils/function';
+import { BusinessHours } from '@/utils/function/time';
 
 interface ListItemProps extends Type<typeof InfoWrapper> {
   title: string;
@@ -143,7 +143,7 @@ export default function ListItem({
       <InfoWrapper>
         <Title>{title}</Title>
         <StadiumInfo>
-          {address} · {findLatestTime(times)}
+          {address} · {new BusinessHours(times).latestAvailableTime}
         </StadiumInfo>
         <TagWrapper ref={element}>
           {tags

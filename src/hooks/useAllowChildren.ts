@@ -12,10 +12,13 @@ export default function useAllowChildren(element: RefObject<HTMLDivElement>) {
     () =>
       throttle(() => {
         const { current } = element;
-        if (current) {
+        if (current && scrollWidth) {
+          const styles = getComputedStyle(current);
           const childWidth = current.children[0]?.clientWidth;
+          const containerWidth =
+            current.clientWidth - parseFloat(styles.paddingLeft) - parseFloat(styles.paddingRight);
           const gap = (scrollWidth - children * childWidth) / (children - 1);
-          const allow = Math.floor((current.clientWidth + gap) / (childWidth + gap));
+          const allow = Math.floor((containerWidth + gap) / (childWidth + gap));
           setAllowChildren(allow === children ? undefined : allow);
         }
       }, 300),
@@ -24,7 +27,12 @@ export default function useAllowChildren(element: RefObject<HTMLDivElement>) {
 
   useLayoutEffect(() => {
     if (element.current) {
-      setScrollWidth(element.current.scrollWidth);
+      const styles = getComputedStyle(element.current);
+      setScrollWidth(
+        element.current.scrollWidth -
+          parseFloat(styles.paddingLeft) -
+          parseFloat(styles.paddingRight),
+      );
       setChildren(element.current.children.length);
       handleResizeWindow();
     }

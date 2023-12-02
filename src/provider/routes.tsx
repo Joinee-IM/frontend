@@ -24,10 +24,22 @@ const router = createBrowserRouter([
           },
           {
             path: routePath('index.stadium.venue'),
-            async lazy() {
-              const { Venue: Component } = await import('@/modules/main/pages');
-              return { Component };
-            },
+            children: [
+              {
+                index: true,
+                async lazy() {
+                  const { VenueList: Component } = await import('@/modules/main/pages');
+                  return { Component };
+                },
+              },
+              {
+                path: routePath('index.stadium.venue.detail'),
+                async lazy() {
+                  const { Venue: Component } = await import('@/modules/main/pages');
+                  return { Component };
+                },
+              },
+            ],
           },
         ],
       },
