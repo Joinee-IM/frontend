@@ -11,6 +11,7 @@ import { useUser } from '@/contexts/useUser';
 import useError from '@/hooks/useError';
 import Card from '@/modules/auth/components/Card';
 import { useGoogleLogin, useLogin } from '@/modules/auth/service';
+import test from '@/test';
 
 interface FieldType {
   email?: string;
@@ -23,11 +24,6 @@ const ForgotPasswordWrapper = styled.div`
   display: flex;
   justify-content: end;
 `;
-
-const TESTVALUE = {
-  email: 'b09705017@ntu.edu.tw',
-  password: 'string',
-};
 
 export default function Login() {
   const [form] = Form.useForm();
@@ -73,7 +69,7 @@ export default function Login() {
           onFinish={handleButtonPress}
           size={'middle'}
           style={{ width: '100%' }}
-          initialValues={TESTVALUE}
+          initialValues={test.login}
         >
           <Form.Item name="email" rules={[{ required: true, message: '' }]}>
             <Input prefix={<UserOutlined />} placeholder="電子郵件" autoComplete="off" />
