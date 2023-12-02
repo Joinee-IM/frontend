@@ -1,7 +1,7 @@
 import type { schemas } from '@/services/type';
 import type { z } from 'zod';
 
-type GenderType = z.infer<(typeof schemas)['GenderType']>;
+export type GenderType = z.infer<(typeof schemas)['GenderType']>;
 
 export default function toGender(gender: GenderType) {
   switch (gender) {
@@ -10,9 +10,11 @@ export default function toGender(gender: GenderType) {
     case 'FEMALE':
       return '女';
     case 'UNREVEALED':
+      return '不願公開';
+    case null:
       return '尚未選擇';
     default:
       gender satisfies never;
-      return '尚未選擇';
+      return '不願公開';
   }
 }

@@ -1,16 +1,19 @@
 import { EditFilled } from '@ant-design/icons';
-import { Form, Input } from 'antd';
+import { Form, Input, Select } from 'antd';
 import { useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { RippleButton } from '@/components/Button';
 import GridForm from '@/components/GridForm';
 import Section from '@/modules/main/pages/UserInfo/components/Section';
+import { useEditAccount, useUserInfo } from '@/modules/main/pages/UserInfo/services';
+import toGender, { GenderType } from '@/utils/function/toGender';
 
 interface InfoProps {
   email: string;
   nickname: string;
-  gender: string;
+  gender: GenderType;
 }
 
 const ButtonWrapper = styled.div`
@@ -20,14 +23,25 @@ const ButtonWrapper = styled.div`
 `;
 
 export default function BaseInfoSection(props: InfoProps) {
+  const { account_id } = useParams();
   const [form] = Form.useForm<InfoProps>();
   const [isEdit, setIsEdit] = useState(false);
+  const { refetch } = useUserInfo(Number(account_id));
+  const { mutate } = useEditAccount(Number(account_id));
 
   const BaseInfoAction = useMemo(() => {
     return function BaseInfoAction() {
       const handleInfoChange = () => {
         const info = form.getFieldsValue();
-        alert(`${info.email}, ${info.gender}, ${info.nickname}`);
+        mutate(
+          { nickname: info.nickname, gender: info.gender },
+          {
+            onSuccess: () => {
+              setIsEdit(false);
+              void refetch();
+            },
+          },
+        );
       };
       return isEdit ? (
         <ButtonWrapper>
@@ -59,13 +73,13 @@ export default function BaseInfoSection(props: InfoProps) {
         </RippleButton>
       );
     };
-  }, [form, isEdit]);
+  }, [form, isEdit, mutate, refetch]);
 
   const baseInfo = useMemo(() => {
     return {
       電子郵件: isEdit ? (
         <Form.Item name="email" initialValue={props.email}>
-          <Input />
+          <Input disabled={true} />
         </Form.Item>
       ) : (
         props.email
@@ -79,10 +93,26 @@ export default function BaseInfoSection(props: InfoProps) {
       ),
       性別: isEdit ? (
         <Form.Item name="gender" initialValue={props.gender}>
-          <Input />
+          <Select
+            style={{ width: 120 }}
+            options={[
+              {
+                value: 'MALE',
+                label: '男性',
+              },
+              {
+                value: 'FEMALE',
+                label: '女性',
+              },
+              {
+                value: 'UNREVEALED',
+                label: '不願公開',
+              },
+            ]}
+          />
         </Form.Item>
       ) : (
-        props.gender
+        toGender(props.gender)
       ),
     };
   }, [isEdit, props.email, props.gender, props.nickname]);

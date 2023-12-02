@@ -7,6 +7,7 @@ import Google from '@/assets/google.png';
 import { RippleButton } from '@/components';
 import AuthButton from '@/components/Button/AuthButton';
 import Divider from '@/components/Divider';
+import { useUser } from '@/contexts/useUser';
 import useError from '@/hooks/useError';
 import Card from '@/modules/auth/components/Card';
 import { useGoogleLogin, useLogin } from '@/modules/auth/service';
@@ -32,7 +33,7 @@ export default function Login() {
   const [form] = Form.useForm();
   const { mutate: login, error, isLoading } = useLogin();
   const { googleLogin } = useGoogleLogin();
-
+  const { setUser } = useUser();
   const navigate = useNavigate();
 
   const { context } = useError(error, undefined, () => {
@@ -55,7 +56,8 @@ export default function Login() {
       login(
         { email, password },
         {
-          onSuccess() {
+          onSuccess(data) {
+            setUser({ accountId: data.data?.account_id });
             navigate('/');
           },
         },

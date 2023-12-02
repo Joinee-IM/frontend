@@ -1,10 +1,10 @@
 import { message } from 'antd';
 import AntdUpload from 'antd/es/upload';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-import type { UploadProps as AntdUploadProps } from 'antd';
+import type { UploadFile, UploadProps as AntdUploadProps } from 'antd';
 
 import UploadIcon from '@/assets/icons/Upload';
 import { RippleButton } from '@/components';
@@ -40,7 +40,11 @@ const UploadContainer = styled.div`
 
 export default function Upload({ handleUploadSuccess, uploadConfig }: UploadProps) {
   const { account_id } = useParams();
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const { mutate } = useEditAvatar(Number(account_id));
+  const onFileChange = (fileList: UploadFile[]) => {
+    setFileList(fileList);
+  };
 
   const baseUploadProps: AntdUploadProps = useMemo(
     () => ({
@@ -53,6 +57,7 @@ export default function Upload({ handleUploadSuccess, uploadConfig }: UploadProp
             } else info.file.percent = Number(info.file.percent) + 10;
           }, 150);
         }
+        onFileChange(info.fileList);
         switch (info.file.status) {
           case 'done':
             void message.success(`${info.file.name} 上傳成功！！`);
@@ -73,6 +78,7 @@ export default function Upload({ handleUploadSuccess, uploadConfig }: UploadProp
               onSuccess: () => {
                 uploadSuccess?.(file);
                 handleUploadSuccess?.();
+                setFileList([]);
               },
               onError: uploadError,
             },
@@ -96,12 +102,13 @@ export default function Upload({ handleUploadSuccess, uploadConfig }: UploadProp
           return isImage || AntdUpload.LIST_IGNORE;
         }}
         style={{ backgroundColor: 'transparent', borderColor: 'transparent' }}
+        fileList={[]}
       >
         <UploadIcon style={{ fontSize: 'clamp(100px, 25vw, 200px)', color: theme.main[500] }} />
       </Dragger>
       將檔案拖曳至此
       <Divider text="或是"></Divider>
-      <AntdUpload {...baseUploadProps} accept=".jpg,.jpeg,.png">
+      <AntdUpload {...baseUploadProps} accept=".jpg,.jpeg,.png" fileList={fileList}>
         <RippleButton category="solid" palette="main">
           從電腦上傳檔案
         </RippleButton>
