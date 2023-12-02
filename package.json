@@ -11,7 +11,7 @@
     "commit": "node scripts/commit",
     "schema": "node scripts/fetch",
     "firebase": "yarn install --frozen-lockfile && node scripts/firebase",
-    "initial": "yarn && node scripts/initial",
+    "initial": "yarn && git update-index --skip-worktree src/test/index.ts &&  node scripts/initial",
     "husky": "husky install"
   },
   "resolutions": {
