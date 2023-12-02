@@ -10,6 +10,9 @@ export default function AntdProvider({ children }: { children: ReactNode }) {
           Form: {
             itemMarginBottom: 12,
           },
+          Tabs: {
+            colorPrimary: '#7D97BE',
+          },
         },
       }}
     >

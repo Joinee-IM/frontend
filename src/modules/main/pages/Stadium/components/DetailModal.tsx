@@ -20,7 +20,7 @@ const ModalTitle = styled.div`
   font-weight: 500;
 `;
 
-const AlbumWrapper = styled.div`
+export const AlbumWrapper = styled.div`
   width: 100%;
   gap: 10px;
   display: grid;
@@ -30,7 +30,7 @@ const AlbumWrapper = styled.div`
   overflow: scroll;
 `;
 
-const ImagePreview = styled(Image)`
+export const ImagePreview = styled(Image)`
   aspect-ratio: 1;
 `;
 

@@ -5,7 +5,9 @@ import styled from 'styled-components';
 
 import Image from '@/assets/stadium.jpeg';
 import Select from '@/components/Select';
+import { SquareTag } from '@/components/Tag';
 import Filter from '@/modules/main/components/Filter';
+import { backgroundCenter } from '@/utils/css';
 type GalleryProps = React.ComponentProps<typeof GalleryWrapper>;
 
 const GalleryWrapper = styled.div`
@@ -27,9 +29,7 @@ const Item = styled.div`
   aspect-ratio: 1.1;
   background-color: aliceblue;
   background-image: url(${Image});
-  background-position: center;
-  background-repeat: repeat;
-  background-size: cover;
+  ${backgroundCenter}
   position: relative;
   overflow: hidden;
   cursor: pointer;
@@ -45,14 +45,11 @@ const Item = styled.div`
   }
 `;
 
-const ItemTag = styled.div<{ reservable: boolean }>`
+const ItemTag = styled(SquareTag)<{ reservable: boolean }>`
   position: absolute;
   top: 5px;
   right: 5px;
-  padding: 5px 8px;
   background-color: ${({ theme, reservable }) => (reservable ? theme.sub[300] : theme.red[300])};
-  color: ${({ theme }) => theme.white};
-  border-radius: 8px;
 `;
 
 const ItemInfo = styled(motion.div).attrs({ className: 'gallery_item_info' })`
