@@ -1,9 +1,11 @@
-import { createContext, memo, useContext, useMemo, useState } from 'react';
+import { createContext, memo, useContext, useEffect, useMemo, useState } from 'react';
+import { useCookies } from 'react-cookie';
 
 import type { ReactNode } from 'react';
 
 export interface UserType {
   accountId?: number;
+  login: boolean;
 }
 
 export type UserPropsType = UserType | undefined;
@@ -25,6 +27,11 @@ export interface UserProps {
 export const UserProvider = memo(function UserProvider({ children }: UserProps) {
   const [user, setUser] = useState<UserPropsType>(undefined);
   const value = useMemo(() => ({ user, setUser }), [user, setUser]);
+  const [cookies] = useCookies(['auth-token', 'id']);
+
+  useEffect(() => {
+    if (cookies['auth-token']) setUser({ login: true, accountId: Number(cookies.id) });
+  }, [cookies]);
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 });
