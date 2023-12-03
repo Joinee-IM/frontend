@@ -1,15 +1,20 @@
 import { motion } from 'framer-motion';
 import styled from 'styled-components';
 
+import { percentageOfFigma } from '@/utils/css';
+
 const TapButtonBase = styled(motion.div)`
-  padding: 1% 3.3%;
-  font-weight: bolder;
-  font-size: 1.5vw;
-  border-radius: 10px;
+  padding: max(${percentageOfFigma(15).vw}, ${percentageOfFigma(15).vh})
+    max(${percentageOfFigma(40).vw}, ${percentageOfFigma(40).vh});
+  font-weight: 600;
+  font-size: max(${percentageOfFigma(32).vw}, ${percentageOfFigma(32).vh});
+  border-radius: 0.625em;
   width: fit-content;
   white-space: nowrap;
-  cursor: inherit, pointer;
+  cursor: pointer;
+  letter-spacing: 2px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  color: ${({ theme }) => theme.main[700]};
 `;
 
 type TapButtonProps = React.ComponentProps<typeof TapButtonBase>;

@@ -6,6 +6,8 @@ import styled from 'styled-components';
 import type { ReactNode } from 'react';
 
 import { RippleButton } from '@/components';
+import { MOBILE_WITH } from '@/constants/rwd';
+import { percentageOfFigma } from '@/utils/css';
 
 interface FeatureProps {
   image: string;
@@ -67,19 +69,28 @@ const Section = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
   width: 100%;
   height: 100%;
   row-gap: 7%;
 `;
 
 const Title = styled.div`
-  font-size: 2.5vw;
+  font-size: ${percentageOfFigma(36).max};
+  @media (max-width: ${MOBILE_WITH}px) {
+    font-size: min(20px, ${percentageOfFigma(36).max});
+  }
+  letter-spacing: 2px;
 `;
 
 const Description = styled.div`
-  font-size: 1.5vw;
-  margin: 0 23%;
+  font-size: ${percentageOfFigma(20).max};
   text-align: center;
+  margin: 0 ${percentageOfFigma(200).max};
+  @media (max-width: ${MOBILE_WITH}px) {
+    font-size: min(16px, ${percentageOfFigma(20).max});
+    margin: 0 min(70px, ${percentageOfFigma(200).max});
+  }
 `;
 
 export default function Feature({
