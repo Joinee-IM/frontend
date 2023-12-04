@@ -6,7 +6,7 @@ export const useLogin = () => api.usePost('/login', undefined, { mutationKey: qu
 export const useGoogleLogin = (role?: string) => {
   const googleLogin = () => {
     const query = role ? `?role=${role}` : '';
-    window.open(`${ENV.baseURL}/google-login${query}`, '_self');
+    window.open(`${ENV.googleLoginBaseURL}/google-login${query}`, '_self');
   };
   return { googleLogin };
 };
