@@ -43,6 +43,13 @@ const router = createBrowserRouter([
         ],
       },
       {
+        path: routePath('index.partner'),
+        async lazy() {
+          const Partner = await import('@/modules/partner');
+          return { Component: Partner.default };
+        },
+      },
+      {
         path: routePath('index.user-info'),
         async lazy() {
           const { UserInfo } = await import('@/modules/main/pages');

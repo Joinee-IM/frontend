@@ -11,6 +11,8 @@ import SearchIcon from '@/assets/icons/Search';
 
 interface GalleryProps extends Type<typeof ToolBarWrapper> {
   filters: ReactNode;
+  twoSteps?: boolean;
+  searchable?: boolean;
 }
 
 const ToolBarWrapper = styled.div`
@@ -58,23 +60,30 @@ const SearchWrapper = styled.div`
   display: flex;
 `;
 
-export default function Filter({ children, filters }: GalleryProps) {
-  const [filterOpen, setFilterOpen] = useState(false);
+export default function Filter({
+  children,
+  filters,
+  searchable = true,
+  twoSteps = true,
+}: GalleryProps) {
+  const [filterOpen, setFilterOpen] = useState(!twoSteps);
   const [search, setSearch] = useState<string | undefined>(undefined);
   return (
     <ToolBarWrapper>
       <ToolBar>
         <FilterWrapper visible={filterOpen}>{filters}</FilterWrapper>
         <IconWrapper>
-          {!filterOpen ? (
+          {!twoSteps ? null : !filterOpen ? (
             <FilterIcon fontSize="20px" cursor="pointer" onClick={() => setFilterOpen(true)} />
           ) : (
             <CloseOutlined style={{ cursor: 'pointer' }} onClick={() => setFilterOpen(false)} />
           )}
-          <SearchWrapper>
-            <SearchIcon fontSize="24px" cursor="pointer" onClick={() => setSearch('')} />
-            {search !== undefined && <Input placeholder="搜尋" bordered={false} />}
-          </SearchWrapper>
+          {searchable && (
+            <SearchWrapper>
+              <SearchIcon fontSize="24px" cursor="pointer" onClick={() => setSearch('')} />
+              {search !== undefined && <Input placeholder="搜尋" bordered={false} />}
+            </SearchWrapper>
+          )}
         </IconWrapper>
       </ToolBar>
       {children}

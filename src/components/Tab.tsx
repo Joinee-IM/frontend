@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 
 type TabItemProps = Exclude<AntdTabProps['items'], undefined>[number] & {
   index: string;
-  children: ReactNode;
+  children?: ReactNode;
 };
 
 interface TabsProps extends Omit<AntdTabProps, 'children'> {
