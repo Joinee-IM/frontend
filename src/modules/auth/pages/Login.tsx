@@ -1,5 +1,6 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Form, Input } from 'antd';
+import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -7,10 +8,10 @@ import Google from '@/assets/google.png';
 import { RippleButton } from '@/components';
 import AuthButton from '@/components/Button/AuthButton';
 import Divider from '@/components/Divider';
-import { useUser } from '@/contexts/useUser';
 import useError from '@/hooks/useError';
 import Card from '@/modules/auth/components/Card';
 import { useGoogleLogin, useLogin } from '@/modules/auth/service';
+import test from '@/test';
 
 interface FieldType {
   email?: string;
@@ -24,17 +25,12 @@ const ForgotPasswordWrapper = styled.div`
   justify-content: end;
 `;
 
-const TESTVALUE = {
-  email: 'b09705017@ntu.edu.tw',
-  password: 'string',
-};
-
 export default function Login() {
   const [form] = Form.useForm();
   const { mutate: login, error, isLoading } = useLogin();
   const { googleLogin } = useGoogleLogin();
-  const { setUser } = useUser();
   const navigate = useNavigate();
+  const [, setCookie] = useCookies(['auth-token', 'id']);
 
   const { context } = useError(error, undefined, () => {
     if (error?.message === 'LoginFailed')
@@ -57,7 +53,8 @@ export default function Login() {
         { email, password },
         {
           onSuccess(data) {
-            setUser({ accountId: data.data?.account_id });
+            setCookie('auth-token', data.data?.token, { path: '/' });
+            setCookie('id', data.data?.account_id, { path: '/' });
             navigate('/');
           },
         },
@@ -73,7 +70,7 @@ export default function Login() {
           onFinish={handleButtonPress}
           size={'middle'}
           style={{ width: '100%' }}
-          initialValues={TESTVALUE}
+          initialValues={test.login}
         >
           <Form.Item name="email" rules={[{ required: true, message: '' }]}>
             <Input prefix={<UserOutlined />} placeholder="電子郵件" autoComplete="off" />

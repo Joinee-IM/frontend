@@ -13,6 +13,7 @@ import Divider from '@/components/Divider';
 import useError from '@/hooks/useError';
 import Card from '@/modules/auth/components/Card';
 import { useAddAccount, useGoogleLogin } from '@/modules/auth/service';
+import test from '@/test';
 
 interface FieldType {
   email?: string;
@@ -25,12 +26,6 @@ const ButtonGroup = styled(Link)`
   width: 100%;
   gap: 8px;
 `;
-
-const TEST_VALUE = {
-  email: 'b09705017@ntu.im',
-  password: '1234',
-  confirm: '1234',
-};
 
 export default function Signup() {
   const [form] = Form.useForm();
@@ -81,7 +76,7 @@ export default function Signup() {
           onFinish={handleButtonPress}
           size={'middle'}
           style={{ width: '100%' }}
-          initialValues={TEST_VALUE}
+          initialValues={test.signup}
         >
           <Form.Item name="email" rules={rules.email}>
             <Input placeholder="電子郵件" autoComplete="off" />

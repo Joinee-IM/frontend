@@ -3,6 +3,9 @@ import fs from 'fs';
 import inquirer from 'inquirer';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import { exclude } from './exclude.js';
+
+await exclude();
 
 const confirm =
   (gitMessage) =>

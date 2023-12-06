@@ -91,7 +91,7 @@ export default function Main() {
             category="link"
             palette="main"
             onClick={() => {
-              user?.accountId ? navigate(`/user-info/${user?.accountId}`) : navigate('/auth/login');
+              user?.login ? navigate(`/user-info/${user?.accountId}`) : navigate('/auth/login');
             }}
           >
             <UserOutlined />

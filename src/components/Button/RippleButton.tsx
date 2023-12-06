@@ -5,7 +5,8 @@ import type { ButtonProps } from 'antd';
 import type { ReactNode } from 'react';
 
 import getTheme, { ButtonThemeProps, ButtonType } from '@/components/Button/theme';
-import { flexCenter } from '@/utils/css';
+import { MOBILE_WITH } from '@/constants/rwd';
+import { flexCenter, percentageOfFigma } from '@/utils/css';
 
 interface RippleButtonProps<T extends ButtonType> extends ButtonThemeProps<T>, ButtonProps {
   borderBox?: boolean;
@@ -19,10 +20,13 @@ function ThemeButton<T extends ButtonType>(props: RippleButtonProps<T>) {
 const RippleButtonBase = styled(ThemeButton).withConfig({
   shouldForwardProp: (prop) => !['borderBox'].includes(prop),
 })<{ borderBox?: boolean }>`
-  padding: 0.44vw 1vw;
-  font-weight: bolder;
-  font-size: clamp(12px, 1vw, 16px);
-  border-radius: 10px;
+  font-size: ${percentageOfFigma(16).max};
+  padding: max(${percentageOfFigma(5).vw}, ${percentageOfFigma(5).vh})
+    max(${percentageOfFigma(10).vw}, ${percentageOfFigma(10).vh});
+  @media (max-width: ${MOBILE_WITH}px) {
+    font-size: min(12px, ${percentageOfFigma(16).max});
+  }
+  border-radius: 0.5em;
   width: fit-content;
   height: fit-content;
   white-space: nowrap;

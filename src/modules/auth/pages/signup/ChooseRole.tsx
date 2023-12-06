@@ -3,17 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { z } from 'zod';
 
-import Bussiness from '@/assets/business.png';
-import Player from '@/assets/player.png';
+import Bussiness from '@/assets/leaser.jpg';
+import Player from '@/assets/player.jpg';
 import { RippleButton } from '@/components';
 import Card from '@/modules/auth/components/Card';
 import { schemas } from '@/services/type';
+import { percentageOfFigma } from '@/utils/css';
 
 const RadioGroup = styled.div`
   display: flex;
   margin-top: 20px;
   justify-content: center;
-  gap: 10px;
+  gap: clamp(20px, ${percentageOfFigma(68).vw}, 68px);
 `;
 
 const CharacterWrapper = styled.div.withConfig({
@@ -44,8 +45,9 @@ const Character = styled.img.withConfig({
   shouldForwardProp: (prop) => !['chosen'].includes(prop),
 })<{ chosen: boolean }>`
   filter: brightness(${({ chosen }) => (chosen ? '100%' : '20%')});
-  width: 100px;
-  height: 120px;
+  width: clamp(100px, ${percentageOfFigma(140).vw}, 140px);
+  border-radius: 50%;
+  aspect-ratio: 1;
   transition: all 0.1s linear;
   cursor: pointer;
 `;
@@ -72,6 +74,7 @@ export default function ChooseMember() {
       <RippleButton
         category="solid"
         palette="main"
+        borderBox={true}
         disabled={!role}
         htmlType="submit"
         style={{ width: '100%', marginTop: '20px' }}
