@@ -8,11 +8,12 @@ import { TapButton } from '@/components';
 import useImageDimension from '@/hooks/useImageDimension';
 import { hexToRgb } from '@/utils';
 
-export const Background = styled.div<{ ratio?: number }>`
+export const Background = styled.div.withConfig({
+  shouldForwardProp: (prop) => !['ratio'].includes(prop),
+})<{ ratio?: number }>`
   background: url(${CoverImage});
   width: 100vw;
   height: ${({ ratio }) => (ratio ? `min(100vh, calc(101vw / ${ratio}))` : `100vh`)};
-  /* height: 101vh; */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;

@@ -21,7 +21,6 @@ const DividerText = styled.div`
   margin: 0 15px;
   font-size: 12px;
   font-weight: 400;
-  line-height: 24px; /* 200% */
 `;
 
 export default function Divider({ text }: { text?: string }) {

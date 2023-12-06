@@ -4,39 +4,38 @@ import styled from 'styled-components';
 import type { ButtonProps } from 'antd';
 import type { ReactNode } from 'react';
 
+import getTheme, { ButtonThemeProps, ButtonType } from '@/components/Button/theme';
 import { flexCenter } from '@/utils/css';
 
-interface TapButtonProps extends ButtonProps {
+interface RippleButtonProps<T extends ButtonType> extends ButtonThemeProps<T>, ButtonProps {
+  borderBox?: boolean;
   children?: ReactNode;
 }
 
-const RippleButtonBase = styled(Button)`
-  padding: 0.8% 3%;
+function ThemeButton<T extends ButtonType>(props: RippleButtonProps<T>) {
+  return <Button {...props} />;
+}
+
+const RippleButtonBase = styled(ThemeButton).withConfig({
+  shouldForwardProp: (prop) => !['borderBox'].includes(prop),
+})<{ borderBox?: boolean }>`
+  padding: 0.44vw 1vw;
   font-weight: bolder;
-  font-size: max(1vw, 12px);
+  font-size: clamp(12px, 1vw, 16px);
   border-radius: 10px;
   width: fit-content;
+  height: fit-content;
   white-space: nowrap;
-  box-sizing: border-box;
   align-items: center;
   justify-content: center;
-  background-color: ${(props) => props.theme.main[500]};
-  ${flexCenter}
-
-  &:not([disabled]) {
-    &:hover {
-      background-color: ${(props) => props.theme.main[300]} !important;
-    }
-    &:active {
-      background-color: ${(props) => props.theme.main[700]} !important;
-    }
-  }
+  box-sizing: ${({ borderBox }) => (borderBox ? 'border-box' : 'content-box')};
+  ${flexCenter};
+  ${({ category, palette }) => getTheme({ category, palette })}
 `;
 
-export default function RippleButton({ children, ...rest }: TapButtonProps) {
-  return (
-    <RippleButtonBase type="primary" {...rest}>
-      {children}
-    </RippleButtonBase>
-  );
+export default function RippleButton<T extends ButtonType>({
+  children,
+  ...rest
+}: RippleButtonProps<T>) {
+  return <RippleButtonBase {...rest}>{children}</RippleButtonBase>;
 }

@@ -1,4 +1,4 @@
-import { NestedKeys } from '@/utils/type';
+import type { NestedKeys } from '@/utils/type';
 
 interface Path {
   route: string;
@@ -15,13 +15,26 @@ function search<T>(target: T, keys: string[]) {
 }
 
 export const ROUTES = {
-  index: '/',
+  index: { route: '/', 'user-info': 'user-info/:account_id' },
   entry: '/entry',
   auth: {
     route: 'auth',
     login: 'login',
-    signup: { route: 'signup', 'choose-role': 'choose-role', account: 'account' },
+    signup: {
+      route: 'signup',
+      'choose-role': 'choose-role',
+      account: 'account',
+      'send-mail': 'send-mail',
+      success: 'success',
+      'more-info': 'more-info',
+    },
+    forgetPassword: {
+      route: 'forget-password',
+      'send-mail': 'send-mail',
+      'reset-password': 'reset-password',
+    },
   },
+  notFound: '*',
   view: { route: 'view' },
 } satisfies Record<string, RoutesType | string>;
 

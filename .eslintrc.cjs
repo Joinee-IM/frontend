@@ -47,14 +47,14 @@ module.exports = {
           ['^@?\\w'],
 
           // Constants
-          ['env', 'AppConstants', '^.*/constants$'],
+          ['env', 'AppConstants'],
 
           // Type imports
           ['^.*\\u0000$'],
 
           // Internal packages inside `src` folder
           [
-            '^(components|context|hooks|icons|layout|lib|modules|services|shared|theme|utils)(/.*|$)',
+            '^(components|context|hooks|icons|layout|lib|modules|services|shared|theme|utils|constants)(/.*|$)',
           ],
 
           // Side effect imports
@@ -80,5 +80,11 @@ module.exports = {
     ],
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
+    '@typescript-eslint/no-misused-promises': [
+      'error',
+      {
+        checksVoidReturn: false,
+      },
+    ],
   },
 };
