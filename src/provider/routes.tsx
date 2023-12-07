@@ -69,6 +69,13 @@ const router = createBrowserRouter([
               return { Component: Reserve };
             },
           },
+          {
+            path: routePath('history'),
+            async lazy() {
+              const History = await import('@/modules/history');
+              return { Component: History.default };
+            },
+          },
         ],
       },
       {

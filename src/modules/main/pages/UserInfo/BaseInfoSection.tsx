@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-import type { GenderType } from '@/utils/function/map/toGender';
+import type { GenderType } from '@/utils/function/map';
 
 import { RippleButton } from '@/components/Button';
 import GridForm from '@/components/Grid/FormGrid';

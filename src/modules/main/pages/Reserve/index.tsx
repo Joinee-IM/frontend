@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-import type { TechnicalLevelType } from '@/utils/function/map/toTechnicalLevel';
+import type { TechnicalLevelType } from '@/utils/function/map';
 
 import { ButtonWrapper, RippleButton } from '@/components/Button';
 import { GeneralGrid } from '@/components/Grid';

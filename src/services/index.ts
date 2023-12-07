@@ -9,6 +9,7 @@ const api = new ZodiosHooks(
   'api',
   createApiClient(ENV.baseURL, {
     axiosInstance: axios,
+    validate: 'request',
   }),
 );
 

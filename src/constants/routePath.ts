@@ -42,6 +42,7 @@ export const ROUTES = {
       'reset-password': 'reset-password',
     },
   },
+  history: '/history/:account_id',
   notFound: '*',
   view: { route: 'view' },
 } satisfies Record<string, RoutesType | string>;
