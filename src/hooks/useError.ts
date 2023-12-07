@@ -1,14 +1,16 @@
 import useMessage from 'antd/es/message/useMessage';
 import { useEffect } from 'react';
-import { z } from 'zod';
 
+import type { schemas } from '@/services/type';
 import type { ZodiosError } from '@zodios/core';
+import type { z } from 'zod';
 
-import { schemas } from '@/services/type';
+type Errors =
+  | z.infer<(typeof schemas)['ErrorMessage']>
+  | "Zodios: Invalid Body parameter 'body'"
+  | 'NoMatch';
 
-type Errors = z.infer<(typeof schemas)['ErrorMessage']> | "Zodios: Invalid Body parameter 'body'";
-
-const INIT_MESSAGES: Record<Errors, string> = {
+const INIT_MESSAGES: Record<Errors, string | undefined> = {
   NotFound: '您未曾使用過該帳號註冊',
   EmailExists: '此電子郵件已註冊！',
   LoginFailed: '登入失敗',
@@ -23,6 +25,7 @@ const INIT_MESSAGES: Record<Errors, string> = {
   ReservationFull: '',
   VenueUnreservable: '',
   CourtUnreservable: '',
+  NoMatch: undefined,
 };
 
 export default function useError<T extends Error | ZodiosError | null>(

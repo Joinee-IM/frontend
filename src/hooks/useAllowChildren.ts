@@ -14,7 +14,7 @@ export default function useAllowChildren(element: RefObject<HTMLDivElement>) {
         const { current } = element;
         if (current) {
           const childWidth = current.children[0]?.clientWidth;
-          const gap = (scrollWidth - children * childWidth) / (children - 1);
+          const gap = children === 1 ? 0 : (scrollWidth - children * childWidth) / (children - 1);
           const allow = Math.floor((current.clientWidth + gap) / (childWidth + gap));
           setAllowChildren(allow === children ? undefined : allow);
         }

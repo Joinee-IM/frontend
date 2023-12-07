@@ -1,40 +1,68 @@
-import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { Dropdown } from 'antd';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import styled from 'styled-components';
 
-import type { MenuProps } from 'antd';
+import type { ButtonProps, MenuProps } from 'antd';
 
-import PositionIcon from '@/assets/icons/Position';
+import { DownArrowIcon, UpArrowIcon } from '@/assets/icons/Arrow';
 import { RippleButton } from '@/components/Button';
 
 interface SelectProps extends MenuProps {
   title?: string;
-  items: { label: string; key: string }[];
+  items: { label: string; key: string }[] | undefined;
+  loading?: ButtonProps['loading'];
+  icon?: ButtonProps['icon'];
 }
 
-export default function Select({ title, items }: SelectProps) {
-  const [selected, setSelected] = useState<string | undefined>(undefined);
+const TitleWrapper = styled.div`
+  display: flex;
+  column-gap: 6px;
+  align-items: center;
+`;
+
+export default function Select({
+  title,
+  items,
+  loading,
+  icon,
+  onSelect,
+  selectedKeys,
+}: SelectProps) {
   const [open, setOpen] = useState(false);
+  const selected = useMemo(
+    () =>
+      selectedKeys?.length ? items?.find((item) => item.key === selectedKeys[0])?.label : undefined,
+    [items, selectedKeys],
+  );
 
   return (
     <Dropdown
       menu={{
         items,
         selectable: true,
+        selectedKeys,
         onClick: () => setOpen(false),
-        onSelect: ({ key }) => setSelected(items?.find((item) => item.key === key)?.label),
+        onSelect,
       }}
       onOpenChange={(status) => setOpen(status)}
       trigger={['click']}
+      disabled={!items?.length}
     >
       <RippleButton
-        icon={<PositionIcon />}
+        icon={icon}
+        loading={loading}
         category={selected ? 'solid' : 'outlined'}
         palette="sub"
         onClick={(e) => e.preventDefault()}
       >
-        {selected ?? title}
-        {open ? <UpOutlined /> : <DownOutlined />}
+        <TitleWrapper>
+          {selected ?? title}
+          {open ? (
+            <UpArrowIcon style={{ fontSize: '0.5em' }} />
+          ) : (
+            <DownArrowIcon style={{ fontSize: '0.5em' }} />
+          )}
+        </TitleWrapper>
       </RippleButton>
     </Dropdown>
   );

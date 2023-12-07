@@ -9,7 +9,7 @@ import { ENV } from '@/constants';
 type Response = z.infer<(typeof schemas)['Response']>;
 
 const instance = axios.create({ baseURL: ENV.baseURL, withCredentials: true });
-const ignorePath = ['/album'];
+const ignorePath = ['/api/album'];
 
 instance.interceptors.request.use(
   function (config) {

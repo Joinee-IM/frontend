@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import type { schemas } from '@/services/type';
 import type { z } from 'zod';
 
-import Bussiness from '@/assets/leaser.jpg';
+import Business from '@/assets/leaser.jpg';
 import Player from '@/assets/player.jpg';
 import { RippleButton } from '@/components';
 import Card from '@/modules/auth/components/Card';
@@ -68,7 +68,7 @@ export default function ChooseMember() {
           <Label chosen={role === 'NORMAL'}>找運動場</Label>
         </CharacterWrapper>
         <CharacterWrapper onClick={() => setRole('PROVIDER')} chosen={role === 'PROVIDER'}>
-          <Character src={Bussiness} chosen={role === 'PROVIDER'} />
+          <Character src={Business} chosen={role === 'PROVIDER'} />
           <Label chosen={role === 'PROVIDER'}>出租場地</Label>
         </CharacterWrapper>
       </RadioGroup>

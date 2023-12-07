@@ -1,10 +1,7 @@
 import { Button } from 'antd';
 import styled from 'styled-components';
 
-import type {
-  ButtonThemeProps,
-  ButtonType
-} from '@/components/Button/theme';
+import type { ButtonThemeProps, ButtonType } from '@/components/Button/theme';
 import type { ButtonProps } from 'antd';
 import type { ReactNode } from 'react';
 

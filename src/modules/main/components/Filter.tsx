@@ -4,13 +4,18 @@ import { useState } from 'react';
 import styled from 'styled-components';
 
 import type { Type } from '@/utils/type';
-import type { ReactNode } from 'react';
+import type { Dispatch, ReactNode, SetStateAction } from 'react';
 
 import FilterIcon from '@/assets/icons/Filter';
 import SearchIcon from '@/assets/icons/Search';
 
-interface GalleryProps extends Type<typeof ToolBarWrapper> {
+interface FilterProps<T extends true | false> extends Type<typeof ToolBarWrapper> {
   filters: ReactNode;
+  onClose?: () => void;
+  searchable: T;
+  onSearch: T extends true ? (word?: string) => void : null;
+  word: T extends true ? string | undefined : null;
+  setWord: T extends true ? Dispatch<SetStateAction<string | undefined>> : null;
 }
 
 const ToolBarWrapper = styled.div`
@@ -58,9 +63,18 @@ const SearchWrapper = styled.div`
   display: flex;
 `;
 
-export default function Filter({ children, filters }: GalleryProps) {
+export default function Filter<T extends true | false>({
+  children,
+  filters,
+  onClose,
+  onSearch,
+  searchable,
+  word,
+  setWord,
+}: FilterProps<T>) {
   const [filterOpen, setFilterOpen] = useState(false);
   const [search, setSearch] = useState<string | undefined>(undefined);
+
   return (
     <ToolBarWrapper>
       <ToolBar>
@@ -69,12 +83,32 @@ export default function Filter({ children, filters }: GalleryProps) {
           {!filterOpen ? (
             <FilterIcon fontSize="20px" cursor="pointer" onClick={() => setFilterOpen(true)} />
           ) : (
-            <CloseOutlined style={{ cursor: 'pointer' }} onClick={() => setFilterOpen(false)} />
+            <CloseOutlined
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                setFilterOpen(false);
+                onClose?.();
+              }}
+            />
           )}
-          <SearchWrapper>
-            <SearchIcon fontSize="24px" cursor="pointer" onClick={() => setSearch('')} />
-            {search !== undefined && <Input placeholder="搜尋" bordered={false} />}
-          </SearchWrapper>
+          {searchable && (
+            <SearchWrapper>
+              <SearchIcon fontSize="24px" cursor="pointer" onClick={() => setSearch('')} />
+              {search !== undefined && (
+                <Input
+                  value={word ?? undefined}
+                  onChange={(e) => setWord?.(e.target.value)}
+                  placeholder="搜尋"
+                  bordered={false}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.nativeEvent.isComposing && word) {
+                      onSearch?.(word);
+                    }
+                  }}
+                />
+              )}
+            </SearchWrapper>
+          )}
         </IconWrapper>
       </ToolBar>
       {children}
