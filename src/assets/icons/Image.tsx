@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { type CSSProperties } from 'react';
 
 export default function ImageIcon({ style }: { style?: CSSProperties }) {
   return (

@@ -14,3 +14,9 @@ const TitleWrapper = styled.div`
 export default function Title({ children, ...rest }: TitleProps) {
   return <TitleWrapper {...rest}>{children ?? 'Jöinee'}</TitleWrapper>;
 }
+
+export const PageTitle = styled.div`
+  font-size: max(20px, 2.29vw);
+  font-weight: 600;
+  letter-spacing: 1.8px;
+`;

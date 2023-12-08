@@ -8,7 +8,7 @@ type Element = 'background' | 'border' | 'text';
 type MouseEvent = 'normal' | 'hover' | 'active';
 
 export const buttonTheme = {
-  solid: {
+  icon: {
     main: {
       normal: {
         background: ColorTheme.main[500],
@@ -19,11 +19,30 @@ export const buttonTheme = {
     },
     gray: {
       normal: {
+        background: 'transparent',
+        text: ColorTheme.gray['700'],
+        border: 'transparent',
+      },
+      hover: { background: ColorTheme.gray[300] },
+      active: { background: ColorTheme.gray[500] },
+    },
+  },
+  solid: {
+    main: {
+      normal: {
         background: ColorTheme.main[500],
         text: ColorTheme.white,
       },
       hover: { background: ColorTheme.main[300] },
       active: { background: ColorTheme.main[700] },
+    },
+    sub: {
+      normal: {
+        background: ColorTheme.sub[500],
+        text: ColorTheme.white,
+      },
+      hover: { background: ColorTheme.sub[300] },
+      active: { background: ColorTheme.sub[700] },
     },
   },
   outlined: {
@@ -38,6 +57,19 @@ export const buttonTheme = {
       },
       active: {
         background: ColorTheme.main[300],
+      },
+    },
+    sub: {
+      normal: {
+        background: 'transparent',
+        border: ColorTheme.sub[500],
+        text: ColorTheme.sub[500],
+      },
+      hover: {
+        background: ColorTheme.sub[100],
+      },
+      active: {
+        background: ColorTheme.sub[300],
       },
     },
     gray: {
@@ -67,9 +99,32 @@ export const buttonTheme = {
         text: ColorTheme.main[700],
       },
     },
+    gray: {
+      normal: {
+        background: 'transparent',
+        text: ColorTheme.gray[500],
+      },
+      hover: {
+        text: ColorTheme.gray[300],
+      },
+      active: {
+        text: ColorTheme.gray[700],
+      },
+    },
+    table: {
+      normal: {
+        background: 'transparent',
+        text: ColorTheme.gray[900],
+      },
+      hover: {
+        background: ColorTheme.main[300],
+        text: ColorTheme.main[100],
+      },
+      active: {},
+    },
   },
 } satisfies Record<
-  'solid' | 'outlined' | 'link',
+  'solid' | 'outlined' | 'link' | 'icon',
   Record<string, Record<MouseEvent, { [x in Element]?: HEX | 'transparent' }>>
 >;
 
@@ -91,7 +146,7 @@ export default function getTheme<T extends ButtonType>({ category, palette }: Bu
     &:not([disabled]) {
       background-color: ${base.normal.background} !important;
       color: ${base.normal.text} !important;
-      border-color: ${base.normal?.border ?? 'transparent'} !important;
+      ${base.normal?.border && `border-color: ${base.normal.border} !important;`}
       &:hover {
         background-color: ${base.hover.background} !important;
         color: ${base.hover.text} !important;

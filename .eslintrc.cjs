@@ -1,4 +1,9 @@
 module.exports = {
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
   env: {
     browser: true,
     es2021: true,
@@ -6,6 +11,7 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended-type-checked',
+    'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
     'plugin:@typescript-eslint/stylistic-type-checked',
     'plugin:react/jsx-runtime',
@@ -84,6 +90,12 @@ module.exports = {
       'error',
       {
         checksVoidReturn: false,
+      },
+    ],
+    '@typescript-eslint/consistent-type-imports': [
+      'error',
+      {
+        fixStyle: 'separate-type-imports',
       },
     ],
   },

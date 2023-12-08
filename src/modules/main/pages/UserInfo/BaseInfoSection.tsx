@@ -4,11 +4,13 @@ import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
+import type { GenderType } from '@/utils/function/toGender';
+
 import { RippleButton } from '@/components/Button';
 import GridForm from '@/components/GridForm';
 import Section from '@/modules/main/pages/UserInfo/components/Section';
 import { useEditAccount, useUserInfo } from '@/modules/main/pages/UserInfo/services';
-import toGender, { GenderType } from '@/utils/function/toGender';
+import toGender from '@/utils/function/toGender';
 
 interface InfoProps {
   email: string;

@@ -23,7 +23,9 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "verbatimModuleSyntax": true,
+    "emitDecoratorMetadata": false
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

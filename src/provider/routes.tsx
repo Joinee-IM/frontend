@@ -12,6 +12,25 @@ const router = createBrowserRouter([
     },
     children: [
       {
+        path: routePath('index.stadium'),
+        children: [
+          {
+            index: true,
+            async lazy() {
+              const { Stadium: Component } = await import('@/modules/main/pages');
+              return { Component };
+            },
+          },
+          {
+            path: routePath('index.stadium.venue'),
+            async lazy() {
+              const { Venue: Component } = await import('@/modules/main/pages');
+              return { Component };
+            },
+          },
+        ],
+      },
+      {
         path: routePath('index.user-info'),
         async lazy() {
           const { UserInfo } = await import('@/modules/main/pages');
