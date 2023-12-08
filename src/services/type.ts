@@ -96,7 +96,11 @@ const Response_ReadAccountOutput_ = z
   .partial()
   .passthrough();
 const EditAccountInput = z
-  .object({ nickname: z.union([z.string(), z.null()]), gender: z.union([GenderType, z.null()]) })
+  .object({
+    nickname: z.union([z.string(), z.null()]),
+    gender: z.union([GenderType, z.null()]),
+    role: z.union([RoleType, z.null()]),
+  })
   .partial()
   .passthrough();
 const Response_bool_ = z
@@ -229,6 +233,14 @@ const Response_AddStadiumOutput_ = z
   .object({ data: z.union([AddStadiumOutput, z.null()]), error: z.union([ErrorMessage, z.null()]) })
   .partial()
   .passthrough();
+const ValidateAddressOutput = z.object({ long: z.number(), lat: z.number() }).passthrough();
+const Response_ValidateAddressOutput_ = z
+  .object({
+    data: z.union([ValidateAddressOutput, z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
+  })
+  .partial()
+  .passthrough();
 const City = z.object({ id: z.number().int(), name: z.string() }).passthrough();
 const Response_Sequence_City__ = z
   .object({ data: z.union([z.array(City), z.null()]), error: z.union([ErrorMessage, z.null()]) })
@@ -276,6 +288,31 @@ const Response_BrowseVenueOutput_ = z
     data: z.union([BrowseVenueOutput, z.null()]),
     error: z.union([ErrorMessage, z.null()]),
   })
+  .partial()
+  .passthrough();
+const AddVenueInput = z
+  .object({
+    stadium_id: z.number().int(),
+    name: z.string(),
+    floor: z.string(),
+    reservation_interval: z.union([z.number(), z.null()]),
+    is_reservable: z.boolean(),
+    is_chargeable: z.boolean(),
+    fee_rate: z.union([z.number(), z.null()]),
+    fee_type: z.union([FeeType, z.null()]),
+    area: z.number().int(),
+    capacity: z.number().int(),
+    sport_equipments: z.union([z.string(), z.null()]),
+    facilities: z.union([z.string(), z.null()]),
+    court_count: z.number().int(),
+    court_type: z.string(),
+    sport_id: z.number().int(),
+    business_hours: z.array(WeekTimeRange),
+  })
+  .passthrough();
+const AddVenueOutput = z.object({ id: z.number().int() }).passthrough();
+const Response_AddVenueOutput_ = z
+  .object({ data: z.union([AddVenueOutput, z.null()]), error: z.union([ErrorMessage, z.null()]) })
   .partial()
   .passthrough();
 const Response_Venue_ = z
@@ -396,43 +433,6 @@ const Response_BrowseReservationOutput_ = z
   })
   .partial()
   .passthrough();
-const ViewMyReservationSortBy = z.enum([
-  'time',
-  'stadium_name',
-  'venue_name',
-  'is_manager',
-  'vacancy',
-  'status',
-]);
-const sort_by__2 = ViewMyReservationSortBy.optional().default('time');
-const ReservationStatus = z.enum(['IN_PROGRESS', 'CANCELLED', 'FINISHED']);
-const ViewMyReservation = z
-  .object({
-    reservation_id: z.number().int(),
-    start_time: z.string().datetime({ offset: true }),
-    end_time: z.string().datetime({ offset: true }),
-    stadium_name: z.string(),
-    venue_name: z.string(),
-    is_manager: z.boolean(),
-    vacancy: z.number().int(),
-    status: ReservationStatus,
-  })
-  .passthrough();
-const ViewMyReservationOutput = z
-  .object({
-    data: z.array(ViewMyReservation),
-    total_count: z.number().int(),
-    limit: z.number().int(),
-    offset: z.number().int(),
-  })
-  .passthrough();
-const Response_ViewMyReservationOutput_ = z
-  .object({
-    data: z.union([ViewMyReservationOutput, z.null()]),
-    error: z.union([ErrorMessage, z.null()]),
-  })
-  .partial()
-  .passthrough();
 const Response_Reservation_ = z
   .object({ data: z.union([Reservation, z.null()]), error: z.union([ErrorMessage, z.null()]) })
   .partial()
@@ -486,13 +486,67 @@ const Response_Sequence_BusinessHour__ = z
   })
   .partial()
   .passthrough();
+const ReservationMemberStatus = z.enum(['JOINED', 'INVITED', 'REJECTED']);
+const ReservationStatus = z.enum(['IN_PROGRESS', 'CANCELLED', 'FINISHED']);
+const ReservationMemberSource = z.enum(['SEARCH', 'INVITATION_CODE']);
+const ViewMyReservationSortBy = z.enum([
+  'time',
+  'stadium_name',
+  'venue_name',
+  'is_manager',
+  'vacancy',
+  'status',
+]);
+const ViewMyReservationParams = z
+  .object({
+    account_id: z.number().int(),
+    is_manager: z.union([z.boolean(), z.null()]).optional(),
+    time_ranges: z.union([z.array(DateTimeRange), z.null()]).optional(),
+    has_vacancy: z.union([z.boolean(), z.null()]).optional(),
+    member_status: z.union([ReservationMemberStatus, z.null()]).optional(),
+    reservation_status: z.union([ReservationStatus, z.null()]).optional(),
+    source: z.union([ReservationMemberSource, z.null()]).optional(),
+    sort_by: ViewMyReservationSortBy.optional().default('time'),
+    order: Sorter.optional().default('DESC'),
+    limit: z.number().int().gt(0).lt(50).optional().default(10),
+    offset: z.number().int().gte(0).optional(),
+  })
+  .passthrough();
+const ViewMyReservation = z
+  .object({
+    reservation_id: z.number().int(),
+    start_time: z.string().datetime({ offset: true }),
+    end_time: z.string().datetime({ offset: true }),
+    stadium_name: z.string(),
+    venue_name: z.string(),
+    is_manager: z.boolean(),
+    manager_name: z.string(),
+    vacancy: z.number().int(),
+    status: ReservationStatus,
+  })
+  .passthrough();
+const ViewMyReservationOutput = z
+  .object({
+    data: z.array(ViewMyReservation),
+    total_count: z.number().int(),
+    limit: z.number().int(),
+    offset: z.number().int(),
+  })
+  .passthrough();
+const Response_ViewMyReservationOutput_ = z
+  .object({
+    data: z.union([ViewMyReservationOutput, z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
+  })
+  .partial()
+  .passthrough();
 const ViewProviderStadiumSortBy = z.enum([
   'district_name',
   'stadium_name',
   'venue_count',
   'is_published',
 ]);
-const sort_by__3 = ViewProviderStadiumSortBy.optional().default('district_name');
+const sort_by__2 = ViewProviderStadiumSortBy.optional().default('district_name');
 const order__2 = Sorter.optional().default('ASC');
 const ViewProviderStadium = z
   .object({
@@ -526,7 +580,7 @@ const ViewProviderVenueSortBy = z.enum([
   'area',
   'is_published',
 ]);
-const sort_by__4 = ViewProviderVenueSortBy.optional().default('stadium_name');
+const sort_by__3 = ViewProviderVenueSortBy.optional().default('stadium_name');
 const ViewProviderVenue = z
   .object({
     venue_id: z.number().int(),
@@ -553,7 +607,7 @@ const Response_ViewProviderVenueOutput_ = z
   .partial()
   .passthrough();
 const ViewProviderCourtSortBy = z.enum(['stadium_name', 'venue_name', 'number', 'is_published']);
-const sort_by__5 = ViewProviderCourtSortBy.optional().default('stadium_name');
+const sort_by__4 = ViewProviderCourtSortBy.optional().default('stadium_name');
 const ViewProviderCourt = z
   .object({
     court_id: z.number().int(),
@@ -626,6 +680,8 @@ export const schemas = {
   AddStadiumInput,
   AddStadiumOutput,
   Response_AddStadiumOutput_,
+  ValidateAddressOutput,
+  Response_ValidateAddressOutput_,
   City,
   Response_Sequence_City__,
   stadium_id,
@@ -638,6 +694,9 @@ export const schemas = {
   Venue,
   BrowseVenueOutput,
   Response_BrowseVenueOutput_,
+  AddVenueInput,
+  AddVenueOutput,
+  Response_AddVenueOutput_,
   Response_Venue_,
   EditVenueInput,
   Court,
@@ -657,12 +716,6 @@ export const schemas = {
   Reservation,
   BrowseReservationOutput,
   Response_BrowseReservationOutput_,
-  ViewMyReservationSortBy,
-  sort_by__2,
-  ReservationStatus,
-  ViewMyReservation,
-  ViewMyReservationOutput,
-  Response_ViewMyReservationOutput_,
   Response_Reservation_,
   EditReservationInput,
   app__processor__http__court__BrowseReservationParameters,
@@ -672,19 +725,27 @@ export const schemas = {
   EditCourtInput,
   AddCourtInput,
   Response_Sequence_BusinessHour__,
+  ReservationMemberStatus,
+  ReservationStatus,
+  ReservationMemberSource,
+  ViewMyReservationSortBy,
+  ViewMyReservationParams,
+  ViewMyReservation,
+  ViewMyReservationOutput,
+  Response_ViewMyReservationOutput_,
   ViewProviderStadiumSortBy,
-  sort_by__3,
+  sort_by__2,
   order__2,
   ViewProviderStadium,
   ViewProviderStadiumOutput,
   Response_ViewProviderStadiumOutput_,
   ViewProviderVenueSortBy,
-  sort_by__4,
+  sort_by__3,
   ViewProviderVenue,
   ViewProviderVenueOutput,
   Response_ViewProviderVenueOutput_,
   ViewProviderCourtSortBy,
-  sort_by__5,
+  sort_by__4,
   ViewProviderCourt,
   ViewProviderCourtOutput,
   Response_ViewProviderCourtOutput_,
@@ -1375,6 +1436,32 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
   },
   {
     method: 'post',
+    path: '/api/reservation/reject-invitation',
+    alias: 'reject_invitation_api_reservation_reject_invitation_post',
+    requestFormat: 'json',
+    parameters: [
+      {
+        name: 'reservation_id',
+        type: 'Query',
+        schema: z.number().int(),
+      },
+      {
+        name: 'auth-token',
+        type: 'Header',
+        schema: auth_token,
+      },
+    ],
+    response: Response,
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
+  },
+  {
+    method: 'post',
     path: '/api/reset-password',
     alias: 'reset_password_api_reset_password_post',
     requestFormat: 'json',
@@ -1512,7 +1599,7 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
         schema: z.string(),
       },
     ],
-    response: Response_bool_,
+    response: Response_ValidateAddressOutput_,
     errors: [
       {
         status: 422,
@@ -1569,6 +1656,32 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
       },
     ],
     response: Response_BrowseVenueOutput_,
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
+  },
+  {
+    method: 'post',
+    path: '/api/venue',
+    alias: 'add_venue_api_venue_post',
+    requestFormat: 'json',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: AddVenueInput,
+      },
+      {
+        name: 'auth-token',
+        type: 'Header',
+        schema: auth_token,
+      },
+    ],
+    response: Response_AddVenueOutput_,
     errors: [
       {
         status: 422,
@@ -1674,7 +1787,7 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
       {
         name: 'sort_by',
         type: 'Query',
-        schema: sort_by__5,
+        schema: sort_by__4,
       },
       {
         name: 'order',
@@ -1708,6 +1821,32 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
   },
   {
     method: 'post',
+    path: '/api/view/my-reservation',
+    alias: 'view_my_reservation_api_view_my_reservation_post',
+    requestFormat: 'json',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: ViewMyReservationParams,
+      },
+      {
+        name: 'auth-token',
+        type: 'Header',
+        schema: auth_token,
+      },
+    ],
+    response: Response_ViewMyReservationOutput_,
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
+  },
+  {
+    method: 'post',
     path: '/api/view/reservation',
     alias: 'browse_reservation_api_view_reservation_post',
     requestFormat: 'json',
@@ -1719,52 +1858,6 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
       },
     ],
     response: Response_BrowseReservationOutput_,
-    errors: [
-      {
-        status: 422,
-        description: `Validation Error`,
-        schema: HTTPValidationError,
-      },
-    ],
-  },
-  {
-    method: 'get',
-    path: '/api/view/reservation',
-    alias: 'view_my_reservation_api_view_reservation_get',
-    requestFormat: 'json',
-    parameters: [
-      {
-        name: 'account_id',
-        type: 'Query',
-        schema: z.number().int(),
-      },
-      {
-        name: 'sort_by',
-        type: 'Query',
-        schema: sort_by__2,
-      },
-      {
-        name: 'order',
-        type: 'Query',
-        schema: order,
-      },
-      {
-        name: 'limit',
-        type: 'Query',
-        schema: z.number().int().optional().default(10),
-      },
-      {
-        name: 'offset',
-        type: 'Query',
-        schema: z.number().int().optional(),
-      },
-      {
-        name: 'auth-token',
-        type: 'Header',
-        schema: auth_token,
-      },
-    ],
-    response: Response_ViewMyReservationOutput_,
     errors: [
       {
         status: 422,
@@ -1797,7 +1890,7 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
       {
         name: 'sort_by',
         type: 'Query',
-        schema: sort_by__3,
+        schema: sort_by__2,
       },
       {
         name: 'order',
@@ -1848,7 +1941,7 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
       {
         name: 'sort_by',
         type: 'Query',
-        schema: sort_by__4,
+        schema: sort_by__3,
       },
       {
         name: 'order',

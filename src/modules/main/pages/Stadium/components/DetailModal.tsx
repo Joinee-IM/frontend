@@ -8,13 +8,16 @@ import type { Type } from '@/utils/type';
 import { RippleButton } from '@/components';
 import GridForm from '@/components/GridForm';
 import { Tag, TagWrapper } from '@/modules/main/pages/Stadium/components/ListItem';
+import { useStadiumInfo } from '@/modules/main/pages/Stadium/services';
+import { useAlbum } from '@/services/useAlbum';
 
-type DetailModalProps = Type<typeof Modal>;
+interface DetailModalProps extends Type<typeof Modal> {
+  stadiumId: number;
+}
 
 const ModalTitle = styled.div`
   font-size: 18px;
   font-weight: 500;
-  border-bottom: 1px solid ${({ theme }) => theme.gray[300]};
 `;
 
 const AlbumWrapper = styled.div`
@@ -37,7 +40,26 @@ const ButtonWrapper = styled.div`
   column-gap: 8px;
 `;
 
-export default function DetailModal({ open, onCancel }: DetailModalProps) {
+const TimeGrid = styled.div`
+  display: grid;
+  grid-template-columns: auto;
+  align-items: center;
+  row-gap: 10px;
+`;
+
+const Label = styled.div`
+  grid-column: 1 / 2;
+  align-self: baseline;
+  padding-right: 1em;
+`;
+
+const Time = styled.div`
+  grid-column: 2 / 3;
+`;
+
+export default function DetailModal({ open, onCancel, stadiumId }: DetailModalProps) {
+  const { data: info, isFetching } = useStadiumInfo(stadiumId);
+  const { data: album } = useAlbum(stadiumId, 'STADIUM');
   const navigate = useNavigate();
   const Footer = useMemo(
     () => (
@@ -45,59 +67,55 @@ export default function DetailModal({ open, onCancel }: DetailModalProps) {
         <RippleButton category="outlined" palette="gray">
           關閉
         </RippleButton>
-        <RippleButton category="solid" palette="main" onClick={() => navigate('/stadium/1/venue')}>
+        <RippleButton
+          category="solid"
+          palette="main"
+          onClick={() => navigate(`/stadium/${stadiumId}/venue`)}
+        >
           前往選擇場地
         </RippleButton>
       </ButtonWrapper>
     ),
-    [navigate],
+    [navigate, stadiumId],
   );
+
+  if (isFetching) return <></>;
 
   return (
     <Modal
-      title={<ModalTitle>臺大體育館</ModalTitle>}
+      title={<ModalTitle>{info?.data?.name}</ModalTitle>}
       centered
       open={open}
       footer={Footer}
       onCancel={onCancel}
+      closable={false}
       style={{ overflow: 'scroll', maxHeight: '90vh' }}
     >
       <GridForm
         data={{
-          地址: '臺北市大安區羅斯福路四段 1 號',
-          營業時間: '週一至週日 08:00-18:00',
+          地址: info?.data?.address,
+          營業時間: (
+            <TimeGrid>
+              <Label>週一</Label>
+              <Time>08:00-10:00・08:00-10:00・08:00-10:00・08:00-10:00</Time>
+            </TimeGrid>
+          ),
           提供的運動項目: (
             <TagWrapper>
-              <Tag>羽球</Tag>
-              <Tag>桌球</Tag>
+              {info?.data?.sports?.map((tag, index) => <Tag key={index}>{tag}</Tag>)}
             </TagWrapper>
           ),
-          連絡電話: '02-27618235',
-          簡介: '你好，這是臺大體育館，歡迎你來這邊運動，我們這邊應有盡有，快來這邊大顯身手，羽球與桌球健將們。',
+          連絡電話: info?.data?.contact_number,
+          簡介: info?.data?.description,
           相簿: '',
         }}
-        labelStyles={{ 簡介: { alignSelf: 'baseline' } }}
-        style={{ padding: '5px 0px 10px' }}
+        labelStyles={{ 營業時間: { alignSelf: 'baseline' }, 簡介: { alignSelf: 'baseline' } }}
+        style={{ padding: '20px 0px' }}
       />
       <AlbumWrapper>
-        <ImagePreview
-          src={`https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png`}
-          placeholder={
-            <ImagePreview
-              preview={false}
-              src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png?x-oss-process=image/blur,r_50,s_50/quality,q_1/resize,m_mfit,h_200,w_200"
-            />
-          }
-        />
-        <ImagePreview
-          src={`https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png`}
-          placeholder={
-            <ImagePreview
-              preview={false}
-              src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png?x-oss-process=image/blur,r_50,s_50/quality,q_1/resize,m_mfit,h_200,w_200"
-            />
-          }
-        />
+        {album?.data?.map(({ url }, index) => (
+          <ImagePreview key={index} src={url} placeholder={<ImagePreview preview={false} />} />
+        ))}
       </AlbumWrapper>
     </Modal>
   );

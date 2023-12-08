@@ -31,3 +31,6 @@ export const useBrowseStadium = (params: BrowseParamsProps) => {
   );
   return { stadiums: data?.pages.flatMap((page) => page.data?.data ?? []), ...rest };
 };
+
+export const useStadiumInfo = (stadium_id: number) =>
+  api.useGet('/api/stadium/:stadium_id', { params: { stadium_id } }, { enabled: !!stadium_id });

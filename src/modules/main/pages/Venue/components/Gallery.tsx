@@ -87,6 +87,7 @@ export default function Gallery({ children }: GalleryProps) {
           <Select title={'開放預約'} items={[]}></Select>
         </>
       }
+      searchable={false}
     >
       <GalleryContent>
         {range(9).map((m) => (

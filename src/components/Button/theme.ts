@@ -8,6 +8,25 @@ type Element = 'background' | 'border' | 'text';
 type MouseEvent = 'normal' | 'hover' | 'active';
 
 export const buttonTheme = {
+  icon: {
+    main: {
+      normal: {
+        background: ColorTheme.main[500],
+        text: ColorTheme.white,
+      },
+      hover: { background: ColorTheme.main[300] },
+      active: { background: ColorTheme.main[700] },
+    },
+    gray: {
+      normal: {
+        background: 'transparent',
+        text: ColorTheme.gray['700'],
+        border: 'transparent',
+      },
+      hover: { background: ColorTheme.gray[300] },
+      active: { background: ColorTheme.gray[500] },
+    },
+  },
   solid: {
     main: {
       normal: {
@@ -24,14 +43,6 @@ export const buttonTheme = {
       },
       hover: { background: ColorTheme.sub[300] },
       active: { background: ColorTheme.sub[700] },
-    },
-    gray: {
-      normal: {
-        background: ColorTheme.main[500],
-        text: ColorTheme.white,
-      },
-      hover: { background: ColorTheme.main[300] },
-      active: { background: ColorTheme.main[700] },
     },
   },
   outlined: {
@@ -113,7 +124,7 @@ export const buttonTheme = {
     },
   },
 } satisfies Record<
-  'solid' | 'outlined' | 'link',
+  'solid' | 'outlined' | 'link' | 'icon',
   Record<string, Record<MouseEvent, { [x in Element]?: HEX | 'transparent' }>>
 >;
 

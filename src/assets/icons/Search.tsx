@@ -1,4 +1,6 @@
-export default function SearchIcon({ style, ...rest }: React.ComponentProps<'svg'>) {
+import type { Type } from '@/utils/type';
+
+export default function SearchIcon({ style, ...rest }: Type<'svg'>) {
   return (
     <svg
       width="1em"

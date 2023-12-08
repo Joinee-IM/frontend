@@ -1,4 +1,3 @@
-import { CloseOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import { useState } from 'react';
 import styled from 'styled-components';
@@ -6,16 +5,28 @@ import styled from 'styled-components';
 import type { Type } from '@/utils/type';
 import type { Dispatch, ReactNode, SetStateAction } from 'react';
 
+import CloseIcon from '@/assets/icons/Close';
 import FilterIcon from '@/assets/icons/Filter';
 import SearchIcon from '@/assets/icons/Search';
+import { RippleButton } from '@/components/Button';
 
-interface FilterProps<T extends true | false> extends Type<typeof ToolBarWrapper> {
+interface FilterProps extends Type<typeof ToolBarWrapper> {
   filters: ReactNode;
   onClose?: () => void;
-  searchable: T;
-  onSearch: T extends true ? (word?: string) => void : null;
-  word: T extends true ? string | undefined : null;
-  setWord: T extends true ? Dispatch<SetStateAction<string | undefined>> : null;
+}
+
+interface UnSearchableFilterProps extends FilterProps {
+  onSearch?: null;
+  word?: null;
+  setWord?: null;
+  searchable?: false;
+}
+
+interface SearchableFilterProps extends FilterProps {
+  onSearch: (word?: string) => void;
+  word: string | undefined;
+  setWord: Dispatch<SetStateAction<string | undefined>>;
+  searchable: true;
 }
 
 const ToolBarWrapper = styled.div`
@@ -56,14 +67,11 @@ const IconWrapper = styled.div`
 `;
 
 const SearchWrapper = styled.div`
-  * {
-    padding-left: 7px;
-  }
   align-items: center;
   display: flex;
 `;
 
-export default function Filter<T extends true | false>({
+export default function Filter({
   children,
   filters,
   onClose,
@@ -71,9 +79,8 @@ export default function Filter<T extends true | false>({
   searchable,
   word,
   setWord,
-}: FilterProps<T>) {
+}: UnSearchableFilterProps | SearchableFilterProps) {
   const [filterOpen, setFilterOpen] = useState(false);
-  const [search, setSearch] = useState<string | undefined>(undefined);
 
   return (
     <ToolBarWrapper>
@@ -81,10 +88,17 @@ export default function Filter<T extends true | false>({
         <FilterWrapper visible={filterOpen}>{filters}</FilterWrapper>
         <IconWrapper>
           {!filterOpen ? (
-            <FilterIcon fontSize="20px" cursor="pointer" onClick={() => setFilterOpen(true)} />
+            <RippleButton
+              category="icon"
+              palette="gray"
+              icon={<FilterIcon fontSize="1.5em" />}
+              onClick={() => setFilterOpen(true)}
+            />
           ) : (
-            <CloseOutlined
-              style={{ cursor: 'pointer' }}
+            <RippleButton
+              category="icon"
+              palette="gray"
+              icon={<CloseIcon fontSize="1.5em" />}
               onClick={() => {
                 setFilterOpen(false);
                 onClose?.();
@@ -93,8 +107,13 @@ export default function Filter<T extends true | false>({
           )}
           {searchable && (
             <SearchWrapper>
-              <SearchIcon fontSize="24px" cursor="pointer" onClick={() => setSearch('')} />
-              {search !== undefined && (
+              <RippleButton
+                category="icon"
+                palette="gray"
+                icon={<SearchIcon fontSize="2em" />}
+                onClick={() => setWord((prev) => (prev === undefined ? '' : undefined))}
+              />
+              {word !== undefined && (
                 <Input
                   value={word ?? undefined}
                   onChange={(e) => setWord?.(e.target.value)}

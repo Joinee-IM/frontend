@@ -1,17 +1,22 @@
 import { GoogleMap, InfoWindowF, MarkerF, useLoadScript } from '@react-google-maps/api';
+import { Modal } from 'antd';
+import { getDay, parse } from 'date-fns';
 import { debounce } from 'lodash';
 import { median } from 'mathjs';
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import BallIcon from '@/assets/icons/Ball';
 import BuildingIcon from '@/assets/icons/Building';
+import CalendarIcon from '@/assets/icons/Calendar';
 import PositionIcon from '@/assets/icons/Position';
+import { ButtonWrapper, RippleButton } from '@/components';
+import DateTimePicker, { useDateTimePicker } from '@/components/DateTimePicker';
 import Loading from '@/components/Loading';
 import Select from '@/components/Select';
+import useElement, { useResizeObserver, useScrollObserver } from '@/hooks/useElement';
 import useError from '@/hooks/useError';
-import useResizeObserver from '@/hooks/useResizeObserver';
-import useScrollObserver from '@/hooks/useScrollObserver';
+import useFilter from '@/hooks/useFilter';
 import { Container, PageTitle } from '@/modules/main/components';
 import Filter from '@/modules/main/components/Filter';
 import DetailModal from '@/modules/main/pages/Stadium/components/DetailModal';
@@ -60,41 +65,56 @@ const LoadingWrapper = styled.div.withConfig({
 `;
 
 export default function Stadium() {
-  const [city, setCity] = useState<number | undefined>(undefined);
-  const [district, setDistrict] = useState<number | undefined>(undefined);
-  const [sport, setSport] = useState<number | undefined>(undefined);
+  const {
+    city,
+    setCity,
+    district,
+    setDistrict,
+    sport,
+    setSport,
+    name,
+    setName,
+    timeRanges,
+    setTimeRanges,
+    clear,
+  } = useFilter();
+  const { width, setWidth, height, setHeight, top, setTop, left, setLeft, element } = useElement();
   const [word, setWord] = useState<string | undefined>(undefined);
-  const [name, setName] = useState<string | undefined>(undefined);
   const { data: cities, isLoading: loadingCity } = useCity();
   const { data: districts, isLoading: loadingDistrict } = useDistrict(city ?? 0);
   const { data: sports } = useSports();
-
-  const [width, setWidth] = useState(0);
-  const [height, setHeight] = useState(0);
-  const [top, setTop] = useState(0);
-  const [left, setLeft] = useState(0);
-  const element = useRef<HTMLDivElement>(null);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [stadiumId, setStadiumId] = useState(0);
+  const {
+    date,
+    setDate,
+    focus,
+    setFocus,
+    times,
+    setTimes,
+    clear: clearCalendar,
+  } = useDateTimePicker();
 
   const clearFilter = () => {
-    setCity(undefined);
-    setDistrict(undefined);
-    setSport(undefined);
     setWord(undefined);
-    setName(undefined);
+    clearCalendar();
+    clear();
   };
 
   useResizeObserver(element.current, (e) => {
-    setWidth(e.target.getBoundingClientRect().width);
-    setHeight(e.target.getBoundingClientRect().height);
-    setTop(e.target.getBoundingClientRect().top);
-    setLeft(e.target.getBoundingClientRect().left);
+    const style = e.target.getBoundingClientRect();
+    setWidth(style.width);
+    setHeight(style.height);
+    setTop(style.top);
+    setLeft(style.left);
   });
 
   useScrollObserver(element.current, (e) => {
-    setWidth(e.target.getBoundingClientRect().width);
-    setHeight(e.target.getBoundingClientRect().height);
-    setTop(e.target.getBoundingClientRect().top);
-    setLeft(e.target.getBoundingClientRect().left);
+    const style = e.target.getBoundingClientRect();
+    setWidth(style.width);
+    setHeight(style.height);
+    setTop(style.top);
+    setLeft(style.left);
   });
 
   const { isLoaded } = useLoadScript({
@@ -107,6 +127,7 @@ export default function Stadium() {
     district_id: district,
     sport_id: sport,
     name,
+    time_ranges: timeRanges,
   });
   const onLoad = (map: google.maps.Map) => {
     const bounds = new google.maps.LatLngBounds();
@@ -138,7 +159,7 @@ export default function Stadium() {
             void fetchNextPage();
           }
       }, 200),
-    [fetchNextPage, hasNextPage],
+    [element, fetchNextPage, hasNextPage],
   );
 
   useEffect(() => {
@@ -147,12 +168,43 @@ export default function Stadium() {
     return () => {
       target?.removeEventListener('scroll', scrollToEnd);
     };
-  }, [scrollToEnd]);
+  }, [element, scrollToEnd]);
 
   const { context } = useError(
     stadiums?.length ?? !isFetched ? null : new Error('NoMatch'),
     { NoMatch: '沒有符合條件的場館' },
     clearFilter,
+  );
+
+  const Footer = useMemo(
+    () => (
+      <ButtonWrapper>
+        <RippleButton category="outlined" palette="gray" onClick={clearCalendar}>
+          清除
+        </RippleButton>
+        <RippleButton
+          category="solid"
+          palette="main"
+          onClick={() => {
+            setTimeRanges(
+              Object.entries(times)
+                .map(([date, times]) =>
+                  times.map((time) => ({
+                    weekday: getDay(parse(date, 'yyyy/MM/dd', new Date())),
+                    start_time: time.split('-')[0],
+                    end_time: time.split('-')[1],
+                  })),
+                )
+                .flat(),
+            );
+            setCalendarOpen(false);
+          }}
+        >
+          篩選時間
+        </RippleButton>
+      </ButtonWrapper>
+    ),
+    [clearCalendar, setTimeRanges, times],
   );
 
   return (
@@ -195,6 +247,25 @@ export default function Stadium() {
                 }))}
                 onSelect={({ key }) => setSport(Number(key))}
               />
+              {' ・ '}
+              <RippleButton
+                category="icon"
+                palette="gray"
+                icon={<CalendarIcon fontSize="0.5em" />}
+                onClick={() => setCalendarOpen(true)}
+              />
+              <Modal
+                centered
+                open={calendarOpen}
+                footer={Footer}
+                onCancel={() => setCalendarOpen(false)}
+                width={'fit-content'}
+                closable={false}
+              >
+                <DateTimePicker
+                  {...{ date, setDate, focus, setFocus, times, setTimes }}
+                ></DateTimePicker>
+              </Modal>
             </>
           }
           onClose={clearFilter}
@@ -250,7 +321,10 @@ export default function Stadium() {
                     times={business_hours}
                     tags={sports}
                     stadium_id={id}
-                    onClick={() => setModalOpen(true)}
+                    onClick={() => {
+                      setModalOpen(true);
+                      setStadiumId(id);
+                    }}
                   />
                   <div style={{ width: '100%', height: '1px', backgroundColor: theme.gray[100] }} />
                 </Fragment>
@@ -258,7 +332,7 @@ export default function Stadium() {
             </ListContainer>
           </ContentContainer>
         </Filter>
-        <DetailModal open={modalOpen} onCancel={() => setModalOpen(false)} />
+        <DetailModal stadiumId={stadiumId} open={modalOpen} onCancel={() => setModalOpen(false)} />
       </Container>
     </>
   );
