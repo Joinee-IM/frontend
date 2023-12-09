@@ -30,7 +30,7 @@ export default function Login() {
   const { mutate: login, error, isLoading } = useLogin();
   const { googleLogin } = useGoogleLogin();
   const navigate = useNavigate();
-  const [, setCookie] = useCookies(['auth-token', 'id']);
+  const [, setCookie] = useCookies(['id']);
 
   const { context } = useError(error, undefined, () => {
     if (error?.message === 'LoginFailed')
@@ -53,7 +53,6 @@ export default function Login() {
         { email, password },
         {
           onSuccess(data) {
-            setCookie('auth-token', data.data?.token, { path: '/' });
             setCookie('id', data.data?.account_id, { path: '/' });
             navigate('/');
           },

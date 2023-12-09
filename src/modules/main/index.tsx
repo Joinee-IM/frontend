@@ -1,5 +1,7 @@
 import { BellOutlined, UserOutlined } from '@ant-design/icons';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useCookies } from 'react-cookie';
+import { Outlet, useNavigate, useSearchParams } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
 import Background from '@/assets/background.jpg';
@@ -74,7 +76,16 @@ const ScrollContainer = styled.div`
 export default function Main() {
   const navigate = useNavigate();
   const { user } = useUser();
+  const [, setCookie] = useCookies(['id']);
+  const [searchParams] = useSearchParams();
+  const account_id = searchParams.get('account_id') as unknown as number;
   useClick();
+  useEffect(() => {
+    if (account_id) {
+      setCookie('id', account_id, { path: '/' });
+    }
+    navigate('/');
+  }, [account_id, navigate, setCookie]);
 
   return (
     <Container>

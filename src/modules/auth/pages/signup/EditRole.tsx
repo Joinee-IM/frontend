@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { z } from 'zod';
 
@@ -58,16 +58,11 @@ export type Role = z.infer<(typeof schemas)['RoleType']> | undefined;
 export default function ChooseMember() {
   const [role, setRole] = useState<Role>(undefined);
   const navigate = useNavigate();
-  const getCookieValue = (name: string) => {
-    const regex = new RegExp(`(^| )${name}=([^;]+)`);
-    const match = document.cookie.match(regex);
-    if (match) {
-      return match[2];
-    }
-  };
-  const { mutate } = useEditAccount(Number(getCookieValue('account_id')));
+  const { account_id } = useParams();
+  const { mutate } = useEditAccount(Number(account_id));
+
   const handleClick = () => {
-    mutate({ role }, { onSuccess: () => navigate('/') });
+    mutate({ role }, { onSuccess: () => navigate(`/?account_id=${account_id}`) });
   };
   return (
     <Card>

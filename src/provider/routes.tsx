@@ -13,8 +13,9 @@ const router = createBrowserRouter([
     loader: ({ request }) => {
       // const [searchParams] = useSearchParams();
       const error = new URL(request.url).searchParams.get('error');
+      const account_id = new URL(request.url).searchParams.get('account_id');
       if (error === 'LoginFailed') {
-        return redirect('/auth/signup/edit-role');
+        return redirect(`/auth/signup/edit-role/${account_id}`);
       }
       return null;
     },
