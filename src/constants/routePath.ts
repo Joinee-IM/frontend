@@ -31,6 +31,7 @@ export const ROUTES = {
       'send-mail': 'send-mail',
       success: 'success',
       'more-info': 'more-info',
+      'edit-role': 'edit-role',
     },
     forgetPassword: {
       route: 'forget-password',

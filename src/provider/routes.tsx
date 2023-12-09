@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom';
 
 import { routePath } from '@/constants';
 import viewPath from '@/view/route';
@@ -9,6 +9,14 @@ const router = createBrowserRouter([
     async lazy() {
       const Main = await import('@/modules/main');
       return { Component: Main.default };
+    },
+    loader: ({ request }) => {
+      // const [searchParams] = useSearchParams();
+      const error = new URL(request.url).searchParams.get('error');
+      if (error === 'LoginFailed') {
+        return redirect('/auth/signup/edit-role');
+      }
+      return null;
     },
     children: [
       {
@@ -88,6 +96,13 @@ const router = createBrowserRouter([
             path: routePath('auth.signup.success'),
             async lazy() {
               const { Success: Component } = await import('@/modules/auth');
+              return { Component };
+            },
+          },
+          {
+            path: routePath('auth.signup.edit-role'),
+            async lazy() {
+              const { EditRole: Component } = await import('@/modules/auth');
               return { Component };
             },
           },
