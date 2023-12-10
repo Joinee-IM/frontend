@@ -9,9 +9,10 @@ type BrowseParamsProps = Exclude<
 >;
 
 export const useBrowseHistory = (account_id: number, params: BrowseParamsProps) => {
-  const { data, ...rest } = api.useInfiniteQuery(
+  const { data, ...rest } = api.useImmutableInfiniteQuery(
     '/api/view/my-reservation',
-    { queries: { account_id, ...params } },
+    { account_id, ...params },
+    undefined,
     {
       getPageParamList: () => ['limit', 'offset'],
       getNextPageParam: (last) => {

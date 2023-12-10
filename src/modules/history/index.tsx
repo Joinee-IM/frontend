@@ -44,34 +44,6 @@ export default function History() {
     {
       title: '場館名稱',
       dataIndex: 'stadium_name',
-      // filters: [
-      //   {
-      //     text: 'Joe',
-      //     value: 'Joe',
-      //   },
-      //   {
-      //     text: 'Jim',
-      //     value: 'Jim',
-      //   },
-      //   {
-      //     text: 'Submenu',
-      //     value: 'Submenu',
-      //     children: [
-      //       {
-      //         text: 'Green',
-      //         value: 'Green',
-      //       },
-      //       {
-      //         text: 'Black',
-      //         value: 'Black',
-      //       },
-      //     ],
-      //   },
-      // ],
-      // specify the condition of filtering result
-      // here is that finding the name started with `value`
-      // onFilter: (value: string, record) => record.name.startsWith(value),
-      // sorter: (a, b) => a.name.length - b.name.length,
       sorter: (a, b) => a.stadium_name.localeCompare(b.stadium_name),
     },
     {
@@ -84,6 +56,17 @@ export default function History() {
       dataIndex: 'is_manager',
       render: (_, { is_manager }) => <div>{is_manager ? '主揪' : '成員'}</div>,
       sorter: (a, b) => Number(a.is_manager) - Number(b.is_manager),
+      filters: [
+        {
+          text: '主揪',
+          value: true,
+        },
+        {
+          text: '成員',
+          value: 'false',
+        },
+      ],
+      onFilter: (value, record) => record.is_manager === value,
     },
     {
       title: '徵球友',
@@ -106,27 +89,6 @@ export default function History() {
         </a>
       ),
     },
-    // {
-    //   title: 'Age',
-    //   dataIndex: 'age',
-    //   defaultSortOrder: 'descend',
-    //   // sorter: (a, b) => a.age - b.age,
-    // },
-    // {
-    //   title: 'Address',
-    //   dataIndex: 'address',
-    //   filters: [
-    //     {
-    //       text: 'London',
-    //       value: 'London',
-    //     },
-    //     {
-    //       text: 'New York',
-    //       value: 'New York',
-    //     },
-    //   ],
-    //   // onFilter: (value: string, record) => record.address.startsWith(value),
-    // },
   ];
 
   const data = histories?.map((history) => ({
