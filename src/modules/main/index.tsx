@@ -84,8 +84,8 @@ export default function Main() {
   useEffect(() => {
     if (account_id) {
       setCookie('id', account_id, { path: '/' });
+      navigate('/');
     }
-    navigate('/');
   }, [account_id, navigate, setCookie]);
 
   return (
