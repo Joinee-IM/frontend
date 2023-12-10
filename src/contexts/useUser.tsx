@@ -27,10 +27,10 @@ export interface UserProps {
 export const UserProvider = memo(function UserProvider({ children }: UserProps) {
   const [user, setUser] = useState<UserPropsType>(undefined);
   const value = useMemo(() => ({ user, setUser }), [user, setUser]);
-  const [cookies] = useCookies(['auth-token', 'id']);
+  const [cookies] = useCookies(['id']);
 
   useEffect(() => {
-    if (cookies['auth-token']) setUser({ login: true, accountId: Number(cookies.id) });
+    if (cookies.id) setUser({ login: true, accountId: Number(cookies.id) });
   }, [cookies]);
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

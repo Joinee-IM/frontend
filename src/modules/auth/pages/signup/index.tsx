@@ -3,7 +3,7 @@ import Link from 'antd/es/typography/Link';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-import type { Role } from '@/modules/auth/pages/signup/ChooseRole';
+import type { Role } from '@/modules/auth/pages/signup/Role';
 import type { Rule } from 'antd/es/form';
 
 import Google from '@/assets/google.png';

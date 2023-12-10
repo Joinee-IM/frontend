@@ -26,7 +26,7 @@ export const ROUTES = {
     login: 'login',
     signup: {
       route: 'signup',
-      'choose-role': 'choose-role',
+      role: 'role/:mode',
       account: 'account',
       'send-mail': 'send-mail',
       success: 'success',
