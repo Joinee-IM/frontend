@@ -30,9 +30,8 @@ export default function useTimeSlotDrag(
   };
 
   useEffect(() => {
-    setCells(init);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [init.length]);
+    setCells((prev) => (prev.flat().length === init.flat().length ? prev : init));
+  }, [init]);
 
   const handleUnitMouseDown = (x: number, y: number) => {
     if (mode === 'straight') {

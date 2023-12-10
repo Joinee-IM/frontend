@@ -1,22 +1,39 @@
+import { Modal, Radio } from 'antd';
+import { eachDayOfInterval, endOfWeek, format, startOfWeek } from 'date-fns';
+import { AnimatePresence } from 'framer-motion';
+import { useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-import Temp from '@/assets/stadium.jpeg';
-import GridForm from '@/components/GridForm';
+import { LeftArrowIcon, RightArrowIcon } from '@/assets/icons/Arrow';
+import CalendarIcon from '@/assets/icons/Calendar';
+import FireIcon from '@/assets/icons/Fire';
+import { ButtonWrapper, RippleButton } from '@/components/Button';
+import DateTimePicker, { useDateTimePicker } from '@/components/DateTimePicker';
+import GridForm from '@/components/Grid/FormGrid';
 import { TabPane, Tabs } from '@/components/Tab';
-import { SquareTag } from '@/components/Tag';
+import { RoundTag, RoundTagWrapper, SquareTag } from '@/components/Tag';
 import TimeSlot from '@/components/TimeSlot';
 import useDeviceDetector from '@/hooks/useDeviceDetector';
+import useTimeSlotDrag from '@/hooks/useTimeSlotDrag';
+import LoadingPage from '@/modules/Loading';
 import { AlbumWrapper, ImagePreview } from '@/modules/main/pages/Stadium/components/DetailModal';
-import { Tag, TagWrapper } from '@/modules/main/pages/Stadium/components/ListItem';
+import { useStadiumInfo } from '@/modules/main/pages/Stadium/services';
+import { useVenueCourts, useVenueInfo } from '@/modules/main/pages/Venue/services';
+import { useAlbum, useBusinessHour } from '@/services/useInfo';
 import { hexToRgb } from '@/utils';
-import { backgroundCenter } from '@/utils/css';
+import { backgroundCenter, percentageOfFigma } from '@/utils/css';
+import toFeeType from '@/utils/function/map/toFeeType';
+import { BusinessHours } from '@/utils/function/time';
 
-const Background = styled.div`
+const Background = styled.div.withConfig({
+  shouldForwardProp: (prop) => !['image'].includes(prop),
+})<{ image?: string }>`
   width: 100%;
   height: clamp(200px, 25%, 280px);
   padding: 0 10%;
   box-sizing: border-box;
-  background-image: url(${Temp});
+  background-image: ${({ image }) => `url(${image})`};
   ${backgroundCenter}
   position: relative;
   &::before {
@@ -36,18 +53,22 @@ const TitleWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  padding: 10px 0;
+  flex-wrap: wrap;
+  row-gap: 10px;
 `;
 
 const Title = styled.div`
   color: ${({ theme }) => theme.white};
   font-size: 30px;
   font-weight: 600;
-  padding: 10px 0;
+  flex: 1;
+  flex-basis: 80%;
 `;
 
 const ItemTag = styled(SquareTag).withConfig({
   shouldForwardProp: (prop) => !['reservable'].includes(prop),
-})<{ reservable: boolean }>`
+})<{ reservable?: boolean }>`
   background-color: ${({ theme, reservable }) => (reservable ? theme.sub[300] : theme.red[300])};
 `;
 
@@ -63,15 +84,77 @@ const ContentWrapper = styled.div`
   }
 `;
 
+const FilterWrapper = styled.div`
+  grid-column: 2/3;
+  grid-row: 1/2;
+  display: flex;
+  align-items: center;
+  column-gap: ${percentageOfFigma(16).vw};
+`;
+
+const ReservationWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+`;
+
+const TimeSlotWrapper = styled.div`
+  display: grid;
+  grid-template-columns: min-content 1fr min-content;
+  grid-template-rows: repeat(2, auto);
+  gap: 24px;
+  align-items: center;
+  width: 100%;
+`;
+
 export default function Venue() {
   const { isMobile } = useDeviceDetector(800);
+  const { stadium_id, venue_id } = useParams();
+  const { data: stadium, isLoading: fetchingStadium } = useStadiumInfo(Number(stadium_id));
+  const { data: venue, isLoading: fetchingVenue } = useVenueInfo(Number(venue_id));
+  const { data: album, isLoading: fetchingAlbum } = useAlbum(Number(venue_id), 'VENUE');
+  const { data: businessHour, isLoading: fetchingBusiness } = useBusinessHour(
+    Number(venue_id),
+    'VENUE',
+  );
+  const { data: courts } = useVenueCourts(Number(venue_id));
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const { date, setDate, focus, setFocus, times, setTimes } = useDateTimePicker();
+
+  const loading = useMemo(
+    () => fetchingStadium || fetchingVenue || fetchingAlbum || fetchingBusiness,
+    [fetchingAlbum, fetchingBusiness, fetchingStadium, fetchingVenue],
+  );
+
+  const timeRange = useMemo(
+    () => new BusinessHours(businessHour?.data ?? []).largestAvailableTimeRange,
+    [businessHour?.data],
+  );
+  const dates = useMemo(
+    () =>
+      eachDayOfInterval({
+        start: startOfWeek(new Date()),
+        end: endOfWeek(new Date()),
+      }),
+    [],
+  );
+  const { cells, handleUnitMouseDown, handleUnitMouseEnter } = useTimeSlotDrag(
+    dates.map(() => timeRange?.slice(1).map(() => false) ?? []),
+    'straight',
+  );
+
+  const navigate = useNavigate();
 
   return (
     <>
-      <Background>
+      <AnimatePresence>{loading && <LoadingPage />} </AnimatePresence>
+      <Background image={album?.data?.[0].url}>
         <TitleWrapper>
-          <Title>臺大體育館 / 羽球場 A</Title>
-          <ItemTag reservable={false}>173 人使用中</ItemTag>
+          <Title>{`${stadium?.data?.name} / ${venue?.data?.name}`}</Title>
+          <ItemTag reservable={venue?.data?.is_reservable}>
+            <FireIcon fontSize="0.4em" /> {venue?.data?.current_user_count} 人使用中
+          </ItemTag>
         </TitleWrapper>
       </Background>
       <ContentWrapper>
@@ -80,94 +163,104 @@ export default function Venue() {
             <GridForm
               style={{ width: isMobile ? '100%' : 'max(36.5%, 575px)', gap: '20px' }}
               data={{
-                樓層: '3F',
-                場地面積: '2359 平方公尺',
-                可容納人數: '200人',
+                樓層: `${venue?.data?.floor}F`,
+                場地面積: `${venue?.data?.area} 平方公尺`,
+                可容納人數: `${venue?.data?.capacity} 人`,
                 提供的運動項目: (
-                  <TagWrapper>
-                    <Tag>羽球</Tag>
-                    <Tag>桌球</Tag>
-                  </TagWrapper>
+                  <RoundTagWrapper>
+                    <RoundTag>{venue?.data?.sport_name}</RoundTag>
+                  </RoundTagWrapper>
                 ),
-                小單位: '40 個',
-                收費資訊: '300 元/小時',
-                預約開放時間: '租借日的 30 天前',
-                設備: '羽球網 、電梯 、空調 、淋浴室 、活動桌椅 、飲水機 、自動體外心臟電擊去顫器 、羽球電動計分板、無障礙電梯 1 座 、無障礙廁所 2 座',
-                運動器材租借: '羽球拍、羽毛球',
+                小單位: `${venue?.data?.court_count} ${venue?.data?.court_type}`,
+                收費資訊: `${venue?.data?.fee_rate} 元${toFeeType(venue?.data?.fee_type)}`,
+                預約開放時間: `租借日的 ${venue?.data?.reservation_interval} 天前`,
+                設備: venue?.data?.facilities,
+                運動器材租借: venue?.data?.sport_equipments,
               }}
               labelStyles={{ 設備: { alignSelf: 'baseline' } }}
             />
           </TabPane>
           <TabPane index="2" label="預約時段" key="2">
-            <div style={{ ...(isMobile && { maxHeight: '450px' }), overflow: 'scroll' }}>
-              <TimeSlot></TimeSlot>
-            </div>
+            <ReservationWrapper>
+              <TimeSlotWrapper style={{ ...(isMobile && { maxHeight: '450px' }) }}>
+                <FilterWrapper>
+                  <Radio.Group defaultValue={courts?.data?.[0].id} buttonStyle="solid">
+                    {courts?.data?.map((court) => (
+                      <Radio.Button value={court.id} key={court.id}>
+                        {`${court.number} ${venue?.data?.court_type}`}
+                      </Radio.Button>
+                    ))}
+                  </Radio.Group>
+                  {' ・ '}
+                  <RippleButton
+                    category="icon"
+                    palette="gray"
+                    icon={<CalendarIcon fontSize="0.5em" />}
+                    onClick={() => setCalendarOpen(true)}
+                  />
+                </FilterWrapper>
+                <Modal
+                  centered
+                  open={calendarOpen}
+                  // footer={Footer}
+                  onCancel={() => setCalendarOpen(false)}
+                  width={'fit-content'}
+                  closable={false}
+                >
+                  <DateTimePicker {...{ date, setDate, focus, setFocus, times, setTimes }} />
+                </Modal>
+                <LeftArrowIcon style={{ gridColumn: '1/2', gridRow: '2/3' }} />
+                {businessHour?.data && (
+                  <TimeSlot
+                    {...{
+                      cells,
+                      handleUnitMouseDown,
+                      handleUnitMouseEnter,
+                      date: dates,
+                      timeRange,
+                    }}
+                    style={{ gridColumn: '2/3', gridRow: '2/3' }}
+                  />
+                )}
+                <RightArrowIcon style={{ gridColumn: '3/4', gridRow: '2/3' }} />
+              </TimeSlotWrapper>
+              <ButtonWrapper>
+                <RippleButton category="outlined" palette="gray">
+                  取消
+                </RippleButton>
+                <RippleButton
+                  category="solid"
+                  palette="main"
+                  disabled={!cells.some((columns) => columns.some((cell) => cell))}
+                  onClick={() => {
+                    const date = dates[cells.findIndex((column) => column.some((cell) => cell))];
+                    const time = timeRange?.filter(
+                      (_, index) => cells.find((column) => column.some((cell) => cell))?.[index],
+                    );
+                    const query = [
+                      `stadium_id=${stadium_id}`,
+                      `venue_id=${venue_id}`,
+                      `court_id=${courts?.data?.[0].id}`,
+                      `date=${format(date, 'yyyy/MM/dd')}`,
+                      `time=${time?.join(',')}`,
+                    ];
+                    navigate(`/reserve?${query.join('&')}`);
+                  }}
+                >
+                  確認選擇時段
+                </RippleButton>
+              </ButtonWrapper>
+            </ReservationWrapper>
           </TabPane>
           <TabPane index="3" label="相簿" key="3">
             <AlbumWrapper>
-              <ImagePreview
-                src={`https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png`}
-                placeholder={
-                  <ImagePreview
-                    preview={false}
-                    src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png?x-oss-process=image/blur,r_50,s_50/quality,q_1/resize,m_mfit,h_200,w_200"
-                  />
-                }
-              />
-              <ImagePreview
-                src={`https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png`}
-                placeholder={
-                  <ImagePreview
-                    preview={false}
-                    src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png?x-oss-process=image/blur,r_50,s_50/quality,q_1/resize,m_mfit,h_200,w_200"
-                  />
-                }
-              />
-              <ImagePreview
-                src={`https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png`}
-                placeholder={
-                  <ImagePreview
-                    preview={false}
-                    src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png?x-oss-process=image/blur,r_50,s_50/quality,q_1/resize,m_mfit,h_200,w_200"
-                  />
-                }
-              />
-              <ImagePreview
-                src={`https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png`}
-                placeholder={
-                  <ImagePreview
-                    preview={false}
-                    src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png?x-oss-process=image/blur,r_50,s_50/quality,q_1/resize,m_mfit,h_200,w_200"
-                  />
-                }
-              />
-              <ImagePreview
-                src={`https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png`}
-                placeholder={
-                  <ImagePreview
-                    preview={false}
-                    src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png?x-oss-process=image/blur,r_50,s_50/quality,q_1/resize,m_mfit,h_200,w_200"
-                  />
-                }
-              />
-              <ImagePreview
-                src={`https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png`}
-                placeholder={
-                  <ImagePreview
-                    preview={false}
-                    src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png?x-oss-process=image/blur,r_50,s_50/quality,q_1/resize,m_mfit,h_200,w_200"
-                  />
-                }
-              />
-              <ImagePreview
-                src={`https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png`}
-                placeholder={
-                  <ImagePreview
-                    preview={false}
-                    src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png?x-oss-process=image/blur,r_50,s_50/quality,q_1/resize,m_mfit,h_200,w_200"
-                  />
-                }
-              />
+              {album?.data?.map(({ url }, index) => (
+                <ImagePreview
+                  key={index}
+                  src={url}
+                  placeholder={<ImagePreview preview={false} />}
+                />
+              ))}
             </AlbumWrapper>
           </TabPane>
         </Tabs>

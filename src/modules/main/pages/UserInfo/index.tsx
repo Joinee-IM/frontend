@@ -47,7 +47,9 @@ const ImageContainer = styled.div`
   ${flexCenter}
 `;
 
-const Image = styled(motion.img)<{ change?: boolean }>`
+const Image = styled(motion.img).withConfig({
+  shouldForwardProp: (prop) => !['change'].includes(prop),
+})<{ change?: boolean }>`
   width: max(25%, 200px);
   aspect-ratio: 1;
   border-radius: 50%;

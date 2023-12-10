@@ -6,10 +6,10 @@ import styled from 'styled-components';
 import type { Type } from '@/utils/type';
 
 import { RippleButton } from '@/components';
-import GridForm from '@/components/GridForm';
-import { Tag, TagWrapper } from '@/modules/main/pages/Stadium/components/ListItem';
+import GridForm from '@/components/Grid/FormGrid';
+import { RoundTag, RoundTagWrapper } from '@/components/Tag';
 import { useStadiumInfo } from '@/modules/main/pages/Stadium/services';
-import { useAlbum } from '@/services/useAlbum';
+import { useAlbum } from '@/services/useInfo';
 
 interface DetailModalProps extends Type<typeof Modal> {
   stadiumId: number;
@@ -32,6 +32,7 @@ export const AlbumWrapper = styled.div`
 
 export const ImagePreview = styled(Image)`
   aspect-ratio: 1;
+  object-fit: cover;
 `;
 
 const ButtonWrapper = styled.div`
@@ -101,9 +102,9 @@ export default function DetailModal({ open, onCancel, stadiumId }: DetailModalPr
             </TimeGrid>
           ),
           提供的運動項目: (
-            <TagWrapper>
-              {info?.data?.sports?.map((tag, index) => <Tag key={index}>{tag}</Tag>)}
-            </TagWrapper>
+            <RoundTagWrapper>
+              {info?.data?.sports?.map((tag, index) => <RoundTag key={index}>{tag}</RoundTag>)}
+            </RoundTagWrapper>
           ),
           連絡電話: info?.data?.contact_number,
           簡介: info?.data?.description,

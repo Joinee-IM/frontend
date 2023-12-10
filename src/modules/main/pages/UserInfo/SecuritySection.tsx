@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import type { Rule } from 'antd/es/form';
 
 import { RippleButton } from '@/components';
-import GridForm from '@/components/GridForm';
+import GridForm from '@/components/Grid/FormGrid';
 import useError from '@/hooks/useError';
 import Section from '@/modules/main/pages/UserInfo/components/Section';
 import { useEditPassword } from '@/modules/main/pages/UserInfo/services';

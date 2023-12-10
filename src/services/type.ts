@@ -110,6 +110,7 @@ const Response_bool_ = z
 const Body_upload_account_image_api_account__account_id__upload_patch = z
   .object({ image: z.instanceof(File) })
   .passthrough();
+const SearchAccountInput = z.object({ query: z.string() }).passthrough();
 const Account = z
   .object({
     id: z.number().int(),
@@ -315,8 +316,31 @@ const Response_AddVenueOutput_ = z
   .object({ data: z.union([AddVenueOutput, z.null()]), error: z.union([ErrorMessage, z.null()]) })
   .partial()
   .passthrough();
-const Response_Venue_ = z
-  .object({ data: z.union([Venue, z.null()]), error: z.union([ErrorMessage, z.null()]) })
+const ReadVenueOutput = z
+  .object({
+    id: z.number().int(),
+    stadium_id: z.number().int(),
+    name: z.string(),
+    floor: z.string(),
+    reservation_interval: z.union([z.number(), z.null()]),
+    is_reservable: z.boolean(),
+    is_chargeable: z.boolean(),
+    fee_rate: z.union([z.number(), z.null()]),
+    fee_type: z.union([FeeType, z.null()]),
+    area: z.number().int(),
+    current_user_count: z.number().int(),
+    capacity: z.number().int(),
+    sport_equipments: z.union([z.string(), z.null()]),
+    facilities: z.union([z.string(), z.null()]),
+    court_count: z.number().int(),
+    court_type: z.string(),
+    sport_id: z.number().int(),
+    is_published: z.boolean(),
+    sport_name: z.string(),
+  })
+  .passthrough();
+const Response_ReadVenueOutput_ = z
+  .object({ data: z.union([ReadVenueOutput, z.null()]), error: z.union([ErrorMessage, z.null()]) })
   .partial()
   .passthrough();
 const EditVenueInput = z
@@ -660,6 +684,7 @@ export const schemas = {
   EditAccountInput,
   Response_bool_,
   Body_upload_account_image_api_account__account_id__upload_patch,
+  SearchAccountInput,
   Account,
   Response_Sequence_Account__,
   EditPasswordInput,
@@ -697,7 +722,8 @@ export const schemas = {
   AddVenueInput,
   AddVenueOutput,
   Response_AddVenueOutput_,
-  Response_Venue_,
+  ReadVenueOutput,
+  Response_ReadVenueOutput_,
   EditVenueInput,
   Court,
   Response_Sequence_Court__,
@@ -752,13 +778,6 @@ export const schemas = {
 };
 
 const endpoints = makeApi([
-  {
-    method: 'get',
-    path: '/api/',
-    alias: 'default_page_api__get',
-    requestFormat: 'json',
-    response: z.void(),
-  },
   {
     method: 'post',
     path: '/api/account',
@@ -900,15 +919,15 @@ const endpoints = makeApi([
     ],
   },
   {
-    method: 'get',
+    method: 'post',
     path: '/api/account/search',
-    alias: 'search_account_api_account_search_get',
+    alias: 'search_account_api_account_search_post',
     requestFormat: 'json',
     parameters: [
       {
-        name: 'query',
-        type: 'Query',
-        schema: z.string(),
+        name: 'body',
+        type: 'Body',
+        schema: z.object({ query: z.string() }).passthrough(),
       },
       {
         name: 'auth-token',
@@ -1525,6 +1544,11 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
         type: 'Path',
         schema: z.number().int(),
       },
+      {
+        name: 'auth-token',
+        type: 'Header',
+        schema: auth_token,
+      },
     ],
     response: Response_ViewStadium_,
     errors: [
@@ -1701,8 +1725,13 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
         type: 'Path',
         schema: z.number().int(),
       },
+      {
+        name: 'auth-token',
+        type: 'Header',
+        schema: auth_token,
+      },
     ],
-    response: Response_Venue_,
+    response: Response_ReadVenueOutput_,
     errors: [
       {
         status: 422,
@@ -1752,6 +1781,11 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
         name: 'venue_id',
         type: 'Path',
         schema: z.number().int(),
+      },
+      {
+        name: 'auth-token',
+        type: 'Header',
+        schema: auth_token,
       },
     ],
     response: Response_Sequence_Court__,
@@ -2042,6 +2076,11 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
         name: 'role',
         type: 'Query',
         schema: role,
+      },
+      {
+        name: 'next_url',
+        type: 'Query',
+        schema: auth_token,
       },
     ],
     response: z.unknown(),

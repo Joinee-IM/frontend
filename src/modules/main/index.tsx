@@ -47,7 +47,9 @@ const MenuItem = styled(RippleButton)`
   font-weight: 400;
 `;
 
-const ContentContainer = styled.div<{ hasBackground?: boolean }>`
+const ContentContainer = styled.div.withConfig({
+  shouldForwardProp: (prop) => !['hasBackground'].includes(prop),
+})<{ hasBackground?: boolean }>`
   flex: 1;
   width: 100%;
   position: relative;
@@ -112,7 +114,7 @@ export default function Main() {
           </MenuItem>
         </MenuWrapper>
       </HeaderWrapper>
-      <ContentContainer>
+      <ContentContainer hasBackground={true}>
         <ScrollContainer>
           <Outlet />
         </ScrollContainer>
