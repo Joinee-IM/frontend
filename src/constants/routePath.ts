@@ -26,12 +26,11 @@ export const ROUTES = {
     login: 'login',
     signup: {
       route: 'signup',
-      'choose-role': 'choose-role',
+      role: 'role/:mode',
       account: 'account',
       'send-mail': 'send-mail',
       success: 'success',
       'more-info': 'more-info',
-      'edit-role': 'edit-role/:account_id',
     },
     forgetPassword: {
       route: 'forget-password',

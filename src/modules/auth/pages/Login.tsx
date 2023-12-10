@@ -113,7 +113,7 @@ export default function Login() {
           type="link"
           category="link"
           palette="main"
-          onClick={() => navigate('/auth/signup/choose-role')}
+          onClick={() => navigate('/auth/signup/role/create')}
           style={{ fontSize: '14px', fontWeight: 400, marginTop: '50px' }}
         >
           還沒有帳號嗎？點我註冊

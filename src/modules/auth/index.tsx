@@ -1,9 +1,8 @@
 export { default as Login } from './pages/Login';
 export { default as Signup } from './pages/signup';
-export { default as ChooseRole } from './pages/signup/ChooseRole';
+export { default as Role } from './pages/signup/Role';
 export { default as SendMail } from './pages/signup/SendMail';
 export { default as Success } from './pages/signup/Success';
-export { default as EditRole } from './pages/signup/EditRole';
 
 import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';

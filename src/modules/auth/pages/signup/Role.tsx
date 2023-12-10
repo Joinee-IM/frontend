@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import type { schemas } from '@/services/type';
 import type { z } from 'zod';
 
-import Bussiness from '@/assets/leaser.jpg';
+import Business from '@/assets/leaser.jpg';
 import Player from '@/assets/player.jpg';
 import { RippleButton } from '@/components';
 import Card from '@/modules/auth/components/Card';
@@ -56,25 +56,29 @@ const Character = styled.img.withConfig({
 
 export type Role = z.infer<(typeof schemas)['RoleType']> | undefined;
 
-export default function ChooseMember() {
+export default function Role() {
   const [role, setRole] = useState<Role>(undefined);
+  const { mode } = useParams<{ mode: 'edit' | 'create' }>();
   const navigate = useNavigate();
-  const { account_id } = useParams();
+
+  const [searchParams] = useSearchParams();
+  const account_id = searchParams.get('account_id');
   const { mutate } = useEditAccount(Number(account_id));
 
-  const handleClick = () => {
+  const handleEdit = () => {
     mutate({ role }, { onSuccess: () => navigate(`/?account_id=${account_id}`) });
   };
+
   return (
     <Card>
-      <div>已成功用 Google 帳號登入，請選擇您的角色</div>
+      <div>{mode === 'create' ? '選擇你的角色' : '已成功用 Google 帳號登入，請選擇您的角色'}</div>
       <RadioGroup>
         <CharacterWrapper onClick={() => setRole('NORMAL')} chosen={role === 'NORMAL'}>
           <Character src={Player} chosen={role === 'NORMAL'} />
           <Label chosen={role === 'NORMAL'}>找運動場</Label>
         </CharacterWrapper>
         <CharacterWrapper onClick={() => setRole('PROVIDER')} chosen={role === 'PROVIDER'}>
-          <Character src={Bussiness} chosen={role === 'PROVIDER'} />
+          <Character src={Business} chosen={role === 'PROVIDER'} />
           <Label chosen={role === 'PROVIDER'}>出租場地</Label>
         </CharacterWrapper>
       </RadioGroup>
@@ -85,9 +89,11 @@ export default function ChooseMember() {
         disabled={!role}
         htmlType="submit"
         style={{ width: '100%', marginTop: '20px' }}
-        onClick={handleClick}
+        onClick={
+          mode === 'create' ? () => navigate(`/auth/signup/account?role=${role}`) : handleEdit
+        }
       >
-        儲存
+        {mode === 'create' ? '下一步' : '儲存'}
       </RippleButton>
     </Card>
   );
