@@ -1,6 +1,6 @@
 import { css } from 'styled-components';
 
-import { FIGMA_HEIGHT, FIGMA_WITH } from '@/constants/rwd';
+import { FIGMA_HEIGHT, FIGMA_WITH, MOBILE_WITH } from '@/constants/rwd';
 
 export const flexCenter = css`
   display: flex;
@@ -17,6 +17,13 @@ export const percentageOfFigma = (number: number) => {
     max: `max(${vw}, ${vh})`,
   };
 };
+
+export const rwdFontSize = (number: number) => css`
+  font-size: ${percentageOfFigma(number).max};
+  @media (max-width: ${MOBILE_WITH}px) {
+    font-size: min(${number * 0.75}px, ${percentageOfFigma(number).max});
+  }
+`;
 
 export const fullChild = css`
   width: 100%;

@@ -62,6 +62,13 @@ const router = createBrowserRouter([
               return { Component: UserInfo };
             },
           },
+          {
+            path: routePath('index.reserve'),
+            async lazy() {
+              const { Reserve } = await import('@/modules/main/pages');
+              return { Component: Reserve };
+            },
+          },
         ],
       },
       {

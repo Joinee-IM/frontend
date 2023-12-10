@@ -22,6 +22,7 @@ export const ROUTES = {
       venue: { route: 'stadium/:stadium_id/venue', detail: ':venue_id' },
     },
     'user-info': 'user-info/:account_id',
+    reserve: 'reserve',
   },
   entry: '/entry',
   auth: {
