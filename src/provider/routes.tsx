@@ -36,10 +36,22 @@ const router = createBrowserRouter([
               },
               {
                 path: routePath('index.stadium.venue'),
-                async lazy() {
-                  const { Venue: Component } = await import('@/modules/main/pages');
-                  return { Component };
-                },
+                children: [
+                  {
+                    index: true,
+                    async lazy() {
+                      const { VenueList: Component } = await import('@/modules/main/pages');
+                      return { Component };
+                    },
+                  },
+                  {
+                    path: routePath('index.stadium.venue.detail'),
+                    async lazy() {
+                      const { Venue: Component } = await import('@/modules/main/pages');
+                      return { Component };
+                    },
+                  },
+                ],
               },
             ],
           },
@@ -48,6 +60,13 @@ const router = createBrowserRouter([
             async lazy() {
               const { UserInfo } = await import('@/modules/main/pages');
               return { Component: UserInfo };
+            },
+          },
+          {
+            path: routePath('index.reserve'),
+            async lazy() {
+              const { Reserve } = await import('@/modules/main/pages');
+              return { Component: Reserve };
             },
           },
         ],

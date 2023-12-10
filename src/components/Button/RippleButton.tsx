@@ -2,20 +2,21 @@ import { Button } from 'antd';
 import styled, { css } from 'styled-components';
 
 import type { ButtonThemeProps, ButtonType } from '@/components/Button/theme';
-import type { ButtonProps } from 'antd';
+import type { Type } from '@/utils/type';
 import type { ReactNode } from 'react';
 
 import getTheme from '@/components/Button/theme';
 import { MOBILE_WITH } from '@/constants/rwd';
 import { flexCenter, percentageOfFigma } from '@/utils/css';
 
-interface RippleButtonProps<T extends ButtonType> extends ButtonThemeProps<T>, ButtonProps {
+interface RippleButtonProps<T extends ButtonType> extends ButtonThemeProps<T>, Type<typeof Button> {
   borderBox?: boolean;
   children?: ReactNode;
+  buttonRef?: React.ForwardedRef<HTMLButtonElement>;
 }
 
-function ThemeButton<T extends ButtonType>(props: RippleButtonProps<T>) {
-  return <Button {...props} />;
+function ThemeButton<T extends ButtonType>({ buttonRef, ...rest }: RippleButtonProps<T>) {
+  return <Button ref={buttonRef} {...rest} />;
 }
 
 const RippleButtonBase = styled(ThemeButton).withConfig({
@@ -49,12 +50,20 @@ export default function RippleButton<T extends ButtonType>({
   children,
   palette = 'main',
   category,
+  buttonRef,
   ...rest
 }: RippleButtonProps<T>) {
   const type = ['link', 'icon'].includes(category) ? 'link' : undefined;
   const shape = category === 'icon' ? 'circle' : 'default';
   return (
-    <RippleButtonBase category={category} palette={palette} type={type} shape={shape} {...rest}>
+    <RippleButtonBase
+      ref={buttonRef}
+      category={category}
+      palette={palette}
+      type={type}
+      shape={shape}
+      {...rest}
+    >
       {children}
     </RippleButtonBase>
   );

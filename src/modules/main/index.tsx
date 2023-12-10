@@ -8,6 +8,7 @@ import Background from '@/assets/background.jpg';
 import { RippleButton } from '@/components';
 import Title from '@/components/Title';
 import { useUser } from '@/contexts/useUser';
+import { backgroundCenter } from '@/utils/css';
 import useClick from '@/view/hooks/useClick';
 
 const Container = styled.div`
@@ -46,7 +47,9 @@ const MenuItem = styled(RippleButton)`
   font-weight: 400;
 `;
 
-const ContentContainer = styled.div<{ hasBackground?: boolean }>`
+const ContentContainer = styled.div.withConfig({
+  shouldForwardProp: (prop) => !['hasBackground'].includes(prop),
+})<{ hasBackground?: boolean }>`
   flex: 1;
   width: 100%;
   position: relative;
@@ -57,9 +60,7 @@ const ContentContainer = styled.div<{ hasBackground?: boolean }>`
       &::before {
         content: '';
         background-image: url(${Background});
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: cover;
+        ${backgroundCenter}
         position: absolute;
         inset: 0;
         opacity: 0.5;
@@ -83,8 +84,8 @@ export default function Main() {
   useEffect(() => {
     if (account_id) {
       setCookie('id', account_id, { path: '/' });
+      navigate('/');
     }
-    navigate('/');
   }, [account_id, navigate, setCookie]);
 
   return (
@@ -113,7 +114,7 @@ export default function Main() {
           </MenuItem>
         </MenuWrapper>
       </HeaderWrapper>
-      <ContentContainer>
+      <ContentContainer hasBackground={true}>
         <ScrollContainer>
           <Outlet />
         </ScrollContainer>

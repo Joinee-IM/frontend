@@ -2,8 +2,8 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import LoadingBackground from '@/assets/loading3.gif';
-import { flexCenter } from '@/utils/css';
+import LoadingBackground from '@/assets/loading.gif';
+import { backgroundCenter, flexCenter } from '@/utils/css';
 
 const LoadingWrapper = styled(motion.div)`
   width: 100vw;
@@ -11,12 +11,10 @@ const LoadingWrapper = styled(motion.div)`
   z-index: 1000000;
   position: absolute;
   background-image: url(${LoadingBackground});
-  background-position-x: center;
-  background-position-y: -200px;
-  background-repeat: no-repeat;
-  background-size: cover;
+  ${backgroundCenter}
   display: flex;
   ${flexCenter}
+  filter: brightness(0.9);
 `;
 
 const Text = styled.div`

@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 
-import type { Time } from '@/utils/function';
+import type { Time } from '@/utils/function/time';
 import type { Type } from '@/utils/type';
 
+import { RoundTag, RoundTagWrapper } from '@/components/Tag';
 import useAllowChildren from '@/hooks/useAllowChildren';
-import { useAlbum } from '@/services/useAlbum';
-import { flexCenter } from '@/utils/css';
-import { findLatestTime } from '@/utils/function';
+import { useAlbum } from '@/services/useInfo';
+import { BusinessHours } from '@/utils/function/time';
 
 interface ListItemProps extends Type<typeof InfoWrapper> {
   title: string;
@@ -71,22 +71,6 @@ const StadiumInfo = styled.div`
   color: ${({ theme }) => theme.gray[700]};
 `;
 
-export const TagWrapper = styled.div`
-  display: flex;
-  column-gap: 4px;
-  overflow: hidden;
-`;
-
-export const Tag = styled.div`
-  ${flexCenter}
-  height: 30px;
-  padding: 0 12px;
-  border-radius: 16px;
-  background: #cbc09f;
-  color: white;
-  flex-shrink: 0;
-`;
-
 export default function ListItem({
   title,
   address,
@@ -143,19 +127,19 @@ export default function ListItem({
       <InfoWrapper>
         <Title>{title}</Title>
         <StadiumInfo>
-          {address} · {findLatestTime(times)}
+          {address} · {new BusinessHours(times).latestAvailableTime}
         </StadiumInfo>
-        <TagWrapper ref={element}>
+        <RoundTagWrapper ref={element}>
           {tags
             ?.slice(0, allowChildNum)
             .map((tag, index) => (
-              <Tag key={index}>
+              <RoundTag key={index}>
                 {allowChildNum && index === allowChildNum - 1
                   ? `${tags.length - allowChildNum + 1}+`
                   : tag}
-              </Tag>
+              </RoundTag>
             ))}
-        </TagWrapper>
+        </RoundTagWrapper>
       </InfoWrapper>
     </ListItemWrapper>
   );

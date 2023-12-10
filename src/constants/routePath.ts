@@ -17,8 +17,12 @@ function search<T>(target: T, keys: string[]) {
 export const ROUTES = {
   index: {
     route: '/',
-    stadium: { route: '/', venue: 'stadium/:stadium_id/venue' },
+    stadium: {
+      route: '/',
+      venue: { route: 'stadium/:stadium_id/venue', detail: ':venue_id' },
+    },
     'user-info': 'user-info/:account_id',
+    reserve: 'reserve',
   },
   entry: '/entry',
   auth: {
