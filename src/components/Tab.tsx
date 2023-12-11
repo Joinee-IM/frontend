@@ -9,7 +9,7 @@ type TabItemProps = Exclude<AntdTabProps['items'], undefined>[number] & {
 };
 
 interface TabsProps extends Omit<AntdTabProps, 'children'> {
-  children: { props: TabItemProps } | { props: TabItemProps }[];
+  children: { props: TabItemProps } | ({ props: TabItemProps } | null | undefined)[];
 }
 
 export const TabPane = (props: TabItemProps) => {
@@ -17,14 +17,16 @@ export const TabPane = (props: TabItemProps) => {
 };
 
 export const Tabs = ({ children, ...rest }: TabsProps) => {
+  const tabs = [children].flat().filter((item) => !!item) as { props: TabItemProps }[];
+
   return (
     <AntdTabs
       {...rest}
-      items={[children].flat().map(({ props }) => ({
-        label: props.label,
-        key: props.index,
-        children: props.children,
-        style: props.style,
+      items={tabs.map((item) => ({
+        label: item.props.label,
+        key: item.props.index,
+        children: item.props.children,
+        style: item.props.style,
       }))}
     />
   );

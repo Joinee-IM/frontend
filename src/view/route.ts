@@ -32,13 +32,6 @@ const viewChildrenRoutes: {
     },
   },
   {
-    path: 'timeslot',
-    async lazy() {
-      const DropZone = await import('@/view/components/TimeSlot');
-      return { Component: DropZone.default };
-    },
-  },
-  {
     path: 'tag',
     async lazy() {
       const Tag = await import('@/view/components/Tag');
@@ -46,17 +39,17 @@ const viewChildrenRoutes: {
     },
   },
   {
-    path: 'test',
-    async lazy() {
-      const Test = await import('@/view/components/Test');
-      return { Component: Test.default };
-    },
-  },
-  {
     path: 'dondondon',
     async lazy() {
       const Don = await import('@/view/components/Dondondon');
       return { Component: Don.default };
+    },
+  },
+  {
+    path: 'tabs',
+    async lazy() {
+      const Tabs = await import('@/view/components/Tabs');
+      return { Component: Tabs.default };
     },
   },
 ];

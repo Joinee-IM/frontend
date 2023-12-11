@@ -180,78 +180,80 @@ export default function Venue() {
               labelStyles={{ 設備: { alignSelf: 'baseline' } }}
             />
           </TabPane>
-          <TabPane index="2" label="預約時段" key="2">
-            <ReservationWrapper>
-              <TimeSlotWrapper style={{ ...(isMobile && { maxHeight: '450px' }) }}>
-                <FilterWrapper>
-                  <Radio.Group defaultValue={courts?.data?.[0].id} buttonStyle="solid">
-                    {courts?.data?.map((court) => (
-                      <Radio.Button value={court.id} key={court.id}>
-                        {`${court.number} ${venue?.data?.court_type}`}
-                      </Radio.Button>
-                    ))}
-                  </Radio.Group>
-                  {' ・ '}
+          {venue?.data?.is_reservable ? (
+            <TabPane index="2" label="預約時段" key="2">
+              <ReservationWrapper>
+                <TimeSlotWrapper style={{ ...(isMobile && { maxHeight: '450px' }) }}>
+                  <FilterWrapper>
+                    <Radio.Group defaultValue={courts?.data?.[0].id} buttonStyle="solid">
+                      {courts?.data?.map((court) => (
+                        <Radio.Button value={court.id} key={court.id}>
+                          {`${court.number} ${venue?.data?.court_type}`}
+                        </Radio.Button>
+                      ))}
+                    </Radio.Group>
+                    {' ・ '}
+                    <RippleButton
+                      category="icon"
+                      palette="gray"
+                      icon={<CalendarIcon fontSize="0.5em" />}
+                      onClick={() => setCalendarOpen(true)}
+                    />
+                  </FilterWrapper>
+                  <Modal
+                    centered
+                    open={calendarOpen}
+                    // footer={Footer}
+                    onCancel={() => setCalendarOpen(false)}
+                    width={'fit-content'}
+                    closable={false}
+                  >
+                    <DateTimePicker {...{ date, setDate, focus, setFocus, times, setTimes }} />
+                  </Modal>
+                  <LeftArrowIcon style={{ gridColumn: '1/2', gridRow: '2/3' }} />
+                  {businessHour?.data && (
+                    <TimeSlot
+                      {...{
+                        cells,
+                        handleUnitMouseDown,
+                        handleUnitMouseEnter,
+                        date: dates,
+                        timeRange,
+                      }}
+                      style={{ gridColumn: '2/3', gridRow: '2/3' }}
+                    />
+                  )}
+                  <RightArrowIcon style={{ gridColumn: '3/4', gridRow: '2/3' }} />
+                </TimeSlotWrapper>
+                <ButtonWrapper>
+                  <RippleButton category="outlined" palette="gray">
+                    取消
+                  </RippleButton>
                   <RippleButton
-                    category="icon"
-                    palette="gray"
-                    icon={<CalendarIcon fontSize="0.5em" />}
-                    onClick={() => setCalendarOpen(true)}
-                  />
-                </FilterWrapper>
-                <Modal
-                  centered
-                  open={calendarOpen}
-                  // footer={Footer}
-                  onCancel={() => setCalendarOpen(false)}
-                  width={'fit-content'}
-                  closable={false}
-                >
-                  <DateTimePicker {...{ date, setDate, focus, setFocus, times, setTimes }} />
-                </Modal>
-                <LeftArrowIcon style={{ gridColumn: '1/2', gridRow: '2/3' }} />
-                {businessHour?.data && (
-                  <TimeSlot
-                    {...{
-                      cells,
-                      handleUnitMouseDown,
-                      handleUnitMouseEnter,
-                      date: dates,
-                      timeRange,
+                    category="solid"
+                    palette="main"
+                    disabled={!cells.some((columns) => columns.some((cell) => cell))}
+                    onClick={() => {
+                      const date = dates[cells.findIndex((column) => column.some((cell) => cell))];
+                      const time = timeRange?.filter(
+                        (_, index) => cells.find((column) => column.some((cell) => cell))?.[index],
+                      );
+                      const query = [
+                        `stadium_id=${stadium_id}`,
+                        `venue_id=${venue_id}`,
+                        `court_id=${courts?.data?.[0].id}`,
+                        `date=${format(date, 'yyyy/MM/dd')}`,
+                        `time=${time?.join(',')}`,
+                      ];
+                      navigate(`/reserve?${query.join('&')}`);
                     }}
-                    style={{ gridColumn: '2/3', gridRow: '2/3' }}
-                  />
-                )}
-                <RightArrowIcon style={{ gridColumn: '3/4', gridRow: '2/3' }} />
-              </TimeSlotWrapper>
-              <ButtonWrapper>
-                <RippleButton category="outlined" palette="gray">
-                  取消
-                </RippleButton>
-                <RippleButton
-                  category="solid"
-                  palette="main"
-                  disabled={!cells.some((columns) => columns.some((cell) => cell))}
-                  onClick={() => {
-                    const date = dates[cells.findIndex((column) => column.some((cell) => cell))];
-                    const time = timeRange?.filter(
-                      (_, index) => cells.find((column) => column.some((cell) => cell))?.[index],
-                    );
-                    const query = [
-                      `stadium_id=${stadium_id}`,
-                      `venue_id=${venue_id}`,
-                      `court_id=${courts?.data?.[0].id}`,
-                      `date=${format(date, 'yyyy/MM/dd')}`,
-                      `time=${time?.join(',')}`,
-                    ];
-                    navigate(`/reserve?${query.join('&')}`);
-                  }}
-                >
-                  確認選擇時段
-                </RippleButton>
-              </ButtonWrapper>
-            </ReservationWrapper>
-          </TabPane>
+                  >
+                    確認選擇時段
+                  </RippleButton>
+                </ButtonWrapper>
+              </ReservationWrapper>
+            </TabPane>
+          ) : undefined}
           <TabPane index="3" label="相簿" key="3">
             <AlbumWrapper>
               {album?.data?.map(({ url }, index) => (

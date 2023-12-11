@@ -1,13 +1,13 @@
 import { motion } from 'framer-motion';
 import styled from 'styled-components';
 
-import { percentageOfFigma } from '@/utils/css';
+import { percentageOfFigma, rwdFontSize } from '@/utils/css';
 
 const TapButtonBase = styled(motion.div)`
   padding: max(${percentageOfFigma(15).vw}, ${percentageOfFigma(15).vh})
     max(${percentageOfFigma(40).vw}, ${percentageOfFigma(40).vh});
   font-weight: 600;
-  font-size: max(${percentageOfFigma(32).vw}, ${percentageOfFigma(32).vh});
+  ${rwdFontSize(32)};
   border-radius: 0.625em;
   width: fit-content;
   white-space: nowrap;

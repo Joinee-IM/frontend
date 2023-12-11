@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 
+import { percentageOfFigma } from '@/utils/css';
+
 export const PageTitle = styled.div`
   font-size: max(20px, 2.29vw);
   font-weight: 600;
@@ -13,6 +15,5 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  row-gap: 15px;
-  justify-content: space-evenly;
+  row-gap: ${percentageOfFigma(36).max};
 `;

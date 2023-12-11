@@ -1,7 +1,7 @@
-import { ENV, queryKey } from '@/constants';
+import { ENV } from '@/constants';
 import api from '@/services';
 
-export const useLogin = () => api.usePost('/api/login', undefined, { mutationKey: queryKey.login });
+export const useLogin = () => api.usePost('/api/login');
 
 export const useGoogleLogin = (role?: string) => {
   const googleLogin = () => {
@@ -11,16 +11,17 @@ export const useGoogleLogin = (role?: string) => {
   return { googleLogin };
 };
 
-export const useAddAccount = () => api.usePost('/api/account', undefined, {});
+export const useAddAccount = () => api.usePost('/api/account');
 
-export const useForgetPassword = () => api.usePost('/api/forget-password', undefined, {});
+export const useForgetPassword = () => api.usePost('/api/forget-password');
 
-export const useResetPassword = () => api.usePost('/api/reset-password', undefined, {});
+export const useResetPassword = () => api.usePost('/api/reset-password');
 
 export const useReadAccount = (account_id: number) =>
-  api.useGet('/api/account/:account_id', { params: { account_id } }, {});
+  api.useGet('/api/account/:account_id', { params: { account_id } });
 
-export const useEmailVerification = () => api.usePost('/api/email-verification', {}, {});
+export const useEmailVerification = () => api.usePost('/api/email-verification');
 
-export const useResendEmailVerification = () =>
-  api.usePost('/api/email-verification/resend', {}, {});
+export const useResendEmailVerification = () => api.usePost('/api/email-verification/resend');
+
+export const useLogout = () => api.usePost('/api/logout');

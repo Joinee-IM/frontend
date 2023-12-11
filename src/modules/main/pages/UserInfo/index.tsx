@@ -16,7 +16,7 @@ import Section from '@/modules/main/pages/UserInfo/components/Section';
 import Upload from '@/modules/main/pages/UserInfo/components/Upload';
 import SecuritySection from '@/modules/main/pages/UserInfo/SecuritySection';
 import { useUserInfo } from '@/modules/main/pages/UserInfo/services';
-import { flexCenter } from '@/utils/css';
+import { flexCenter, percentageOfFigma } from '@/utils/css';
 
 const Title = styled.div`
   font-size: max(20px, 2.29vw);
@@ -37,7 +37,7 @@ const InformationWrapper = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  row-gap: 40px;
+  row-gap: ${percentageOfFigma(60).max};
 `;
 
 const ImageContainer = styled.div`
