@@ -64,9 +64,33 @@ const router = createBrowserRouter([
           },
           {
             path: routePath('index.reserve'),
+            loader: ({ params }) => {
+              if (!['create', 'edit', 'info'].includes(params?.mode ?? ''))
+                throw new Response('Not Found', { status: 404 });
+              return null;
+            },
+            children: [
+              {
+                index: true,
+                async lazy() {
+                  const { Reserve } = await import('@/modules/main/pages');
+                  return { Component: Reserve };
+                },
+              },
+              {
+                path: routePath('index.reserve.info'),
+                async lazy() {
+                  const { Reserve } = await import('@/modules/main/pages');
+                  return { Component: Reserve };
+                },
+              },
+            ],
+          },
+          {
+            path: routePath('history'),
             async lazy() {
-              const { Reserve } = await import('@/modules/main/pages');
-              return { Component: Reserve };
+              const History = await import('@/modules/history');
+              return { Component: History.default };
             },
           },
         ],

@@ -23,7 +23,7 @@ import { useVenueCourts, useVenueInfo } from '@/modules/main/pages/Venue/service
 import { useAlbum, useBusinessHour } from '@/services/useInfo';
 import { hexToRgb } from '@/utils';
 import { backgroundCenter, percentageOfFigma } from '@/utils/css';
-import toFeeType from '@/utils/function/map/toFeeType';
+import { toFeeType } from '@/utils/function/map';
 import { BusinessHours } from '@/utils/function/time';
 
 const Background = styled.div.withConfig({
@@ -245,7 +245,7 @@ export default function Venue() {
                         `date=${format(date, 'yyyy/MM/dd')}`,
                         `time=${time?.join(',')}`,
                       ];
-                      navigate(`/reserve?${query.join('&')}`);
+                      navigate(`/reserve/create?${query.join('&')}`);
                     }}
                   >
                     確認選擇時段

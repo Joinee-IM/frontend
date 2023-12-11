@@ -85,6 +85,19 @@ export const buttonTheme = {
         background: ColorTheme.gray[300],
       },
     },
+    red: {
+      normal: {
+        background: 'transparent',
+        border: ColorTheme.red[700],
+        text: ColorTheme.red[700],
+      },
+      hover: {
+        background: ColorTheme.red[100],
+      },
+      active: {
+        background: ColorTheme.red[300],
+      },
+    },
   },
   link: {
     main: {

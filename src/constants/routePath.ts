@@ -22,7 +22,7 @@ export const ROUTES = {
       venue: { route: 'stadium/:stadium_id/venue', detail: ':venue_id' },
     },
     'user-info': 'user-info/:account_id',
-    reserve: 'reserve',
+    reserve: { route: 'reserve/:mode', info: ':reservation_id' },
   },
   entry: '/entry',
   auth: {
@@ -34,7 +34,6 @@ export const ROUTES = {
       account: 'account',
       'send-mail': 'send-mail',
       success: 'success',
-      'more-info': 'more-info',
     },
     forgetPassword: {
       route: 'forget-password',
@@ -42,6 +41,7 @@ export const ROUTES = {
       'reset-password': 'reset-password',
     },
   },
+  history: '/history/:account_id',
   notFound: '*',
   view: { route: 'view' },
 } satisfies Record<string, RoutesType | string>;

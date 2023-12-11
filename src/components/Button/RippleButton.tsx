@@ -14,8 +14,8 @@ interface RippleButtonProps<T extends ButtonType> extends ButtonThemeProps<T>, T
   buttonRef?: React.ForwardedRef<HTMLButtonElement>;
 }
 
-function ThemeButton<T extends ButtonType>({ buttonRef, ...rest }: RippleButtonProps<T>) {
-  return <Button ref={buttonRef} {...rest} />;
+function ThemeButton<T extends ButtonType>({ ...rest }: RippleButtonProps<T>) {
+  return <Button {...rest} />;
 }
 
 const RippleButtonBase = styled(ThemeButton).withConfig({
@@ -46,12 +46,11 @@ export default function RippleButton<T extends ButtonType>({
   children,
   palette = 'main',
   category,
-  buttonRef,
   ...rest
 }: RippleButtonProps<T>) {
   const type = ['link', 'icon'].includes(category) ? 'link' : undefined;
   return (
-    <RippleButtonBase ref={buttonRef} category={category} palette={palette} type={type} {...rest}>
+    <RippleButtonBase category={category} palette={palette} type={type} {...rest}>
       {children}
     </RippleButtonBase>
   );

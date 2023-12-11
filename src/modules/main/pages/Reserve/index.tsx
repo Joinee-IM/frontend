@@ -1,24 +1,33 @@
 import { Card as CardAntd, Form, InputNumber, Select, Switch } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import TextArea from 'antd/es/input/TextArea';
-import { format, formatISO, formatISO9075, setHours } from 'date-fns';
-import { useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { differenceInHours, format, formatISO, setHours } from 'date-fns';
+import { AnimatePresence } from 'framer-motion';
+import { useCallback, useMemo } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-import type { TechnicalLevelType } from '@/utils/function/map/toTechnicalLevel';
+import type { schemas } from '@/services/type';
+import type { TechnicalLevelType } from '@/utils/function/map';
+import type { z } from 'zod';
 
 import { ButtonWrapper, RippleButton } from '@/components/Button';
 import { GeneralGrid } from '@/components/Grid';
 import GridForm from '@/components/Grid/FormGrid';
 import { SearchSelect } from '@/components/Select';
 import { RoundTag, RoundTagWrapper } from '@/components/Tag';
-import { useCreateReservation, useSearchAccount } from '@/modules/main/pages/Reserve/services';
-import { useBrowseStadium } from '@/modules/main/pages/Stadium/services';
+import LoadingPage from '@/modules/Loading';
+import {
+  useCreateReservation,
+  useReservationInfo,
+  useSearchAccount,
+} from '@/modules/main/pages/Reserve/services';
+import { useBrowseStadium, useStadiumInfo } from '@/modules/main/pages/Stadium/services';
 import { useBrowseVenue, useVenueCourts, useVenueInfo } from '@/modules/main/pages/Venue/services';
 import { hexToRgb } from '@/utils';
 import { flexCenter, percentageOfFigma, rwdFontSize } from '@/utils/css';
 import { toTechnicalLevel } from '@/utils/function/map';
+import calculateTotalCost from '@/utils/function/money';
 
 interface ReservationFormDataType {
   stadium_id: string;
@@ -67,115 +76,168 @@ const SumContainer = styled.div`
 
 export default function Reserve() {
   const [form] = useForm<ReservationFormDataType>();
+  const { mode, reservation_id } = useParams<{
+    mode: 'edit' | 'create' | 'info';
+    reservation_id: string;
+  }>();
+  const { data: reservation } = useReservationInfo(
+    reservation_id ? Number(reservation_id) : undefined,
+  );
+
   const [searchParams] = useSearchParams();
-  const stadium_id = searchParams.get('stadium_id');
-  const venue_id = searchParams.get('venue_id');
-  const court_id = searchParams.get('court_id');
+  const stadium_id = useMemo(
+    () => reservation?.data?.stadium_id ?? searchParams.get('stadium_id'),
+    [reservation?.data?.stadium_id, searchParams],
+  );
+  const venue_id = reservation?.data?.venue_id ?? searchParams.get('venue_id');
+  const court_id = reservation?.data?.court_id ?? searchParams.get('court_id');
   const date = searchParams.get('date');
   const time = searchParams.get('time')?.split(',').map(Number);
-  const { stadiums } = useBrowseStadium({
+  const { stadiums, isLoading: fetchingStadiums } = useBrowseStadium({
     limit: 20,
     offset: 0,
   });
-  const { venues } = useBrowseVenue({
+  const { venues, isLoading: fetchVenues } = useBrowseVenue({
     limit: 20,
     offset: 0,
     stadium_id: Number(stadium_id),
   });
-  const { data: courts } = useVenueCourts(Number(venue_id));
-  const { data: venue } = useVenueInfo(Number(venue_id));
+  const { data: courts, isLoading: fetchingCourts } = useVenueCourts(Number(venue_id));
+  const { data: stadium, isLoading: fetchingStadiumInfo } = useStadiumInfo(Number(stadium_id));
+  const { data: venue, isLoading: fetchingVenueInfo } = useVenueInfo(Number(venue_id));
   const { mutateAsync } = useSearchAccount();
   const { mutate: createReservation } = useCreateReservation(Number(court_id));
-
-  const handleReserve = async () => {
-    try {
-      await form.validateFields();
-      if (date) {
-        const { remark = '', member_count } = form.getFieldsValue();
-        createReservation({
-          start_time: formatISO9075(setHours(new Date(date), Number(time?.[0]))),
-          end_time: formatISO(setHours(new Date(date), Number(time?.[time?.length - 1]) + 1)),
-          member_count,
-          remark,
-        });
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  const navigate = useNavigate();
 
   const data = useMemo(() => {
     return {
-      場館名稱: (
-        <Form.Item name="stadium_id" initialValue={Number(stadium_id)}>
-          <Select
-            style={{ width: '100%' }}
-            options={stadiums?.map((stadium) => ({
-              value: stadium.id,
-              label: stadium.name,
-            }))}
-          />
-        </Form.Item>
-      ),
-      場地名稱: (
-        <Form.Item name="venue_id" initialValue={Number(venue_id)}>
-          <Select
-            style={{ width: '100%' }}
-            options={venues?.map((venue) => ({
-              value: venue.id,
-              label: venue.name,
-            }))}
-          />
-        </Form.Item>
-      ),
-      小單位編號: (
-        <Form.Item name="court_id" initialValue={Number(court_id)}>
-          <Select
-            style={{ width: '100%' }}
-            options={courts?.data?.map((court) => ({
-              value: Number(court.id),
-              label: court.number,
-            }))}
-          />
-        </Form.Item>
-      ),
+      場館名稱:
+        stadium_id &&
+        (mode === 'info' ? (
+          stadium?.data?.name
+        ) : (
+          <Form.Item name="stadium_id" initialValue={Number(stadium_id)}>
+            <Select
+              style={{ width: '100%' }}
+              options={stadiums?.map((stadium) => ({
+                value: stadium.id,
+                label: stadium.name,
+              }))}
+            />
+          </Form.Item>
+        )),
+      場地名稱:
+        venue_id &&
+        (mode === 'info' ? (
+          venue?.data?.name
+        ) : (
+          <Form.Item name="venue_id" initialValue={Number(venue_id)}>
+            <Select
+              style={{ width: '100%' }}
+              options={venues?.map((venue) => ({
+                value: venue.id,
+                label: venue.name,
+              }))}
+            />
+          </Form.Item>
+        )),
+      小單位編號:
+        court_id &&
+        (mode === 'info' ? (
+          courts?.data?.find((court) => court.id === Number(court_id))?.number
+        ) : (
+          <Form.Item name="court_id" initialValue={Number(court_id)}>
+            <Select
+              style={{ width: '100%' }}
+              options={courts?.data?.map((court) => ({
+                value: Number(court.id),
+                label: court.number,
+              }))}
+            />
+          </Form.Item>
+        )),
       租借時間:
-        date &&
-        `${format(setHours(new Date(date), Number(time?.[0])), 'yyyy/MM/dd HH:mm')}-${format(
-          setHours(new Date(date), Number(time?.[time?.length - 1]) + 1),
-          'HH:mm',
-        )}`,
+        mode === 'info'
+          ? reservation?.data &&
+            `${format(new Date(reservation?.data?.start_time), 'yyyy/MM/dd HH:mm')}-${format(
+              new Date(reservation?.data?.end_time),
+              'HH:mm',
+            )}`
+          : date &&
+            `${format(setHours(new Date(date), Number(time?.[0])), 'yyyy/MM/dd HH:mm')}-${format(
+              setHours(new Date(date), Number(time?.[time?.length - 1]) + 1),
+              'HH:mm',
+            )}`,
       運動項目: (
         <RoundTagWrapper>
           <RoundTag>{venue?.data?.sport_name}</RoundTag>
         </RoundTagWrapper>
       ),
-      預計使用人數: (
-        <Form.Item name="member_count" rules={[{ required: true, message: '' }]}>
-          <InputNumber addonAfter="人" style={{ width: 120 }} min={0} />
-        </Form.Item>
-      ),
-      邀請的成員: (
-        <Form.Item name="member_ids" initialValue={[]}>
-          <SearchSelect
-            style={{ width: '100%' }}
-            fetcher={(query) =>
-              mutateAsync({ query }).then(
-                (data) =>
-                  data?.data?.map((account) => ({
-                    value: account.id,
-                    label: account.nickname,
-                  })) ?? [],
-              )
-            }
-          />
-        </Form.Item>
-      ),
-      尋找球友: (
-        <Form.Item name="vacancy_switch" valuePropName="checked">
-          <Switch />
-        </Form.Item>
-      ),
+      預計使用人數:
+        mode === 'info' ? (
+          reservation?.data?.member_count
+        ) : (
+          <Form.Item name="member_count" rules={[{ required: true, message: '' }]}>
+            <InputNumber addonAfter="人" style={{ width: 120 }} min={0} />
+          </Form.Item>
+        ),
+      ...(mode === 'info' &&
+        reservation?.data && {
+          總花費: calculateTotalCost(venue?.data?.fee_type)(
+            differenceInHours(
+              new Date(reservation?.data?.end_time),
+              new Date(reservation?.data?.start_time),
+            ),
+            reservation?.data?.member_count,
+            venue?.data?.fee_rate ?? 0,
+          ),
+        }),
+      邀請的成員:
+        mode === 'info' ? (
+          ''
+        ) : (
+          <Form.Item name="member_ids" initialValue={[]}>
+            <SearchSelect
+              style={{ width: '100%' }}
+              fetcher={async (query) => {
+                const { data } = (await mutateAsync({ query })) as {
+                  data: z.infer<(typeof schemas)['Account']>[] | undefined | null;
+                };
+                return (
+                  data?.map((account) => ({ label: account.nickname, value: account.id })) ?? []
+                );
+              }}
+            />
+          </Form.Item>
+        ),
+      ...(mode === 'info' && { 邀請連結: reservation?.data?.invitation_code }),
+      尋找球友:
+        mode === 'info' ? (
+          reservation?.data?.vacancy !== -1 ? (
+            <CardAntd>
+              <GeneralGrid
+                labelStyles={{ 備註: { alignSelf: 'flex-start' } }}
+                data={{
+                  徵求人數: reservation?.data?.vacancy,
+                  技術水準: (
+                    <RoundTagWrapper>
+                      {reservation?.data?.technical_level.map((level, index) => (
+                        <RoundTag key={index}>{toTechnicalLevel(level)}</RoundTag>
+                      ))}
+                    </RoundTagWrapper>
+                  ),
+                  備註: reservation?.data?.remark,
+                }}
+              />
+            </CardAntd>
+          ) : (
+            '無'
+          )
+        ) : (
+          <Form.Item name="vacancy_switch" valuePropName="checked">
+            <Switch />
+          </Form.Item>
+        ),
       '': (
         <Form.Item shouldUpdate noStyle>
           {({ getFieldValue }) => {
@@ -220,37 +282,128 @@ export default function Reserve() {
     court_id,
     courts?.data,
     date,
+    mode,
     mutateAsync,
+    reservation?.data,
+    stadium?.data?.name,
     stadium_id,
     stadiums,
     time,
+    venue?.data?.fee_rate,
+    venue?.data?.fee_type,
+    venue?.data?.name,
     venue?.data?.sport_name,
     venue_id,
     venues,
   ]);
 
+  const handleReserve = useCallback(async () => {
+    try {
+      await form.validateFields();
+      if (date) {
+        const { remark = '', member_count } = form.getFieldsValue();
+        createReservation({
+          start_time: formatISO(setHours(new Date(date), Number(time?.[0]))),
+          end_time: formatISO(setHours(new Date(date), Number(time?.[time?.length - 1]) + 1)),
+          member_count,
+          remark,
+        });
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }, [createReservation, date, form, time]);
+
+  const action = useMemo(() => {
+    switch (mode) {
+      case 'create':
+        return (
+          <>
+            <RippleButton category="outlined" palette="gray" onClick={() => navigate(-1)}>
+              取消
+            </RippleButton>
+            <RippleButton category="solid" palette="main" onClick={handleReserve}>
+              確定預約
+            </RippleButton>
+          </>
+        );
+      case 'edit':
+        return (
+          <>
+            <RippleButton
+              category="outlined"
+              palette="gray"
+              onClick={() => navigate(`/reserve/info/${reservation_id}`)}
+            >
+              取消
+            </RippleButton>
+            <RippleButton category="solid" palette="main">
+              儲存
+            </RippleButton>
+          </>
+        );
+      case 'info':
+        return (
+          <>
+            <RippleButton category="outlined" palette="red">
+              退出
+            </RippleButton>
+            <RippleButton
+              category="solid"
+              palette="main"
+              onClick={() => navigate(`/reserve/edit/${reservation_id}`)}
+            >
+              編輯預約
+            </RippleButton>
+          </>
+        );
+      default:
+        break;
+    }
+  }, [handleReserve, mode, navigate, reservation_id]);
+
   return (
-    <Container>
-      <Card>
-        <Title>預約場地</Title>
-        <GridForm
-          style={{ padding: `0 ${percentageOfFigma(80).max}`, rowGap: percentageOfFigma(20).max }}
-          form={form}
-          data={data}
-        />
-        <SumContainer>
-          <div style={{ fontWeight: 600 }}>場地費用</div>
-          <div>160 元</div>
-        </SumContainer>
-        <ButtonWrapper>
-          <RippleButton category="outlined" palette="gray">
-            取消
-          </RippleButton>
-          <RippleButton category="solid" palette="main" onClick={handleReserve}>
-            確定預約
-          </RippleButton>
-        </ButtonWrapper>
-      </Card>
-    </Container>
+    <>
+      <AnimatePresence>
+        {(fetchingStadiums ||
+          fetchVenues ||
+          fetchingCourts ||
+          fetchingVenueInfo ||
+          fetchingStadiumInfo) && <LoadingPage />}{' '}
+      </AnimatePresence>
+      <Container>
+        <Card>
+          <Title>{mode === 'create' ? '預約場地' : '詳細資料'}</Title>
+          <GridForm
+            style={{ padding: `0 ${percentageOfFigma(80).max}`, rowGap: percentageOfFigma(20).max }}
+            form={form}
+            data={data}
+            labelStyles={{ ...(mode === 'info' && { 尋找球友: { alignSelf: 'flex-start' } }) }}
+          />
+          {mode !== 'info' && (
+            <SumContainer>
+              <div style={{ fontWeight: 600 }}>場地費用</div>
+              <Form.Item noStyle shouldUpdate>
+                {({ getFieldValue }) => {
+                  const member_count = getFieldValue('member_count') as number | undefined;
+                  return (
+                    date &&
+                    calculateTotalCost(venue?.data?.fee_type)(
+                      differenceInHours(
+                        setHours(new Date(date), Number(time?.[time?.length - 1]) + 1),
+                        setHours(new Date(date), Number(time?.[0])),
+                      ),
+                      member_count ?? 0,
+                      venue?.data?.fee_rate ?? 0,
+                    )
+                  );
+                }}
+              </Form.Item>
+            </SumContainer>
+          )}
+          <ButtonWrapper>{action}</ButtonWrapper>
+        </Card>
+      </Container>
+    </>
   );
 }

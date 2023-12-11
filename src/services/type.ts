@@ -472,6 +472,25 @@ const EditReservationInput = z
   })
   .partial()
   .passthrough();
+const ReservationMemberStatus = z.enum(['JOINED', 'INVITED', 'REJECTED']);
+const ReservationMemberSource = z.enum(['SEARCH', 'INVITATION_CODE']);
+const ReservationMemberWithName = z
+  .object({
+    reservation_id: z.number().int(),
+    account_id: z.number().int(),
+    is_manager: z.boolean(),
+    status: ReservationMemberStatus,
+    source: ReservationMemberSource,
+    nickname: z.string(),
+  })
+  .passthrough();
+const Response_Sequence_ReservationMemberWithName__ = z
+  .object({
+    data: z.union([z.array(ReservationMemberWithName), z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
+  })
+  .partial()
+  .passthrough();
 const app__processor__http__court__BrowseReservationParameters = z
   .object({
     time_ranges: z.union([z.array(DateTimeRange), z.null()]),
@@ -510,9 +529,7 @@ const Response_Sequence_BusinessHour__ = z
   })
   .partial()
   .passthrough();
-const ReservationMemberStatus = z.enum(['JOINED', 'INVITED', 'REJECTED']);
 const ReservationStatus = z.enum(['IN_PROGRESS', 'CANCELLED', 'FINISHED']);
-const ReservationMemberSource = z.enum(['SEARCH', 'INVITATION_CODE']);
 const ViewMyReservationSortBy = z.enum([
   'time',
   'stadium_name',
@@ -744,6 +761,10 @@ export const schemas = {
   Response_BrowseReservationOutput_,
   Response_Reservation_,
   EditReservationInput,
+  ReservationMemberStatus,
+  ReservationMemberSource,
+  ReservationMemberWithName,
+  Response_Sequence_ReservationMemberWithName__,
   app__processor__http__court__BrowseReservationParameters,
   AddReservationInput,
   AddReservationOutput,
@@ -751,9 +772,7 @@ export const schemas = {
   EditCourtInput,
   AddCourtInput,
   Response_Sequence_BusinessHour__,
-  ReservationMemberStatus,
   ReservationStatus,
-  ReservationMemberSource,
   ViewMyReservationSortBy,
   ViewMyReservationParams,
   ViewMyReservation,
@@ -1419,6 +1438,32 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
       },
     ],
     response: Response,
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
+  },
+  {
+    method: 'get',
+    path: '/api/reservation/:reservation_id/members',
+    alias: 'read_reservation_members_api_reservation__reservation_id__members_get',
+    requestFormat: 'json',
+    parameters: [
+      {
+        name: 'reservation_id',
+        type: 'Path',
+        schema: z.number().int(),
+      },
+      {
+        name: 'auth-token',
+        type: 'Header',
+        schema: auth_token,
+      },
+    ],
+    response: Response_Sequence_ReservationMemberWithName__,
     errors: [
       {
         status: 422,
