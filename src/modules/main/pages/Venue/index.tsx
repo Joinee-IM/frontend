@@ -245,7 +245,7 @@ export default function Venue() {
                         `date=${format(date, 'yyyy/MM/dd')}`,
                         `time=${time?.join(',')}`,
                       ];
-                      navigate(`/reserve?${query.join('&')}`);
+                      navigate(`/reserve/create?${query.join('&')}`);
                     }}
                   >
                     確認選擇時段

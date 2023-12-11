@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import type { schemas } from '@/services/type';
@@ -28,6 +28,7 @@ const Container = styled.div`
 export default function History() {
   const { account_id } = useParams();
   const { histories } = useBrowseHistory(Number(account_id), { limit: 10, offset: 0 });
+  const navigate = useNavigate();
 
   const columns: ColumnsType<DataType> = [
     {
@@ -83,8 +84,8 @@ export default function History() {
     {
       dataIndex: '',
       key: 'x',
-      render: () => (
-        <a>
+      render: (_, record) => (
+        <a onClick={() => navigate(`/reserve/info/${record.reservation_id}`)}>
           <DirectionRightIcon />
         </a>
       ),
