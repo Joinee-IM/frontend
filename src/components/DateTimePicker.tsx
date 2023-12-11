@@ -8,9 +8,8 @@ import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
 
 import 'react-day-picker/dist/style.css';
 
-import { MOBILE_WITH } from '@/constants/rwd';
 import theme from '@/provider/theme/theme';
-import { flexCenter, percentageOfFigma } from '@/utils/css';
+import { flexCenter, percentageOfFigma, rwdFontSize } from '@/utils/css';
 
 interface DateTimePickerProps {
   date: Date[] | undefined;
@@ -64,11 +63,8 @@ const TagTag = styled.label.withConfig({
   shouldForwardProp: (prop) => !['selected'].includes(prop),
 })<{ selected?: boolean }>`
   cursor: pointer;
-  font-size: ${percentageOfFigma(16).max};
+  ${rwdFontSize(16)};
   padding: 0.375em 0.75em;
-  @media (max-width: ${MOBILE_WITH}px) {
-    font-size: min(12px, ${percentageOfFigma(16).max});
-  }
   border-radius: 0.5em;
   width: fit-content;
   height: fit-content;

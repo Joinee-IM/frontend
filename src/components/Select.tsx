@@ -15,6 +15,7 @@ interface SelectProps extends MenuProps {
   items: { label: string; key: string }[] | undefined;
   loading?: ButtonProps['loading'];
   icon?: ButtonProps['icon'];
+  children?: ReactNode;
 }
 
 const TitleWrapper = styled.div`
@@ -30,6 +31,7 @@ export default function Select({
   icon,
   onSelect,
   selectedKeys,
+  children,
 }: SelectProps) {
   const [open, setOpen] = useState(false);
   const selected = useMemo(
@@ -51,23 +53,24 @@ export default function Select({
       trigger={['click']}
       disabled={!items?.length}
     >
-      <RippleButton
-        icon={icon}
-        loading={loading}
-        // category={selected ? 'solid' : 'outlined'}
-        category="outlined"
-        palette="main"
-        onClick={(e) => e.preventDefault()}
-      >
-        <TitleWrapper>
-          {selected ?? title}
-          {open ? (
-            <UpArrowIcon style={{ fontSize: '0.5em' }} />
-          ) : (
-            <DownArrowIcon style={{ fontSize: '0.5em' }} />
-          )}
-        </TitleWrapper>
-      </RippleButton>
+      {children ?? (
+        <RippleButton
+          icon={icon}
+          loading={loading}
+          category={selected ? 'solid' : 'outlined'}
+          palette="sub"
+          onClick={(e) => e.preventDefault()}
+        >
+          <TitleWrapper>
+            {selected ?? title}
+            {open ? (
+              <UpArrowIcon style={{ fontSize: '0.5em' }} />
+            ) : (
+              <DownArrowIcon style={{ fontSize: '0.5em' }} />
+            )}
+          </TitleWrapper>
+        </RippleButton>
+      )}
     </Dropdown>
   );
 }

@@ -248,12 +248,9 @@ export default function Stadium() {
                 onSelect={({ key }) => setSport(Number(key))}
               />
               {' ・ '}
-              <RippleButton
-                category="icon"
-                palette="gray"
-                icon={<CalendarIcon fontSize="0.5em" />}
-                onClick={() => setCalendarOpen(true)}
-              />
+              <RippleButton category="icon" palette="gray" onClick={() => setCalendarOpen(true)}>
+                <CalendarIcon fontSize="0.5em" />
+              </RippleButton>
               <Modal
                 centered
                 open={calendarOpen}

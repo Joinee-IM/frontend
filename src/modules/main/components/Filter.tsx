@@ -88,31 +88,30 @@ export default function Filter({
         <FilterWrapper visible={filterOpen}>{filters}</FilterWrapper>
         <IconWrapper>
           {!filterOpen ? (
-            <RippleButton
-              category="icon"
-              palette="gray"
-              icon={<FilterIcon fontSize="1.5em" />}
-              onClick={() => setFilterOpen(true)}
-            />
+            <RippleButton category="icon" palette="gray" onClick={() => setFilterOpen(true)}>
+              <FilterIcon fontSize="1.5em" />
+            </RippleButton>
           ) : (
             <RippleButton
               category="icon"
               palette="gray"
-              icon={<CloseIcon fontSize="1.5em" />}
               onClick={() => {
                 setFilterOpen(false);
                 onClose?.();
               }}
-            />
+            >
+              <CloseIcon fontSize="1.5em" />
+            </RippleButton>
           )}
           {searchable && (
             <SearchWrapper>
               <RippleButton
                 category="icon"
                 palette="gray"
-                icon={<SearchIcon fontSize="2em" />}
                 onClick={() => setWord((prev) => (prev === undefined ? '' : undefined))}
-              />
+              >
+                <SearchIcon fontSize="1.5em" />
+              </RippleButton>
               {word !== undefined && (
                 <Input
                   value={word ?? undefined}

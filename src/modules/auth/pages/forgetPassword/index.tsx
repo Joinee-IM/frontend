@@ -59,7 +59,7 @@ export default function ForgetPassword() {
               category="solid"
               palette="main"
               htmlType="submit"
-              style={{ padding: '0 10px', marginTop: '10px' }}
+              style={{ marginTop: '10px' }}
             >
               傳送驗證信
             </RippleButton>
