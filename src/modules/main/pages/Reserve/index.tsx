@@ -2,7 +2,6 @@ import { Card as CardAntd, Form, InputNumber, Select, Switch } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import TextArea from 'antd/es/input/TextArea';
 import { differenceInHours, format, formatISO, setHours } from 'date-fns';
-import { AnimatePresence } from 'framer-motion';
 import { useCallback, useMemo } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -11,12 +10,13 @@ import type { schemas } from '@/services/type';
 import type { TechnicalLevelType } from '@/utils/function/map';
 import type { z } from 'zod';
 
+import Loading from '@/assets/create.gif';
 import { ButtonWrapper, RippleButton } from '@/components/Button';
 import { GeneralGrid } from '@/components/Grid';
 import GridForm from '@/components/Grid/FormGrid';
+import { useLoading } from '@/components/Loading/PageLoading';
 import { SearchSelect } from '@/components/Select';
 import { RoundTag, RoundTagWrapper } from '@/components/Tag';
-import LoadingPage from '@/modules/Loading';
 import {
   useCreateReservation,
   useReservationInfo,
@@ -362,15 +362,15 @@ export default function Reserve() {
     }
   }, [handleReserve, mode, navigate, reservation_id]);
 
+  const { context } = useLoading(
+    [fetchingStadiums, fetchVenues, fetchingCourts, fetchingVenueInfo, fetchingStadiumInfo],
+    Loading,
+    '正在生成預約表單',
+  );
+
   return (
     <>
-      <AnimatePresence>
-        {(fetchingStadiums ||
-          fetchVenues ||
-          fetchingCourts ||
-          fetchingVenueInfo ||
-          fetchingStadiumInfo) && <LoadingPage />}{' '}
-      </AnimatePresence>
+      {context}
       <Container>
         <Card>
           <Title>{mode === 'create' ? '預約場地' : '詳細資料'}</Title>

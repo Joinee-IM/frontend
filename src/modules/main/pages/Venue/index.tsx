@@ -1,6 +1,5 @@
 import { Modal, Radio } from 'antd';
 import { eachDayOfInterval, endOfWeek, format, startOfWeek } from 'date-fns';
-import { AnimatePresence } from 'framer-motion';
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -11,12 +10,12 @@ import FireIcon from '@/assets/icons/Fire';
 import { ButtonWrapper, RippleButton } from '@/components/Button';
 import DateTimePicker, { useDateTimePicker } from '@/components/DateTimePicker';
 import GridForm from '@/components/Grid/FormGrid';
+import { useLoading } from '@/components/Loading/PageLoading';
 import { TabPane, Tabs } from '@/components/Tab';
 import { RoundTag, RoundTagWrapper, SquareTag } from '@/components/Tag';
 import TimeSlot from '@/components/TimeSlot';
 import useDeviceDetector from '@/hooks/useDeviceDetector';
 import useTimeSlotDrag from '@/hooks/useTimeSlotDrag';
-import LoadingPage from '@/modules/Loading';
 import { AlbumWrapper, ImagePreview } from '@/modules/main/pages/Stadium/components/DetailModal';
 import { useStadiumInfo } from '@/modules/main/pages/Stadium/services';
 import { useVenueCourts, useVenueInfo } from '@/modules/main/pages/Venue/services';
@@ -122,11 +121,6 @@ export default function Venue() {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const { date, setDate, focus, setFocus, times, setTimes } = useDateTimePicker();
 
-  const loading = useMemo(
-    () => fetchingStadium || fetchingVenue || fetchingAlbum || fetchingBusiness,
-    [fetchingAlbum, fetchingBusiness, fetchingStadium, fetchingVenue],
-  );
-
   const timeRange = useMemo(
     () => new BusinessHours(businessHour?.data ?? []).largestAvailableTimeRange,
     [businessHour?.data],
@@ -145,10 +139,11 @@ export default function Venue() {
   );
 
   const navigate = useNavigate();
+  const { context } = useLoading([fetchingAlbum, fetchingBusiness, fetchingStadium, fetchingVenue]);
 
   return (
     <>
-      <AnimatePresence>{loading && <LoadingPage />} </AnimatePresence>
+      {context}
       <Background image={album?.data?.[0].url}>
         <TitleWrapper>
           <Title>{`${stadium?.data?.name} / ${venue?.data?.name}`}</Title>
