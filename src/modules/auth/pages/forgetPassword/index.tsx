@@ -23,7 +23,7 @@ const Text = styled.div`
 export default function ForgetPassword() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
-  const { mutate, error } = useForgetPassword();
+  const { mutate, error, isLoading } = useForgetPassword();
 
   const { context } = useError(error);
 
@@ -59,7 +59,8 @@ export default function ForgetPassword() {
               category="solid"
               palette="main"
               htmlType="submit"
-              style={{ marginTop: '10px' }}
+              style={{ padding: '0 10px', marginTop: '10px' }}
+              loading={isLoading}
             >
               傳送驗證信
             </RippleButton>

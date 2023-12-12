@@ -29,7 +29,7 @@ export default function BaseInfoSection(props: InfoProps) {
   const [form] = Form.useForm<InfoProps>();
   const [isEdit, setIsEdit] = useState(false);
   const { refetch } = useUserInfo(Number(account_id));
-  const { mutate } = useEditAccount(Number(account_id));
+  const { mutate, isLoading } = useEditAccount(Number(account_id));
 
   const BaseInfoAction = useMemo(() => {
     return function BaseInfoAction() {
@@ -60,6 +60,7 @@ export default function BaseInfoSection(props: InfoProps) {
             category="outlined"
             palette="main"
             icon={<EditFilled />}
+            loading={isLoading}
           >
             儲存
           </RippleButton>
@@ -75,7 +76,7 @@ export default function BaseInfoSection(props: InfoProps) {
         </RippleButton>
       );
     };
-  }, [form, isEdit, mutate, refetch]);
+  }, [form, isEdit, isLoading, mutate, refetch]);
 
   const baseInfo = useMemo(() => {
     return {

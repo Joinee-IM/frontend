@@ -46,7 +46,7 @@ export default function SecuritySection() {
       }),
     ],
   };
-  const { mutate, error } = useEditPassword(Number(account_id));
+  const { mutate, error, isLoading } = useEditPassword(Number(account_id));
   const { context } = useError(error, undefined);
 
   const SecurityInfoAction = useMemo(() => {
@@ -74,6 +74,7 @@ export default function SecuritySection() {
             category="outlined"
             palette="main"
             icon={<EditFilled />}
+            loading={isLoading}
           >
             儲存
           </RippleButton>
@@ -89,7 +90,7 @@ export default function SecuritySection() {
         </RippleButton>
       );
     };
-  }, [form, isEdit, mutate]);
+  }, [form, isEdit, isLoading, mutate]);
 
   const securityInfo = useMemo(() => {
     return isEdit
