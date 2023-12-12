@@ -14,6 +14,7 @@ function search<T>(target: T, keys: string[]) {
   else return search(path, keys.slice(1));
 }
 
+// 對應 modules 裡資料夾的結構
 export const ROUTES = {
   index: {
     route: '/',
@@ -42,6 +43,10 @@ export const ROUTES = {
     },
   },
   history: '/history/:account_id',
+  lessor: {
+    route: '/',
+    manage: { route: 'manage/:account_id', venue: 'venue/:venue_id' },
+  },
   notFound: '*',
   view: { route: 'view' },
 } satisfies Record<string, RoutesType | string>;

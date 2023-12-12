@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 import { MOBILE_WITH } from '@/constants/rwd';
-import { flexCenter, percentageOfFigma } from '@/utils/css';
+import { flexCenter, percentageOfFigma, rwdFontSize } from '@/utils/css';
 
 export const SquareTag = styled.div`
   font-size: ${percentageOfFigma(20).max};
@@ -17,9 +17,9 @@ export const SquareTag = styled.div`
 
 export const RoundTag = styled.div`
   ${flexCenter}
-  height: 30px;
-  padding: 0 12px;
-  border-radius: 16px;
+  ${rwdFontSize(14)};
+  padding: 0.5em 1em;
+  border-radius: 1.3em;
   background: #cbc09f;
   color: white;
   flex-shrink: 0;

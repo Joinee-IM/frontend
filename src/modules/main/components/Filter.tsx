@@ -13,6 +13,8 @@ import { RippleButton } from '@/components/Button';
 interface FilterProps extends Type<typeof ToolBarWrapper> {
   filters: ReactNode;
   onClose?: () => void;
+  twoStepsFilter?: boolean;
+  customControl?: ReactNode;
 }
 
 interface UnSearchableFilterProps extends FilterProps {
@@ -79,53 +81,60 @@ export default function Filter({
   searchable,
   word,
   setWord,
+  twoStepsFilter = true,
+  customControl,
 }: UnSearchableFilterProps | SearchableFilterProps) {
   const [filterOpen, setFilterOpen] = useState(false);
 
   return (
     <ToolBarWrapper>
       <ToolBar>
-        <FilterWrapper visible={filterOpen}>{filters}</FilterWrapper>
+        <FilterWrapper visible={twoStepsFilter ? filterOpen : true}>{filters}</FilterWrapper>
         <IconWrapper>
-          {!filterOpen ? (
-            <RippleButton category="icon" palette="gray" onClick={() => setFilterOpen(true)}>
-              <FilterIcon fontSize="1.5em" />
-            </RippleButton>
-          ) : (
-            <RippleButton
-              category="icon"
-              palette="gray"
-              onClick={() => {
-                setFilterOpen(false);
-                onClose?.();
-              }}
-            >
-              <CloseIcon fontSize="1.5em" />
-            </RippleButton>
-          )}
-          {searchable && (
-            <SearchWrapper>
-              <RippleButton
-                category="icon"
-                palette="gray"
-                onClick={() => setWord((prev) => (prev === undefined ? '' : undefined))}
-              >
-                <SearchIcon fontSize="1.5em" />
-              </RippleButton>
-              {word !== undefined && (
-                <Input
-                  value={word ?? undefined}
-                  onChange={(e) => setWord?.(e.target.value)}
-                  placeholder="搜尋"
-                  bordered={false}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.nativeEvent.isComposing && word) {
-                      onSearch?.(word);
-                    }
-                  }}
-                />
+          {customControl ?? (
+            <>
+              {twoStepsFilter &&
+                (!filterOpen ? (
+                  <RippleButton category="icon" palette="gray" onClick={() => setFilterOpen(true)}>
+                    <FilterIcon fontSize="1.5em" />
+                  </RippleButton>
+                ) : (
+                  <RippleButton
+                    category="icon"
+                    palette="gray"
+                    onClick={() => {
+                      setFilterOpen(false);
+                      onClose?.();
+                    }}
+                  >
+                    <CloseIcon fontSize="1.5em" />
+                  </RippleButton>
+                ))}
+              {searchable && (
+                <SearchWrapper>
+                  <RippleButton
+                    category="icon"
+                    palette="gray"
+                    onClick={() => setWord((prev) => (prev === undefined ? '' : undefined))}
+                  >
+                    <SearchIcon fontSize="1.5em" />
+                  </RippleButton>
+                  {word !== undefined && (
+                    <Input
+                      value={word ?? undefined}
+                      onChange={(e) => setWord?.(e.target.value)}
+                      placeholder="搜尋"
+                      bordered={false}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.nativeEvent.isComposing && word) {
+                          onSearch?.(word);
+                        }
+                      }}
+                    />
+                  )}
+                </SearchWrapper>
               )}
-            </SearchWrapper>
+            </>
           )}
         </IconWrapper>
       </ToolBar>

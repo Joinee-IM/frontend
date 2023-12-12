@@ -93,6 +93,30 @@ const router = createBrowserRouter([
               return { Component: History.default };
             },
           },
+          {
+            path: routePath('lessor'),
+            children: [
+              {
+                path: routePath('lessor.manage'),
+                children: [
+                  {
+                    index: true,
+                    async lazy() {
+                      const Court = await import('@/modules/lessor/pages/Manage');
+                      return { Component: Court.default };
+                    },
+                  },
+                  {
+                    path: routePath('lessor.manage.venue'),
+                    async lazy() {
+                      const Venue = await import('@/modules/lessor/pages/Venue');
+                      return { Component: Venue.default };
+                    },
+                  },
+                ],
+              },
+            ],
+          },
         ],
       },
       {

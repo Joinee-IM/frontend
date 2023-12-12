@@ -1,5 +1,5 @@
 import { BellOutlined, UserOutlined } from '@ant-design/icons';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useCookies } from 'react-cookie';
 import { Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import styled, { css } from 'styled-components';
@@ -11,6 +11,7 @@ import Title from '@/components/Title';
 import MODULE_TO_ROUTE from '@/constants/module';
 import { useUser } from '@/contexts/useUser';
 import { useLogout } from '@/modules/auth/service';
+import { useUserInfo } from '@/modules/main/pages/UserInfo/services';
 import { backgroundCenter, percentageOfFigma } from '@/utils/css';
 import useClick from '@/view/hooks/useClick';
 
@@ -106,43 +107,70 @@ export default function Main() {
     }
   }, [account_id, navigate, setCookie]);
 
-  const userSelect: UserSelect[] = ['歷史紀錄', '個人檔案', '登出'];
-  const handleUserSelect = (key: UserSelect) => {
-    switch (key) {
-      case '歷史紀錄':
-        break;
-      case '個人檔案':
-        navigate(`/user-info/${cookies.id}`);
-        break;
-      case '登出':
-        logout(undefined, {
-          onSuccess: () => {
-            removeCookie('id');
-            navigate('/entry');
-          },
-        });
-        break;
-      default:
-        break;
-    }
-  };
+  const { data: account } = useUserInfo(Number(cookies.id));
 
-  return (
-    <Container>
-      <HeaderWrapper>
-        <Title style={{ fontSize: 'max(24px, 1.9vw)' }} />
-        <MenuWrapper>
-          <MenuItemWrapper selected={MODULE_TO_ROUTE.stadium.some((path) => path.test(pathname))}>
-            <MenuItem type="link" category="link" palette="main">
-              尋找場地
-            </MenuItem>
-          </MenuItemWrapper>
-          <MenuItem type="link" category="link" palette="main">
-            尋找球友
-          </MenuItem>
-          <MenuItem type="link" category="link" palette="main">
-            <BellOutlined />
-          </MenuItem>
+  const userSelect: UserSelect[] = useMemo(() => ['歷史紀錄', '個人檔案', '登出'], []);
+  const handleUserSelect = useCallback(
+    (key: UserSelect) => {
+      switch (key) {
+        case '歷史紀錄':
+          break;
+        case '個人檔案':
+          navigate(`/user-info/${cookies.id}`);
+          break;
+        case '登出':
+          logout(undefined, {
+            onSuccess: () => {
+              removeCookie('id');
+              navigate('/entry');
+            },
+          });
+          break;
+        default:
+          break;
+      }
+    },
+    [cookies.id, logout, navigate, removeCookie],
+  );
+
+  const menu = useMemo(
+    () =>
+      account?.data && (
+        <>
+          {account.data?.role === 'NORMAL' ? (
+            <>
+              <MenuItemWrapper
+                selected={MODULE_TO_ROUTE.stadium.some((path) => path.test(pathname))}
+              >
+                <MenuItem type="link" category="link" palette="main">
+                  尋找場地
+                </MenuItem>
+              </MenuItemWrapper>
+              <MenuItem type="link" category="link" palette="main">
+                尋找球友
+              </MenuItem>
+              <MenuItem type="link" category="link" palette="main">
+                <BellOutlined />
+              </MenuItem>
+            </>
+          ) : (
+            <>
+              <MenuItemWrapper
+                selected={MODULE_TO_ROUTE.stadium.some((path) => path.test(pathname))}
+              >
+                <MenuItem type="link" category="link" palette="main">
+                  新增設施
+                </MenuItem>
+              </MenuItemWrapper>
+              <MenuItemWrapper
+                selected={MODULE_TO_ROUTE.stadium.some((path) => path.test(pathname))}
+              >
+                <MenuItem type="link" category="link" palette="main">
+                  管理現有設施
+                </MenuItem>
+              </MenuItemWrapper>
+            </>
+          )}
           <Select
             selectedKeys={[]}
             items={userSelect.map((label) => ({
@@ -164,9 +192,18 @@ export default function Main() {
               <UserOutlined />
             </MenuItem>
           </Select>
-        </MenuWrapper>
+        </>
+      ),
+    [account?.data, handleUserSelect, navigate, pathname, user?.login, userSelect],
+  );
+
+  return (
+    <Container>
+      <HeaderWrapper>
+        <Title />
+        <MenuWrapper>{menu}</MenuWrapper>
       </HeaderWrapper>
-      <ContentContainer hasBackground={true}>
+      <ContentContainer hasBackground={false}>
         <ScrollContainer>
           <Outlet />
         </ScrollContainer>
