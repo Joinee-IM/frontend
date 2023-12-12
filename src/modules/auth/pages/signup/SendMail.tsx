@@ -10,7 +10,7 @@ export default function SendMail() {
   const location = useLocation();
   const { state = { email: '12345' } } = location as { state: { email: string } };
 
-  const { mutate } = useResendEmailVerification();
+  const { mutate, isLoading } = useResendEmailVerification();
   const handleButtonPress = () => {
     if (state.email) mutate({ email: state.email });
   };
@@ -32,6 +32,7 @@ export default function SendMail() {
           htmlType="submit"
           style={{ width: '100%', marginTop: '15px' }}
           onClick={handleButtonPress}
+          loading={isLoading}
         >
           重傳驗證碼
         </RippleButton>

@@ -21,7 +21,7 @@ const Text = styled.div`
 export default function ResetPassword() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
-  const { mutate } = useResetPassword();
+  const { mutate, isLoading } = useResetPassword();
   const [searchParams] = useSearchParams();
   const code = searchParams.get('code');
 
@@ -67,7 +67,9 @@ export default function ResetPassword() {
             category="solid"
             palette="main"
             htmlType="submit"
+            borderBox={true}
             style={{ width: '100%', marginTop: '20px' }}
+            loading={isLoading}
           >
             確認
           </RippleButton>

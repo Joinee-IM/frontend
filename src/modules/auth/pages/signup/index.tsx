@@ -30,7 +30,7 @@ const ButtonGroup = styled(Link)`
 export default function Signup() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
-  const { mutate, error } = useAddAccount();
+  const { mutate, error, isLoading } = useAddAccount();
   const [searchParams] = useSearchParams();
   const role = searchParams.get('role') as Role;
   const { googleLogin } = useGoogleLogin(role ?? '');
@@ -106,6 +106,7 @@ export default function Signup() {
                 palette="main"
                 htmlType="submit"
                 style={{ width: '100%' }}
+                loading={isLoading}
               >
                 下一步
               </RippleButton>
