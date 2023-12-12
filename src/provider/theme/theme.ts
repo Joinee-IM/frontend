@@ -30,6 +30,7 @@ const theme = {
   },
 
   white: '#FFFFFF',
+  black: '#000000',
 } satisfies ThemeType;
 
 export type Theme = typeof theme;

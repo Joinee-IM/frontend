@@ -316,6 +316,9 @@ const Response_AddVenueOutput_ = z
   .object({ data: z.union([AddVenueOutput, z.null()]), error: z.union([ErrorMessage, z.null()]) })
   .partial()
   .passthrough();
+const BatchEditVenueInput = z
+  .object({ venue_ids: z.array(z.number()), is_published: z.boolean() })
+  .passthrough();
 const ReadVenueOutput = z
   .object({
     id: z.number().int(),
@@ -457,8 +460,40 @@ const Response_BrowseReservationOutput_ = z
   })
   .partial()
   .passthrough();
-const Response_Reservation_ = z
-  .object({ data: z.union([Reservation, z.null()]), error: z.union([ErrorMessage, z.null()]) })
+const ReservationMemberStatus = z.enum(['JOINED', 'INVITED', 'REJECTED']);
+const ReservationMemberSource = z.enum(['SEARCH', 'INVITATION_CODE']);
+const ReservationMember = z
+  .object({
+    reservation_id: z.number().int(),
+    account_id: z.number().int(),
+    is_manager: z.boolean(),
+    status: ReservationMemberStatus,
+    source: ReservationMemberSource,
+  })
+  .passthrough();
+const ReadReservationOutput = z
+  .object({
+    id: z.number().int(),
+    stadium_id: z.number().int(),
+    venue_id: z.number().int(),
+    court_id: z.number().int(),
+    start_time: z.string().datetime({ offset: true }),
+    end_time: z.string().datetime({ offset: true }),
+    member_count: z.number().int(),
+    vacancy: z.number().int(),
+    technical_level: z.array(TechnicalType),
+    remark: z.union([z.string(), z.null()]),
+    invitation_code: z.string(),
+    is_cancelled: z.boolean(),
+    google_event_id: z.union([z.string(), z.null()]).optional(),
+    members: z.array(ReservationMember),
+  })
+  .passthrough();
+const Response_ReadReservationOutput_ = z
+  .object({
+    data: z.union([ReadReservationOutput, z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
+  })
   .partial()
   .passthrough();
 const EditReservationInput = z
@@ -472,8 +507,6 @@ const EditReservationInput = z
   })
   .partial()
   .passthrough();
-const ReservationMemberStatus = z.enum(['JOINED', 'INVITED', 'REJECTED']);
-const ReservationMemberSource = z.enum(['SEARCH', 'INVITATION_CODE']);
 const ReservationMemberWithName = z
   .object({
     reservation_id: z.number().int(),
@@ -739,6 +772,7 @@ export const schemas = {
   AddVenueInput,
   AddVenueOutput,
   Response_AddVenueOutput_,
+  BatchEditVenueInput,
   ReadVenueOutput,
   Response_ReadVenueOutput_,
   EditVenueInput,
@@ -759,10 +793,12 @@ export const schemas = {
   Reservation,
   BrowseReservationOutput,
   Response_BrowseReservationOutput_,
-  Response_Reservation_,
-  EditReservationInput,
   ReservationMemberStatus,
   ReservationMemberSource,
+  ReservationMember,
+  ReadReservationOutput,
+  Response_ReadReservationOutput_,
+  EditReservationInput,
   ReservationMemberWithName,
   Response_Sequence_ReservationMemberWithName__,
   app__processor__http__court__BrowseReservationParameters,
@@ -1354,7 +1390,7 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
         schema: z.number().int(),
       },
     ],
-    response: Response_Reservation_,
+    response: Response_ReadReservationOutput_,
     errors: [
       {
         status: 422,
@@ -1449,7 +1485,7 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
   {
     method: 'get',
     path: '/api/reservation/:reservation_id/members',
-    alias: 'read_reservation_members_api_reservation__reservation_id__members_get',
+    alias: 'browse_reservation_members_api_reservation__reservation_id__members_get',
     requestFormat: 'json',
     parameters: [
       {
@@ -1834,6 +1870,32 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
       },
     ],
     response: Response_Sequence_Court__,
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
+  },
+  {
+    method: 'patch',
+    path: '/api/venue/batch',
+    alias: 'batch_edit_venue_api_venue_batch_patch',
+    requestFormat: 'json',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: BatchEditVenueInput,
+      },
+      {
+        name: 'auth-token',
+        type: 'Header',
+        schema: auth_token,
+      },
+    ],
+    response: Response,
     errors: [
       {
         status: 422,

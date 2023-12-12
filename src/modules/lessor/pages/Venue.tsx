@@ -109,9 +109,11 @@ const TimeSlotWrapper = styled.div`
 
 export default function Venue() {
   const { isMobile } = useDeviceDetector(800);
-  const { stadium_id, venue_id } = useParams();
-  const { data: stadium, isLoading: fetchingStadium } = useStadiumInfo(Number(stadium_id));
+  const { venue_id } = useParams();
   const { data: venue, isLoading: fetchingVenue } = useVenueInfo(Number(venue_id));
+  const { data: stadium, isLoading: fetchingStadium } = useStadiumInfo(
+    Number(venue?.data?.stadium_id),
+  );
   const { data: album, isLoading: fetchingAlbum } = useAlbum(Number(venue_id), 'VENUE');
   const { data: businessHour, isLoading: fetchingBusiness } = useBusinessHour(
     Number(venue_id),
@@ -120,7 +122,6 @@ export default function Venue() {
   const { data: courts } = useVenueCourts(Number(venue_id));
   const [calendarOpen, setCalendarOpen] = useState(false);
   const { date, setDate, focus, setFocus, times, setTimes } = useDateTimePicker();
-
   const timeRange = useMemo(
     () => new BusinessHours(businessHour?.data ?? []).largestAvailableTimeRange,
     [businessHour?.data],
@@ -139,7 +140,7 @@ export default function Venue() {
   );
 
   const navigate = useNavigate();
-  const { context } = useLoading([fetchingAlbum, fetchingBusiness, fetchingStadium, fetchingVenue]);
+  const { context } = useLoading([fetchingStadium, fetchingVenue, fetchingAlbum, fetchingBusiness]);
 
   return (
     <>
@@ -234,7 +235,7 @@ export default function Venue() {
                         (_, index) => cells.find((column) => column.some((cell) => cell))?.[index],
                       );
                       const query = [
-                        `stadium_id=${stadium_id}`,
+                        `stadium_id=${venue.data?.stadium_id}`,
                         `venue_id=${venue_id}`,
                         `court_id=${courts?.data?.[0].id}`,
                         `date=${format(date, 'yyyy/MM/dd')}`,

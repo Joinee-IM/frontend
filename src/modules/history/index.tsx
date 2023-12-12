@@ -1,6 +1,6 @@
+import { Table } from 'antd';
 import { format } from 'date-fns';
 import { useNavigate, useParams } from 'react-router-dom';
-import styled from 'styled-components';
 
 import type { schemas } from '@/services/type';
 import type { StatusType } from '@/utils/function/map/toStatus';
@@ -8,22 +8,13 @@ import type { ColumnsType } from 'antd/es/table';
 import type { z } from 'zod';
 
 import { DirectionRightIcon } from '@/assets/icons/Direction';
-import Table from '@/components/Table';
 import { useBrowseHistory } from '@/modules/history/services';
+import { Container } from '@/modules/main/components';
 import { toStatus } from '@/utils/function/map';
 
 interface DataType extends z.infer<(typeof schemas)['ViewMyReservation']> {
   key: React.Key;
 }
-const Container = styled.div`
-  padding: 60px clamp(30px, 12.7vw, 200px);
-  width: 100%;
-  box-sizing: border-box;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  row-gap: 40px;
-`;
 
 export default function History() {
   const { account_id } = useParams();

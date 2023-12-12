@@ -12,7 +12,7 @@ import CalendarIcon from '@/assets/icons/Calendar';
 import PositionIcon from '@/assets/icons/Position';
 import { ButtonWrapper, RippleButton } from '@/components';
 import DateTimePicker, { useDateTimePicker } from '@/components/DateTimePicker';
-import Loading from '@/components/Loading';
+import Loading from '@/components/Loading/RippleLoading';
 import Select from '@/components/Select';
 import useElement, { useResizeObserver, useScrollObserver } from '@/hooks/useElement';
 import useError from '@/hooks/useError';

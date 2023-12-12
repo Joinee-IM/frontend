@@ -1,4 +1,4 @@
-import type { JSXElementConstructor } from 'react';
+import type { JSXElementConstructor, Key } from 'react';
 
 export type NestedKeys<T> = T extends Record<string | number, object | string>
   ? {
@@ -17,3 +17,7 @@ export type AllKeys<T> = T extends Record<string | number, unknown>
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Type<T extends keyof JSX.IntrinsicElements | JSXElementConstructor<any>> =
   React.ComponentProps<T>;
+
+export type TableItemType<T> = T & {
+  key: Key;
+};
