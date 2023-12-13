@@ -107,6 +107,20 @@ const router = createBrowserRouter([
                     },
                   },
                   {
+                    path: routePath('lessor.manage.create'),
+                    children: [
+                      {
+                        path: routePath('lessor.manage.create.stadium'),
+                        async lazy() {
+                          const CreateStadium = await import(
+                            '@/modules/lessor/pages/Upload/Stadium'
+                          );
+                          return { Component: CreateStadium.default };
+                        },
+                      },
+                    ],
+                  },
+                  {
                     path: routePath('lessor.manage.venue'),
                     async lazy() {
                       const Venue = await import('@/modules/lessor/pages/Venue');

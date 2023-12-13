@@ -55,6 +55,9 @@ const FilterWrapper = styled.div.withConfig({
   padding-right: 8px;
   margin-right: 8px;
   overflow: scroll;
+  & > * {
+    flex-shrink: 0;
+  }
 `;
 
 const IconWrapper = styled.div`

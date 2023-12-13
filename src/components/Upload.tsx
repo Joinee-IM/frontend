@@ -1,22 +1,26 @@
 import { message } from 'antd';
 import AntdUpload from 'antd/es/upload';
 import { useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import type { UploadFile } from 'antd';
-import type { UploadProps as AntdUploadProps } from 'antd/es/upload';
+import type { RcFile, UploadProps as UploadPropsAntd } from 'antd/es/upload';
+import type { UploadRequestOption } from 'rc-upload/lib/interface';
 
 import UploadIcon from '@/assets/icons/Upload';
 import { RippleButton } from '@/components';
 import Divider from '@/components/Divider';
-import { useEditAvatar } from '@/modules/main/pages/UserInfo/services';
 import theme from '@/provider/theme/theme';
 import { flexCenter } from '@/utils/css';
 
-interface UploadProps {
-  handleUploadSuccess?: () => void;
-  uploadConfig?: AntdUploadProps;
+interface UploaderProps extends Exclude<UploadRequestOption, 'file'> {
+  file: RcFile;
+}
+
+export interface UploadProps {
+  uploader?: (option: UploaderProps) => Promise<void>;
+  uploadConfig?: UploadPropsAntd;
+  successMessage?: 'once' | 'separate';
 }
 
 const { Dragger } = AntdUpload;
@@ -39,17 +43,27 @@ const UploadContainer = styled.div`
   }
 `;
 
-export default function Upload({ handleUploadSuccess, uploadConfig }: UploadProps) {
-  const { account_id } = useParams();
+const ModalTitle = styled.div`
+  font-size: 18px;
+  font-weight: 500;
+  border-bottom: 1px solid ${({ theme }) => theme.gray[300]};
+`;
+
+export const UploadImageTitle = () => <ModalTitle>上傳圖片</ModalTitle>;
+
+export default function Upload({
+  uploader,
+  uploadConfig = {},
+  successMessage = 'separate',
+}: UploadProps) {
+  const { onChange, ...rest } = uploadConfig;
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const { mutate } = useEditAvatar(Number(account_id));
   const onFileChange = (fileList: UploadFile[]) => {
     setFileList(fileList);
   };
 
-  const baseUploadProps: AntdUploadProps = useMemo(
+  const baseUploadProps: UploadPropsAntd = useMemo(
     () => ({
-      maxCount: 1,
       onChange: (info) => {
         if (info.file.status === 'uploading') {
           const clear = setInterval(() => {
@@ -61,7 +75,18 @@ export default function Upload({ handleUploadSuccess, uploadConfig }: UploadProp
         onFileChange(info.fileList);
         switch (info.file.status) {
           case 'done':
-            void message.success(`${info.file.name} 上傳成功！！`);
+            if (successMessage === 'separate')
+              void message.success(`${info.file.name} 上傳成功 🤩`);
+            else if (
+              info.fileList.findIndex((file) => info.file.uid === file.uid) ===
+              info.fileList.length - 1
+            ) {
+              void message.success(
+                `${
+                  info.fileList.filter((file) => file.status === 'done').length
+                }張照片 上傳成功 🤩`,
+              );
+            }
             break;
           case 'error':
             void message.error(`${info.file.name} 上傳失敗 😖`);
@@ -70,25 +95,15 @@ export default function Upload({ handleUploadSuccess, uploadConfig }: UploadProp
           default:
             break;
         }
+        onChange?.(info);
       },
-      customRequest: ({ file, onError: uploadError, onSuccess: uploadSuccess }) => {
-        if (file instanceof File) {
-          mutate(
-            { image: file },
-            {
-              onSuccess: () => {
-                uploadSuccess?.(file);
-                handleUploadSuccess?.();
-                setTimeout(() => setFileList([]), 1000);
-              },
-              onError: uploadError,
-            },
-          );
-        }
+      customRequest: async (options) => {
+        await uploader?.(options as UploaderProps);
+        setTimeout(() => setFileList([]), 1000);
       },
-      ...uploadConfig,
+      ...rest,
     }),
-    [handleUploadSuccess, mutate, uploadConfig],
+    [onChange, rest, successMessage, uploader],
   );
 
   return (

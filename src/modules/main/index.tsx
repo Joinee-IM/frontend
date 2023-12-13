@@ -16,6 +16,7 @@ import { backgroundCenter, percentageOfFigma } from '@/utils/css';
 import useClick from '@/view/hooks/useClick';
 
 type UserSelect = '歷史紀錄' | '個人檔案' | '登出';
+type ManagerSelect = '新增場館' | '新增場地' | '新增小單位';
 
 const Container = styled.div`
   width: 100vw;
@@ -49,7 +50,7 @@ const MenuWrapper = styled.div`
 
 const MenuItemWrapper = styled.div.withConfig({
   shouldForwardProp: (prop) => !['hasBackground'].includes(prop),
-})<{ selected: boolean }>`
+})<{ selected?: boolean }>`
   height: 100%;
   box-sizing: border-box;
   border-bottom: 4px solid ${({ selected, theme }) => (selected ? theme.main[500] : 'transparent')};
@@ -110,6 +111,7 @@ export default function Main() {
   const { data: account } = useUserInfo(Number(cookies.id));
 
   const userSelect: UserSelect[] = useMemo(() => ['歷史紀錄', '個人檔案', '登出'], []);
+  const managerSelect: ManagerSelect[] = useMemo(() => ['新增場館', '新增場地', '新增小單位'], []);
   const handleUserSelect = useCallback(
     (key: UserSelect) => {
       switch (key) {
@@ -131,6 +133,22 @@ export default function Main() {
       }
     },
     [cookies.id, logout, navigate, removeCookie],
+  );
+  const handleLessorSelect = useCallback(
+    (key: ManagerSelect) => {
+      switch (key) {
+        case '新增場館':
+          navigate(`/manage/${cookies.id}/create/stadium`);
+          break;
+        case '新增場地':
+          break;
+        case '新增小單位':
+          break;
+        default:
+          break;
+      }
+    },
+    [cookies.id, navigate],
   );
 
   const menu = useMemo(
@@ -156,16 +174,30 @@ export default function Main() {
           ) : (
             <>
               <MenuItemWrapper
-                selected={MODULE_TO_ROUTE.stadium.some((path) => path.test(pathname))}
+                selected={MODULE_TO_ROUTE.manager.some((path) => path.test(pathname))}
               >
-                <MenuItem type="link" category="link" palette="main">
-                  新增設施
-                </MenuItem>
+                <Select
+                  selectedKeys={[]}
+                  items={managerSelect.map((label) => ({
+                    label,
+                    key: label,
+                  }))}
+                  onSelect={({ key }) => {
+                    handleLessorSelect(key as ManagerSelect);
+                  }}
+                >
+                  <MenuItem type="link" category="link" palette="main">
+                    新增設施
+                  </MenuItem>
+                </Select>
               </MenuItemWrapper>
-              <MenuItemWrapper
-                selected={MODULE_TO_ROUTE.stadium.some((path) => path.test(pathname))}
-              >
-                <MenuItem type="link" category="link" palette="main">
+              <MenuItemWrapper>
+                <MenuItem
+                  type="link"
+                  category="link"
+                  palette="main"
+                  onClick={() => navigate(`/manage/${cookies.id}`)}
+                >
                   管理現有設施
                 </MenuItem>
               </MenuItemWrapper>
@@ -194,7 +226,17 @@ export default function Main() {
           </Select>
         </>
       ),
-    [account?.data, handleUserSelect, navigate, pathname, user?.login, userSelect],
+    [
+      account?.data,
+      cookies.id,
+      handleLessorSelect,
+      handleUserSelect,
+      managerSelect,
+      navigate,
+      pathname,
+      user?.login,
+      userSelect,
+    ],
   );
 
   return (
@@ -203,7 +245,9 @@ export default function Main() {
         <Title />
         <MenuWrapper>{menu}</MenuWrapper>
       </HeaderWrapper>
-      <ContentContainer hasBackground={false}>
+      <ContentContainer
+        hasBackground={MODULE_TO_ROUTE.background.some((path) => path.test(pathname))}
+      >
         <ScrollContainer>
           <Outlet />
         </ScrollContainer>

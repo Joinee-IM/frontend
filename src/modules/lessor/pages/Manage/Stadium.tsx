@@ -1,6 +1,6 @@
 import { Table } from 'antd';
 import { isEqual } from 'lodash';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import type { StadiumTableItem, TableBaseProps } from '@/modules/lessor/pages/Manage/types';
@@ -10,6 +10,7 @@ import type { Key } from 'react';
 
 import { DirectionRightIcon } from '@/assets/icons/Direction';
 import { RippleButton } from '@/components';
+import { pagination } from '@/modules/lessor/pages/Manage';
 import { useLessorBrowseStadium } from '@/modules/lessor/services';
 
 export default function StadiumTable({
@@ -18,8 +19,10 @@ export default function StadiumTable({
   setSelectedRowKeys,
 }: TableBaseProps) {
   const navigate = useNavigate();
+  const limit = useMemo(() => 10, []);
+  const [offset, setOffset] = useState(0);
 
-  const { stadiums } = useLessorBrowseStadium({ limit: 10, offset: 0 });
+  const { stadiums, count } = useLessorBrowseStadium({ limit, offset });
   const columns: ColumnsType<StadiumTableItem> = [
     {
       title: '區域',
@@ -89,5 +92,10 @@ export default function StadiumTable({
     setData?.((prev) => (isEqual(prev, dataSource) ? prev : dataSource));
   }, [dataSource, setData]);
 
-  return <Table {...{ columns, dataSource, rowSelection }}></Table>;
+  return (
+    <Table
+      pagination={pagination(count ?? 0, limit, offset, setOffset)}
+      {...{ columns, dataSource, rowSelection }}
+    />
+  );
 }
