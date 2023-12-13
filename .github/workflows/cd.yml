@@ -46,7 +46,7 @@ jobs:
       # Build and push the Docker image
       - name: Build
         run: |-
-          echo "$ENV" > env/.env
+          echo "$ENV" >> env/.env.production
           docker build --platform=linux/amd64 -t asia-east1-docker.pkg.dev/tw-rd-sa-zoe-lin/cloud-native-repository/cloud-native-frontend:${{ github.run_id }} -f docker/DockerFile .
           gcloud auth configure-docker asia-east1-docker.pkg.dev
           docker push asia-east1-docker.pkg.dev/tw-rd-sa-zoe-lin/cloud-native-repository/cloud-native-frontend:${{ github.run_id }}
