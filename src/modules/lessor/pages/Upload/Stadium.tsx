@@ -62,6 +62,7 @@ export default function CreateStadium() {
     if (file instanceof File) {
       try {
         const url = await getBase64(file);
+        console.log(url);
         uploadSuccess?.(file);
         setImages((prev) => [...prev, file]);
         setPreviews((prev) => [...prev, url]);
