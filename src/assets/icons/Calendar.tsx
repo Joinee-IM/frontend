@@ -3,7 +3,7 @@ import type { Type } from '@/utils/type';
 export default function CalendarIcon({ style, ...rest }: Type<'svg'>) {
   return (
     <svg
-      width="2.65em"
+      width="3em"
       height="3em"
       viewBox="0 0 106 120"
       fill="none"

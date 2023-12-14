@@ -26,13 +26,15 @@ export const AlbumWrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: auto auto;
-  grid-auto-rows: 0px;
+  /* grid-auto-rows: 0px; */
+  min-height: 0;
   overflow: scroll;
 `;
 
 export const ImagePreview = styled(Image)`
   aspect-ratio: 1;
   object-fit: cover;
+  min-height: 0;
 `;
 
 const ButtonWrapper = styled.div`

@@ -45,7 +45,11 @@ export const ROUTES = {
   history: '/history/:account_id',
   lessor: {
     route: '/',
-    manage: { route: 'manage/:account_id', venue: 'venue/:venue_id' },
+    manage: {
+      route: 'manage/:account_id',
+      venue: 'venue/:venue_id',
+      create: { route: 'create', stadium: 'stadium' },
+    },
   },
   notFound: '*',
   view: { route: 'view' },

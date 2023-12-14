@@ -4,18 +4,20 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
+import type { UploadProps } from '@/components/Upload';
+
 import Google from '@/assets/google.png';
 import ImageIcon from '@/assets/icons/Image';
 import Person from '@/assets/user.png';
 import { RippleButton } from '@/components';
 import AuthButton from '@/components/Button/AuthButton';
+import Upload, { UploadImageTitle } from '@/components/Upload';
 import { useGoogleLogin } from '@/modules/auth/service';
 import { Container } from '@/modules/main/components';
 import BaseInfoSection from '@/modules/main/pages/UserInfo/BaseInfoSection';
 import Section from '@/modules/main/pages/UserInfo/components/Section';
-import Upload from '@/modules/main/pages/UserInfo/components/Upload';
 import SecuritySection from '@/modules/main/pages/UserInfo/SecuritySection';
-import { useUserInfo } from '@/modules/main/pages/UserInfo/services';
+import { useEditAvatar, useUserInfo } from '@/modules/main/pages/UserInfo/services';
 import { flexCenter, percentageOfFigma } from '@/utils/css';
 
 const Title = styled.div`
@@ -59,23 +61,31 @@ const Image = styled(motion.img).withConfig({
   transition: all 0.1s ease-in-out;
 `;
 
-const ModalTitle = styled.div`
-  font-size: 18px;
-  font-weight: 500;
-  border-bottom: 1px solid ${({ theme }) => theme.gray[300]};
-`;
-
 export default function UserInfo() {
   const [imageModal, setImageModal] = useState(false);
   const { account_id } = useParams();
-  const { data, refetch } = useUserInfo(Number(account_id));
+  const { data, refetch, isFetching } = useUserInfo(Number(account_id));
   const controls = useAnimationControls();
   const { googleLogin } = useGoogleLogin();
+  const { mutateAsync } = useEditAvatar(Number(account_id));
 
-  const handleUploadSuccess = async () => {
-    setImageModal(false);
-    await refetch();
-    await controls.start({ opacity: 1, scale: [2, 1] });
+  const handleUpload: UploadProps['uploader'] = async ({
+    file,
+    onError: uploadError,
+    onSuccess: uploadSuccess,
+  }) => {
+    if (file instanceof File) {
+      try {
+        console.log(file);
+        await mutateAsync({ image: file }, { onError: uploadError });
+        uploadSuccess?.(file);
+        setImageModal(false);
+        await refetch();
+        void controls.start({ opacity: 1, scale: [2, 1] });
+      } catch (e) {
+        /* empty */
+      }
+    }
   };
 
   return (
@@ -124,6 +134,7 @@ export default function UserInfo() {
               category="outlined"
               palette="main"
               onClick={() => setImageModal(true)}
+              disabled={isFetching}
             >
               上傳圖片
             </RippleButton>
@@ -131,13 +142,13 @@ export default function UserInfo() {
         </ContentWrapper>
       )}
       <Modal
-        title={<ModalTitle>上傳圖片</ModalTitle>}
+        title={<UploadImageTitle />}
         centered
         open={imageModal}
         footer={null}
         onCancel={() => setImageModal(false)}
       >
-        <Upload handleUploadSuccess={handleUploadSuccess} />
+        <Upload uploader={handleUpload} uploadConfig={{ maxCount: 1 }} />
       </Modal>
     </Container>
   );

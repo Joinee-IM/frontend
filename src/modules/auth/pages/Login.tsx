@@ -27,10 +27,10 @@ const ForgotPasswordWrapper = styled.div`
 
 export default function Login() {
   const [form] = Form.useForm();
-  const { mutate: login, error, isLoading } = useLogin();
+  const { mutateAsync: login, error, isLoading: loginLoading } = useLogin();
   const { googleLogin } = useGoogleLogin();
   const navigate = useNavigate();
-  const [, setCookie] = useCookies(['id']);
+  const [, setCookie] = useCookies(['id', 'user-role']);
 
   const { context } = useError(error, undefined, () => {
     if (error?.message === 'LoginFailed')
@@ -46,18 +46,21 @@ export default function Login() {
       ]);
   });
 
-  const handleButtonPress = (values: FieldType) => {
+  const handleButtonPress = async (values: FieldType) => {
     const { email, password } = values;
-    if (email && password)
-      login(
+    if (email && password) {
+      const { data } = await login(
         { email, password },
         {
           onSuccess(data) {
             setCookie('id', data.data?.account_id, { path: '/' });
-            navigate('/');
+            setCookie('user-role', data.data?.role, { path: '/' });
           },
         },
       );
+      if (data?.role === 'NORMAL') navigate('/');
+      else navigate(`/manage/${data?.account_id}`);
+    }
   };
 
   return (
@@ -99,7 +102,7 @@ export default function Login() {
               htmlType="submit"
               borderBox={true}
               style={{ width: '100%' }}
-              loading={isLoading}
+              loading={loginLoading}
             >
               登入
             </RippleButton>
