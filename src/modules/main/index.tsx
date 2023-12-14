@@ -45,7 +45,7 @@ const ScrollContainer = styled.div`
 
 export default function Main() {
   const navigate = useNavigate();
-  const [, setCookie] = useCookies(['id']);
+  const [, setCookie] = useCookies(['id', 'user-role']);
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
   const account_id = searchParams.get('account_id') as unknown as number;

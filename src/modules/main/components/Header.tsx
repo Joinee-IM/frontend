@@ -92,6 +92,7 @@ export default function Header() {
           logout(undefined, {
             onSuccess: () => {
               removeCookie('id');
+              removeCookie('user-role');
               navigate('/entry');
             },
           });

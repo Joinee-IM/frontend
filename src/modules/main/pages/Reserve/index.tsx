@@ -107,7 +107,8 @@ export default function Reserve() {
   const { data: stadium, isLoading: fetchingStadiumInfo } = useStadiumInfo(Number(stadium_id));
   const { data: venue, isLoading: fetchingVenueInfo } = useVenueInfo(Number(venue_id));
   const { mutateAsync } = useSearchAccount();
-  const { mutate: createReservation } = useCreateReservation(Number(court_id));
+  const { mutateAsync: createReservation, isLoading: createReservationLoading } =
+    useCreateReservation(Number(court_id));
   const navigate = useNavigate();
 
   const data = useMemo(() => {
@@ -303,18 +304,18 @@ export default function Reserve() {
       await form.validateFields();
       if (date) {
         const { remark = '', member_count } = form.getFieldsValue();
-        console.log('Hi', toISOString(setHours(new Date(date), Number(time?.[0]))));
-        createReservation({
+        const { data } = await createReservation({
           start_time: toISOString(setHours(new Date(date), Number(time?.[0]))),
           end_time: toISOString(setHours(new Date(date), Number(time?.[time?.length - 1]) + 1)),
           member_count,
           remark,
         });
+        navigate(`/reserve/info/${data?.id}`);
       }
     } catch (e) {
       console.log(e);
     }
-  }, [createReservation, date, form, time]);
+  }, [createReservation, date, form, navigate, time]);
 
   const action = useMemo(() => {
     switch (mode) {
@@ -324,7 +325,12 @@ export default function Reserve() {
             <RippleButton category="outlined" palette="gray" onClick={() => navigate(-1)}>
               取消
             </RippleButton>
-            <RippleButton category="solid" palette="main" onClick={handleReserve}>
+            <RippleButton
+              category="solid"
+              palette="main"
+              onClick={handleReserve}
+              loading={createReservationLoading}
+            >
               確定預約
             </RippleButton>
           </>
@@ -362,7 +368,7 @@ export default function Reserve() {
       default:
         break;
     }
-  }, [handleReserve, mode, navigate, reservation_id]);
+  }, [createReservationLoading, handleReserve, mode, navigate, reservation_id]);
 
   const { context } = useLoading(
     [fetchingStadiums, fetchVenues, fetchingCourts, fetchingVenueInfo, fetchingStadiumInfo],
