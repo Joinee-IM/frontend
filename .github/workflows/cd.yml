@@ -48,7 +48,7 @@ jobs:
         env:
           VITE_APP_GOOGLE_MAP_KEY: ${{ secrets.VITE_APP_GOOGLE_MAP_KEY }}
         run: |-
-          docker build --platform=linux/amd64 -t asia-east1-docker.pkg.dev/tw-rd-sa-zoe-lin/cloud-native-repository/cloud-native-frontend:${{ github.run_id }} -f docker/DockerFile .
+          docker build --platform=linux/amd64 --build-arg VITE_APP_GOOGLE_MAP_KEY=$VITE_APP_GOOGLE_MAP_KEY -t asia-east1-docker.pkg.dev/tw-rd-sa-zoe-lin/cloud-native-repository/cloud-native-frontend:${{ github.run_id }} -f docker/DockerFile .
           gcloud auth configure-docker asia-east1-docker.pkg.dev
           docker push asia-east1-docker.pkg.dev/tw-rd-sa-zoe-lin/cloud-native-repository/cloud-native-frontend:${{ github.run_id }}
 
