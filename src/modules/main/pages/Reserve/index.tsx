@@ -1,7 +1,7 @@
 import { Card as CardAntd, Form, InputNumber, Select, Switch } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import TextArea from 'antd/es/input/TextArea';
-import { differenceInHours, format, formatISO, setHours } from 'date-fns';
+import { differenceInHours, format, setHours } from 'date-fns';
 import { useCallback, useMemo } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -26,6 +26,7 @@ import { useBrowseStadium, useStadiumInfo } from '@/modules/main/pages/Stadium/s
 import { useBrowseVenue, useVenueCourts, useVenueInfo } from '@/modules/main/pages/Venue/services';
 import { hexToRgb } from '@/utils';
 import { flexCenter, percentageOfFigma, rwdFontSize } from '@/utils/css';
+import { toISOString } from '@/utils/function/date';
 import { toTechnicalLevel } from '@/utils/function/map';
 import calculateTotalCost from '@/utils/function/money';
 
@@ -106,7 +107,8 @@ export default function Reserve() {
   const { data: stadium, isLoading: fetchingStadiumInfo } = useStadiumInfo(Number(stadium_id));
   const { data: venue, isLoading: fetchingVenueInfo } = useVenueInfo(Number(venue_id));
   const { mutateAsync } = useSearchAccount();
-  const { mutate: createReservation } = useCreateReservation(Number(court_id));
+  const { mutateAsync: createReservation, isLoading: createReservationLoading } =
+    useCreateReservation(Number(court_id));
   const navigate = useNavigate();
 
   const data = useMemo(() => {
@@ -302,17 +304,18 @@ export default function Reserve() {
       await form.validateFields();
       if (date) {
         const { remark = '', member_count } = form.getFieldsValue();
-        createReservation({
-          start_time: formatISO(setHours(new Date(date), Number(time?.[0]))),
-          end_time: formatISO(setHours(new Date(date), Number(time?.[time?.length - 1]) + 1)),
+        const { data } = await createReservation({
+          start_time: toISOString(setHours(new Date(date), Number(time?.[0]))),
+          end_time: toISOString(setHours(new Date(date), Number(time?.[time?.length - 1]) + 1)),
           member_count,
           remark,
         });
+        navigate(`/reserve/info/${data?.id}`);
       }
     } catch (e) {
       console.log(e);
     }
-  }, [createReservation, date, form, time]);
+  }, [createReservation, date, form, navigate, time]);
 
   const action = useMemo(() => {
     switch (mode) {
@@ -322,7 +325,12 @@ export default function Reserve() {
             <RippleButton category="outlined" palette="gray" onClick={() => navigate(-1)}>
               取消
             </RippleButton>
-            <RippleButton category="solid" palette="main" onClick={handleReserve}>
+            <RippleButton
+              category="solid"
+              palette="main"
+              onClick={handleReserve}
+              loading={createReservationLoading}
+            >
               確定預約
             </RippleButton>
           </>
@@ -360,7 +368,7 @@ export default function Reserve() {
       default:
         break;
     }
-  }, [handleReserve, mode, navigate, reservation_id]);
+  }, [createReservationLoading, handleReserve, mode, navigate, reservation_id]);
 
   const { context } = useLoading(
     [fetchingStadiums, fetchVenues, fetchingCourts, fetchingVenueInfo, fetchingStadiumInfo],

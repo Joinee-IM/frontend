@@ -27,7 +27,7 @@ export interface UserProps {
 export const UserProvider = memo(function UserProvider({ children }: UserProps) {
   const [user, setUser] = useState<UserPropsType>(undefined);
   const value = useMemo(() => ({ user, setUser }), [user, setUser]);
-  const [cookies] = useCookies(['id']);
+  const [cookies] = useCookies(['id', 'user-role']);
 
   useEffect(() => {
     if (cookies.id) setUser({ login: true, accountId: Number(cookies.id) });
