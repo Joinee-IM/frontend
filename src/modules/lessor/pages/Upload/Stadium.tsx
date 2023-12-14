@@ -64,8 +64,9 @@ export default function CreateStadium() {
       try {
         console.log(file);
         const url = await getBase64(file);
+        console.log(url);
         uploadSuccess?.(file);
-        setImages((prev) => [...prev, { url, ...file }]);
+        setImages((prev) => [...prev, file]);
         setImageModal(false);
       } catch (e) {
         /* empty */
@@ -121,6 +122,7 @@ export default function CreateStadium() {
 
   useEffect(() => {
     if (data?.data?.id) {
+      console.log(images);
       addAlbum({ files: images });
     }
   }, [addAlbum, data?.data?.id, images]);
