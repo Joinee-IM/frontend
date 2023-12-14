@@ -2,7 +2,8 @@ FROM node:18-alpine
 COPY ./ /frontend
 WORKDIR /frontend
 
-ENV VITE_APP_GOOGLE_MAP_KEY = ${VITE_APP_GOOGLE_MAP_KEY}
+ARG VITE_APP_GOOGLE_MAP_KEY
+ENV VITE_APP_GOOGLE_MAP_KEY=$VITE_APP_GOOGLE_MAP_KEY
 
 RUN yarn install --frozen-lockfile && yarn build --mode production
 
