@@ -1,4 +1,6 @@
-export default function FilterIcon({ style, ...rest }: React.ComponentProps<'svg'>) {
+import type { Type } from '@/utils/type';
+
+export default function FilterIcon({ style, ...rest }: Type<'svg'>) {
   return (
     <svg
       style={style}

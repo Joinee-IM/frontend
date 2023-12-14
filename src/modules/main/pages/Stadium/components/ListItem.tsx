@@ -123,7 +123,7 @@ export default function ListItem({
         handleMouseLeave();
       }}
     >
-      <DemoImage src={data?.data?.[0].url} style={{ height: '100px' }} />
+      <DemoImage src={data?.data?.[0]?.url ?? ''} style={{ height: '100px' }} />
       <InfoWrapper>
         <Title>{title}</Title>
         <StadiumInfo>

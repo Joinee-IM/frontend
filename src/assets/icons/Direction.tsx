@@ -1,4 +1,6 @@
-export function DirectionRightIcon({ style, ...rest }: React.ComponentProps<'svg'>) {
+import type { Type } from '@/utils/type';
+
+export function DirectionRightIcon({ style, ...rest }: Type<'svg'>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

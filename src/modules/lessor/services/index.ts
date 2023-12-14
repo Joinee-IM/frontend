@@ -39,7 +39,7 @@ export const useLessorBrowseStadium = (params: LessorBrowseStadiumProps) => {
     {
       getPageParamList: () => [],
       getNextPageParam: (last) => {
-        if (last.data) {
+        if (last.data && last.data.offset && last.data.limit) {
           if (last.data.offset + last.data.limit >= last.data.total_count) return undefined;
           else return { ...params, offset: Number(last.data?.offset) + Number(last.data?.limit) };
         } else return undefined;

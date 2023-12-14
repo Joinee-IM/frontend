@@ -1,4 +1,6 @@
-export default function Logo({ style, ...rest }: React.ComponentProps<'svg'>) {
+import type { Type } from '@/utils/type';
+
+export default function Logo({ style, ...rest }: Type<'svg'>) {
   return (
     <svg
       width="1.225em"

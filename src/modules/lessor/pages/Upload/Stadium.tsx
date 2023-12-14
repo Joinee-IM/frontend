@@ -4,8 +4,6 @@ import TextArea from 'antd/es/input/TextArea';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import type { UploadFile } from 'antd';
-
 import CalendarIcon from '@/assets/icons/Calendar';
 import HelpIcon from '@/assets/icons/Help';
 import PlusIcon from '@/assets/icons/Plus';
@@ -55,18 +53,18 @@ export default function CreateStadium() {
   const { data: cities, isLoading: loadingCity } = useCity();
   const { data: districts, isLoading: loadingDistrict } = useDistrict(city ?? 0);
   const [imageModal, setImageModal] = useState(false);
-  const [images, setImages] = useState<UploadFile[]>([]);
+  const [images, setImages] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
   const { data, mutate: addStadium } = useUploadStadium();
   const { mutate: addAlbum } = useAddAlbum(Number(data?.data?.id), 'STADIUM');
 
   const handleUpload: UploadProps['uploader'] = async ({ file, onSuccess: uploadSuccess }) => {
     if (file instanceof File) {
       try {
-        console.log(file);
         const url = await getBase64(file);
-        console.log(url);
         uploadSuccess?.(file);
         setImages((prev) => [...prev, file]);
+        setPreviews((prev) => [...prev, url]);
         setImageModal(false);
       } catch (e) {
         /* empty */
@@ -122,8 +120,9 @@ export default function CreateStadium() {
 
   useEffect(() => {
     if (data?.data?.id) {
-      console.log(images);
-      addAlbum({ files: images });
+      for (const file of images) {
+        addAlbum({ file });
+      }
     }
   }, [addAlbum, data?.data?.id, images]);
 
@@ -233,10 +232,10 @@ export default function CreateStadium() {
               ),
               '': (
                 <AlbumWrapper>
-                  {images.map((image, index) => (
+                  {previews.map((preview, index) => (
                     <ImagePreview
                       key={index}
-                      src={image.url}
+                      src={preview}
                       placeholder={<ImagePreview preview={false} />}
                     />
                   ))}

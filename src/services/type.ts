@@ -28,7 +28,10 @@ const Response_HealthCheckOutput_ = z
   .partial()
   .passthrough();
 const LoginInput = z.object({ email: z.string().email(), password: z.string() }).passthrough();
-const LoginOutput = z.object({ account_id: z.number().int(), token: z.string() }).passthrough();
+const RoleType = z.enum(['PROVIDER', 'NORMAL']);
+const LoginOutput = z
+  .object({ account_id: z.number().int(), token: z.string(), role: RoleType })
+  .passthrough();
 const Response_LoginOutput_ = z
   .object({ data: z.union([LoginOutput, z.null()]), error: z.union([ErrorMessage, z.null()]) })
   .partial()
@@ -57,7 +60,6 @@ const Response_EmailVerificationOutput_ = z
   .partial()
   .passthrough();
 const GenderType = z.enum(['MALE', 'FEMALE', 'UNREVEALED']);
-const RoleType = z.enum(['PROVIDER', 'NORMAL']);
 const AddAccountInput = z
   .object({
     email: z.string().email(),
@@ -204,6 +206,12 @@ const Response_BrowseStadiumOutput_ = z
     error: z.union([ErrorMessage, z.null()]),
   })
   .partial()
+  .passthrough();
+const BatchEditStadiumInput = z
+  .object({
+    stadium_ids: z.array(z.number()),
+    is_published: z.union([z.boolean(), z.null()]).optional(),
+  })
   .passthrough();
 const Response_ViewStadium_ = z
   .object({ data: z.union([ViewStadium, z.null()]), error: z.union([ErrorMessage, z.null()]) })
@@ -394,7 +402,15 @@ const Response_Sequence_BrowseAlbumOutput__ = z
   })
   .partial()
   .passthrough();
-const Body_batch_add_album_api_album_post = z
+const Body_add_album_api_album_post = z.object({ file: z.instanceof(File) }).passthrough();
+const Response_BrowseAlbumOutput_ = z
+  .object({
+    data: z.union([BrowseAlbumOutput, z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
+  })
+  .partial()
+  .passthrough();
+const Body_batch_add_album_api_album_batch_post = z
   .object({ files: z.array(z.instanceof(File)) })
   .passthrough();
 const BatchDeleteAlbumInput = z
@@ -524,6 +540,9 @@ const Response_Sequence_ReservationMemberWithName__ = z
   })
   .partial()
   .passthrough();
+const BatchEditCourtInput = z
+  .object({ court_ids: z.array(z.number()), is_published: z.union([z.boolean(), z.null()]) })
+  .passthrough();
 const app__processor__http__court__BrowseReservationParameters = z
   .object({
     time_ranges: z.union([z.array(DateTimeRange), z.null()]),
@@ -636,8 +655,8 @@ const ViewProviderStadiumOutput = z
   .object({
     data: z.array(ViewProviderStadium),
     total_count: z.number().int(),
-    limit: z.number().int(),
-    offset: z.number().int(),
+    limit: z.union([z.number(), z.null()]),
+    offset: z.union([z.number(), z.null()]),
   })
   .passthrough();
 const Response_ViewProviderStadiumOutput_ = z
@@ -712,6 +731,7 @@ export const schemas = {
   ErrorMessage,
   Response_HealthCheckOutput_,
   LoginInput,
+  RoleType,
   LoginOutput,
   Response_LoginOutput_,
   ValidationError,
@@ -721,7 +741,6 @@ export const schemas = {
   EmailVerificationOutput,
   Response_EmailVerificationOutput_,
   GenderType,
-  RoleType,
   AddAccountInput,
   AddAccountOutput,
   Response_AddAccountOutput_,
@@ -750,6 +769,7 @@ export const schemas = {
   ViewStadium,
   BrowseStadiumOutput,
   Response_BrowseStadiumOutput_,
+  BatchEditStadiumInput,
   Response_ViewStadium_,
   EditStadiumInput,
   AddStadiumInput,
@@ -782,7 +802,9 @@ export const schemas = {
   Response_Sequence_District__,
   BrowseAlbumOutput,
   Response_Sequence_BrowseAlbumOutput__,
-  Body_batch_add_album_api_album_post,
+  Body_add_album_api_album_post,
+  Response_BrowseAlbumOutput_,
+  Body_batch_add_album_api_album_batch_post,
   BatchDeleteAlbumInput,
   Sport,
   Response_Sequence_Sport__,
@@ -801,6 +823,7 @@ export const schemas = {
   EditReservationInput,
   ReservationMemberWithName,
   Response_Sequence_ReservationMemberWithName__,
+  BatchEditCourtInput,
   app__processor__http__court__BrowseReservationParameters,
   AddReservationInput,
   AddReservationOutput,
@@ -1028,13 +1051,49 @@ const endpoints = makeApi([
   {
     method: 'post',
     path: '/api/album',
-    alias: 'batch_add_album_api_album_post',
+    alias: 'add_album_api_album_post',
     requestFormat: 'form-data',
     parameters: [
       {
         name: 'body',
         type: 'Body',
-        schema: Body_batch_add_album_api_album_post,
+        schema: z.object({ file: z.instanceof(File) }).passthrough(),
+      },
+      {
+        name: 'place_type',
+        type: 'Query',
+        schema: z.enum(['STADIUM', 'VENUE']),
+      },
+      {
+        name: 'place_id',
+        type: 'Query',
+        schema: z.number().int(),
+      },
+      {
+        name: 'auth-token',
+        type: 'Header',
+        schema: auth_token,
+      },
+    ],
+    response: Response_BrowseAlbumOutput_,
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
+  },
+  {
+    method: 'post',
+    path: '/api/album/batch',
+    alias: 'batch_add_album_api_album_batch_post',
+    requestFormat: 'form-data',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: Body_batch_add_album_api_album_batch_post,
       },
       {
         name: 'place_type',
@@ -1227,6 +1286,32 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
         name: 'court_id',
         type: 'Path',
         schema: z.number().int(),
+      },
+    ],
+    response: Response,
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
+  },
+  {
+    method: 'patch',
+    path: '/api/court/batch',
+    alias: 'batch_edit_court_api_court_batch_patch',
+    requestFormat: 'json',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: BatchEditCourtInput,
+      },
+      {
+        name: 'auth-token',
+        type: 'Header',
+        schema: auth_token,
       },
     ],
     response: Response,
@@ -1672,6 +1757,32 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
     ],
   },
   {
+    method: 'patch',
+    path: '/api/stadium/batch',
+    alias: 'batch_edit_stadium_api_stadium_batch_patch',
+    requestFormat: 'json',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: BatchEditStadiumInput,
+      },
+      {
+        name: 'auth-token',
+        type: 'Header',
+        schema: auth_token,
+      },
+    ],
+    response: Response,
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
+  },
+  {
     method: 'post',
     path: '/api/stadium/browse',
     alias: 'browse_stadium_api_stadium_browse_post',
@@ -2041,12 +2152,12 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
       {
         name: 'limit',
         type: 'Query',
-        schema: z.number().int().optional(),
+        schema: stadium_id,
       },
       {
         name: 'offset',
         type: 'Query',
-        schema: z.number().int().optional(),
+        schema: stadium_id,
       },
       {
         name: 'auth-token',
