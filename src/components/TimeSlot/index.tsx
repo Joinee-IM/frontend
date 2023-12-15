@@ -139,7 +139,6 @@ export default function TimeSlot({
 
   return (
     <Container ref={element} {...rest}>
-      {isLoading && <FullScreenLoading />}
       {date.length === cells.length &&
         cells.map((dateCells, cIndex) => (
           <Column key={cIndex}>
@@ -180,6 +179,7 @@ export default function TimeSlot({
             </Column>
           </Column>
         ))}
+      {isLoading && <FullScreenLoading />}
     </Container>
   );
 }
