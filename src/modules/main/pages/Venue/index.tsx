@@ -1,6 +1,14 @@
-import { Modal, Radio } from 'antd';
-import { eachDayOfInterval, endOfWeek, format, startOfWeek } from 'date-fns';
-import { useMemo, useState } from 'react';
+import { Radio } from 'antd';
+import {
+  addDays,
+  eachDayOfInterval,
+  endOfWeek,
+  format,
+  isBefore,
+  parseISO,
+  startOfWeek,
+} from 'date-fns';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -8,17 +16,23 @@ import { LeftArrowIcon, RightArrowIcon } from '@/assets/icons/Arrow';
 import CalendarIcon from '@/assets/icons/Calendar';
 import FireIcon from '@/assets/icons/Fire';
 import { ButtonWrapper, RippleButton } from '@/components/Button';
-import DateTimePicker, { useDateTimePicker } from '@/components/DateTimePicker';
+import { toDateTimeRange, useDateTimePicker } from '@/components/DateTimePicker';
+import DateTimePickerModal from '@/components/DateTimePicker/Modal';
 import GridForm from '@/components/Grid/FormGrid';
 import { useLoading } from '@/components/Loading/PageLoading';
 import { TabPane, Tabs } from '@/components/Tab';
 import { RoundTag, RoundTagWrapper, SquareTag } from '@/components/Tag';
-import TimeSlot from '@/components/TimeSlot';
+import TimeSlot, { reservationToTimeRange } from '@/components/TimeSlot';
+import useTimeSlotDrag from '@/components/TimeSlot/useTimeSlotDrag';
 import useDeviceDetector from '@/hooks/useDeviceDetector';
-import useTimeSlotDrag from '@/hooks/useTimeSlotDrag';
+import useFilter from '@/hooks/useFilter';
 import { AlbumWrapper, ImagePreview } from '@/modules/main/pages/Stadium/components/DetailModal';
 import { useStadiumInfo } from '@/modules/main/pages/Stadium/services';
-import { useVenueCourts, useVenueInfo } from '@/modules/main/pages/Venue/services';
+import {
+  useCourtReservations,
+  useVenueCourts,
+  useVenueInfo,
+} from '@/modules/main/pages/Venue/services';
 import { useAlbum, useBusinessHour } from '@/services/useInfo';
 import { hexToRgb } from '@/utils';
 import { backgroundCenter, percentageOfFigma } from '@/utils/css';
@@ -91,6 +105,12 @@ const FilterWrapper = styled.div`
   column-gap: ${percentageOfFigma(16).vw};
 `;
 
+const CalendarIconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  color: ${({ theme }) => theme.gray[700]};
+`;
+
 const ReservationWrapper = styled.div`
   width: 100%;
   display: flex;
@@ -105,6 +125,7 @@ const TimeSlotWrapper = styled.div`
   gap: 24px;
   align-items: center;
   width: 100%;
+  padding-bottom: ${percentageOfFigma(40)};
 `;
 
 export default function Venue() {
@@ -117,29 +138,75 @@ export default function Venue() {
     Number(venue_id),
     'VENUE',
   );
-  const { data: courts } = useVenueCourts(Number(venue_id));
+  const {
+    data: courts,
+    mutate: getCourts,
+    isLoading: fetchingCourts,
+  } = useVenueCourts(Number(venue_id));
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const { date, setDate, focus, setFocus, times, setTimes } = useDateTimePicker();
+  const {
+    date,
+    setDate,
+    focus,
+    setFocus,
+    times,
+    setTimes,
+    clear: clearCalendar,
+  } = useDateTimePicker();
+  const [page, setPage] = useState<number>(0);
+  const { dateTimeRange, setDateTimeRange } = useFilter();
+  const [courtId, setCourtId] = useState(0);
+  const {
+    data,
+    mutate: getReservations,
+    isLoading: loadingCourtReservations,
+  } = useCourtReservations(courtId);
 
   const timeRange = useMemo(
     () => new BusinessHours(businessHour?.data ?? []).largestAvailableTimeRange,
     [businessHour?.data],
   );
-  const dates = useMemo(
-    () =>
-      eachDayOfInterval({
-        start: startOfWeek(new Date()),
-        end: endOfWeek(new Date()),
-      }),
-    [],
-  );
-  const { cells, handleUnitMouseDown, handleUnitMouseEnter } = useTimeSlotDrag(
-    dates.map(() => timeRange?.slice(1).map(() => false) ?? []),
-    'straight',
-  );
-
+  const dates = useMemo(() => {
+    const baseDate = dateTimeRange.length
+      ? parseISO(
+          dateTimeRange.sort((a, b) => a.start_time.localeCompare(b.start_time))[0].start_time,
+        )
+      : new Date();
+    return eachDayOfInterval({
+      start: addDays(startOfWeek(baseDate), page * 7),
+      end: addDays(endOfWeek(baseDate), page * 7),
+    });
+  }, [dateTimeRange, page]);
+  const init = useMemo<(boolean | null)[][]>(() => {
+    const disabled = reservationToTimeRange(data?.data?.reservations);
+    return dates.map(
+      (date) =>
+        timeRange
+          ?.slice(1)
+          .map((time) =>
+            isBefore(date, new Date()) || disabled[format(date, 'yyyy/MM/dd')]?.includes(time - 1)
+              ? null
+              : false,
+          ) ?? [],
+    );
+  }, [data?.data?.reservations, dates, timeRange]);
+  const { cells, handleUnitMouseDown, handleUnitMouseEnter } = useTimeSlotDrag(init, 'straight');
   const navigate = useNavigate();
   const { context } = useLoading([fetchingAlbum, fetchingBusiness, fetchingStadium, fetchingVenue]);
+
+  useEffect(() => {
+    getCourts({});
+  }, [getCourts]);
+
+  useEffect(() => {
+    if (courtId) {
+      getReservations({ start_date: format(dates[0], 'yyyy-MM-dd') });
+    }
+  }, [courtId, dates, getReservations]);
+
+  useEffect(() => {
+    if (courts?.data?.length) setCourtId(courts?.data?.[0].id);
+  }, [courts?.data]);
 
   return (
     <>
@@ -180,7 +247,11 @@ export default function Venue() {
               <ReservationWrapper>
                 <TimeSlotWrapper style={{ ...(isMobile && { maxHeight: '450px' }) }}>
                   <FilterWrapper>
-                    <Radio.Group defaultValue={courts?.data?.[0].id} buttonStyle="solid">
+                    <Radio.Group
+                      defaultValue={courts?.data?.[0]?.id}
+                      buttonStyle="solid"
+                      onChange={(e) => setCourtId(Number(e.target.value))}
+                    >
                       {courts?.data?.map((court) => (
                         <Radio.Button value={court.id} key={court.id}>
                           {`${court.number} ${venue?.data?.court_type}`}
@@ -188,24 +259,42 @@ export default function Venue() {
                       ))}
                     </Radio.Group>
                     {' ・ '}
-                    <RippleButton
-                      category="icon"
-                      palette="gray"
-                      icon={<CalendarIcon fontSize="0.5em" />}
-                      onClick={() => setCalendarOpen(true)}
-                    />
+                    <CalendarIconWrapper>
+                      <RippleButton
+                        category="icon"
+                        palette="gray"
+                        icon={<CalendarIcon fontSize="0.5em" />}
+                        onClick={() => setCalendarOpen(true)}
+                      />
+                      {dateTimeRange.length ? `已選擇 ${dateTimeRange.length} 個時段` : null}
+                    </CalendarIconWrapper>
                   </FilterWrapper>
-                  <Modal
-                    centered
+                  <DateTimePickerModal
+                    dateTimePickerProps={{ date, setDate, focus, setFocus, times, setTimes }}
                     open={calendarOpen}
-                    // footer={Footer}
-                    onCancel={() => setCalendarOpen(false)}
-                    width={'fit-content'}
-                    closable={false}
+                    setOpen={setCalendarOpen}
+                    handleCancel={() => {
+                      clearCalendar();
+                      setDateTimeRange([]);
+                      getCourts({});
+                    }}
+                    handleOk={() => {
+                      setDateTimeRange(toDateTimeRange(times));
+                      getCourts(
+                        { time_ranges: toDateTimeRange(times) },
+                        { onSuccess: () => setCalendarOpen(false) },
+                      );
+                    }}
+                    isLoading={fetchingCourts}
+                  />
+                  <RippleButton
+                    category="icon"
+                    palette="gray"
+                    style={{ gridColumn: '1/2', gridRow: '2/3' }}
+                    onClick={() => setPage((prev) => prev - 1)}
                   >
-                    <DateTimePicker {...{ date, setDate, focus, setFocus, times, setTimes }} />
-                  </Modal>
-                  <LeftArrowIcon style={{ gridColumn: '1/2', gridRow: '2/3' }} />
+                    <LeftArrowIcon />
+                  </RippleButton>
                   {businessHour?.data && (
                     <TimeSlot
                       {...{
@@ -215,10 +304,19 @@ export default function Venue() {
                         date: dates,
                         timeRange,
                       }}
+                      reservationInfos={data?.data?.reservations}
                       style={{ gridColumn: '2/3', gridRow: '2/3' }}
+                      isLoading={loadingCourtReservations}
                     />
                   )}
-                  <RightArrowIcon style={{ gridColumn: '3/4', gridRow: '2/3' }} />
+                  <RippleButton
+                    category="icon"
+                    palette="gray"
+                    style={{ gridColumn: '3/4', gridRow: '2/3' }}
+                    onClick={() => setPage((prev) => prev + 1)}
+                  >
+                    <RightArrowIcon />
+                  </RippleButton>
                 </TimeSlotWrapper>
                 <ButtonWrapper>
                   <RippleButton category="outlined" palette="gray">

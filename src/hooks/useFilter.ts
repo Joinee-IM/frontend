@@ -9,6 +9,9 @@ export default function useFilter() {
   const [sport, setSport] = useState<number | undefined>(undefined);
   const [name, setName] = useState<string | undefined>(undefined);
   const [timeRanges, setTimeRanges] = useState<z.infer<(typeof schemas)['WeekTimeRange']>[]>([]);
+  const [dateTimeRange, setDateTimeRange] = useState<z.infer<(typeof schemas)['DateTimeRange']>[]>(
+    [],
+  );
   const [isReservable, setIsReservable] = useState<boolean | undefined>(undefined);
 
   const clear = () => {
@@ -17,6 +20,7 @@ export default function useFilter() {
     setSport(undefined);
     setName(undefined);
     setTimeRanges([]);
+    setDateTimeRange([]);
     setIsReservable(undefined);
   };
 
@@ -31,6 +35,8 @@ export default function useFilter() {
     setName,
     timeRanges,
     setTimeRanges,
+    dateTimeRange,
+    setDateTimeRange,
     isReservable,
     setIsReservable,
     clear,

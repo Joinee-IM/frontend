@@ -1,20 +1,19 @@
 import { GoogleMap, InfoWindowF, MarkerF, useLoadScript } from '@react-google-maps/api';
-import { Modal } from 'antd';
 import { getDay, parse } from 'date-fns';
-import { debounce } from 'lodash';
 import { median } from 'mathjs';
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import BallIcon from '@/assets/icons/Ball';
 import BuildingIcon from '@/assets/icons/Building';
 import CalendarIcon from '@/assets/icons/Calendar';
 import PositionIcon from '@/assets/icons/Position';
-import { ButtonWrapper, RippleButton } from '@/components';
-import DateTimePicker, { useDateTimePicker } from '@/components/DateTimePicker';
+import { RippleButton } from '@/components';
+import { useDateTimePicker } from '@/components/DateTimePicker';
+import DateTimePickerModal from '@/components/DateTimePicker/Modal';
 import Loading from '@/components/Loading/RippleLoading';
 import Select from '@/components/Select';
-import useElement, { useResizeObserver, useScrollObserver } from '@/hooks/useElement';
+import { useScrollToEnd } from '@/hooks/useElement';
 import useError from '@/hooks/useError';
 import useFilter from '@/hooks/useFilter';
 import { Container, PageTitle } from '@/modules/main/components';
@@ -42,25 +41,27 @@ const MapContainer = styled.div`
   aspect-ratio: 1;
 `;
 
-const ListContainer = styled.div`
+const StadiumsContainer = styled.div`
   flex: 1;
   flex-basis: 400px;
-  overflow: scroll;
+  overflow: hidden;
   max-height: max(400px, 60vh);
   position: relative;
   aspect-ratio: 1;
   border: 1px solid ${({ theme }) => theme.gray[300]};
 `;
 
-const LoadingWrapper = styled.div.withConfig({
-  shouldForwardProp: (prop) => !['width', 'height', 'top', 'left'].includes(prop),
-})<{ width: number; height: number; left: number; top: number }>`
+const ListContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  overflow: scroll;
+`;
+
+const LoadingWrapper = styled.div`
   background-color: ${hexToRgb('#000000', 0.5)};
-  position: fixed;
-  width: ${({ width }) => `${width}px`};
-  height: ${({ height }) => `${height}px`};
-  top: ${({ top }) => `${top}px`};
-  left: ${({ left }) => `${left}px`};
+  position: absolute;
+  width: 100%;
+  height: 100%;
   ${flexCenter}
 `;
 
@@ -78,7 +79,6 @@ export default function Stadium() {
     setTimeRanges,
     clear,
   } = useFilter();
-  const { width, setWidth, height, setHeight, top, setTop, left, setLeft, element } = useElement();
   const [word, setWord] = useState<string | undefined>(undefined);
   const { data: cities, isLoading: loadingCity } = useCity();
   const { data: districts, isLoading: loadingDistrict } = useDistrict(city ?? 0);
@@ -100,22 +100,6 @@ export default function Stadium() {
     clearCalendar();
     clear();
   };
-
-  useResizeObserver(element.current, (e) => {
-    const style = e.target.getBoundingClientRect();
-    setWidth(style.width);
-    setHeight(style.height);
-    setTop(style.top);
-    setLeft(style.left);
-  });
-
-  useScrollObserver(element.current, (e) => {
-    const style = e.target.getBoundingClientRect();
-    setWidth(style.width);
-    setHeight(style.height);
-    setTop(style.top);
-    setLeft(style.left);
-  });
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: String(import.meta.env.VITE_APP_GOOGLE_MAP_KEY),
@@ -143,68 +127,16 @@ export default function Stadium() {
   );
   const [markerFocus, setMarkerFocus] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
-
-  const scrollToEnd = useMemo(
-    () =>
-      debounce(() => {
-        if (element.current)
-          if (
-            Math.abs(
-              element.current.scrollHeight -
-                element.current.scrollTop -
-                element.current.clientHeight,
-            ) < 1 &&
-            hasNextPage
-          ) {
-            void fetchNextPage();
-          }
-      }, 200),
-    [element, fetchNextPage, hasNextPage],
-  );
-
-  useEffect(() => {
-    const target = element.current;
-    target?.addEventListener('scroll', scrollToEnd);
-    return () => {
-      target?.removeEventListener('scroll', scrollToEnd);
-    };
-  }, [element, scrollToEnd]);
+  const scrollElement = useScrollToEnd(() => {
+    if (hasNextPage) {
+      void fetchNextPage();
+    }
+  });
 
   const { context } = useError(
     stadiums?.length ?? !isFetched ? null : new Error('NoMatch'),
     { NoMatch: '沒有符合條件的場館' },
     clearFilter,
-  );
-
-  const Footer = useMemo(
-    () => (
-      <ButtonWrapper>
-        <RippleButton category="outlined" palette="gray" onClick={clearCalendar}>
-          清除
-        </RippleButton>
-        <RippleButton
-          category="solid"
-          palette="main"
-          onClick={() => {
-            setTimeRanges(
-              Object.entries(times)
-                .map(([date, times]) =>
-                  times.map((time) => ({
-                    weekday: getDay(parse(date, 'yyyy/MM/dd', new Date())),
-                    start_time: time.split('-')[0],
-                    end_time: time.split('-')[1],
-                  })),
-                )
-                .flat(),
-            );
-            setCalendarOpen(false);
-          }}
-        >
-          篩選時間
-        </RippleButton>
-      </ButtonWrapper>
-    ),
-    [clearCalendar, setTimeRanges, times],
   );
 
   return (
@@ -251,18 +183,26 @@ export default function Stadium() {
               <RippleButton category="icon" palette="gray" onClick={() => setCalendarOpen(true)}>
                 <CalendarIcon fontSize="0.5em" />
               </RippleButton>
-              <Modal
-                centered
+              <DateTimePickerModal
+                dateTimePickerProps={{ date, setDate, focus, setFocus, times, setTimes }}
                 open={calendarOpen}
-                footer={Footer}
-                onCancel={() => setCalendarOpen(false)}
-                width={'fit-content'}
-                closable={false}
-              >
-                <DateTimePicker
-                  {...{ date, setDate, focus, setFocus, times, setTimes }}
-                ></DateTimePicker>
-              </Modal>
+                setOpen={setCalendarOpen}
+                handleCancel={clearCalendar}
+                handleOk={() => {
+                  setTimeRanges(
+                    Object.entries(times)
+                      .map(([date, times]) =>
+                        times.map((time) => ({
+                          weekday: getDay(parse(date, 'yyyy/MM/dd', new Date())),
+                          start_time: time.split('-')[0],
+                          end_time: time.split('-')[1],
+                        })),
+                      )
+                      .flat(),
+                  );
+                  setCalendarOpen(false);
+                }}
+              />
             </>
           }
           onClose={clearFilter}
@@ -301,32 +241,36 @@ export default function Stadium() {
               )}
             </MapContainer>
 
-            <ListContainer ref={element}>
+            <StadiumsContainer>
               {isFetching && (
-                <LoadingWrapper width={width} height={height} top={top} left={left}>
+                <LoadingWrapper>
                   <Loading />
                 </LoadingWrapper>
               )}
-              {stadiums?.map(({ id, name, business_hours, city, district, sports }) => (
-                <Fragment key={id}>
-                  <ListItem
-                    markerFocus={markerFocus === id}
-                    handleMouseEnter={() => setMarkerFocus(id)}
-                    handleMouseLeave={() => setMarkerFocus(0)}
-                    title={name}
-                    address={city + district}
-                    times={business_hours}
-                    tags={sports}
-                    stadium_id={id}
-                    onClick={() => {
-                      setModalOpen(true);
-                      setStadiumId(id);
-                    }}
-                  />
-                  <div style={{ width: '100%', height: '1px', backgroundColor: theme.gray[100] }} />
-                </Fragment>
-              ))}
-            </ListContainer>
+              <ListContainer ref={scrollElement}>
+                {stadiums?.map(({ id, name, business_hours, city, district, sports }) => (
+                  <Fragment key={id}>
+                    <ListItem
+                      markerFocus={markerFocus === id}
+                      handleMouseEnter={() => setMarkerFocus(id)}
+                      handleMouseLeave={() => setMarkerFocus(0)}
+                      title={name}
+                      address={city + district}
+                      times={business_hours}
+                      tags={sports}
+                      stadium_id={id}
+                      onClick={() => {
+                        setModalOpen(true);
+                        setStadiumId(id);
+                      }}
+                    />
+                    <div
+                      style={{ width: '100%', height: '1px', backgroundColor: theme.gray[100] }}
+                    />
+                  </Fragment>
+                ))}
+              </ListContainer>
+            </StadiumsContainer>
           </ContentContainer>
         </Filter>
         <DetailModal stadiumId={stadiumId} open={modalOpen} onCancel={() => setModalOpen(false)} />

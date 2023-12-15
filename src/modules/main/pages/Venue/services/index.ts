@@ -46,4 +46,7 @@ export const useVenueInfo = (venue_id: number) =>
   api.useGet('/api/venue/:venue_id', { params: { venue_id } }, { enabled: !!venue_id });
 
 export const useVenueCourts = (venue_id: number) =>
-  api.useGet('/api/venue/:venue_id/court', { params: { venue_id } });
+  api.usePost('/api/venue/:venue_id/court', { params: { venue_id } });
+
+export const useCourtReservations = (court_id: number) =>
+  api.usePost('/api/court/:court_id/reservation/browse', { params: { court_id } });
