@@ -51,7 +51,7 @@ const LoadingWrapper = styled.div`
   }
 `;
 
-const FullScreenLoadingWrapper = styled.div`
+const FullContainerLoadingWrapper = styled.div`
   background-color: ${hexToRgb('#000000', 0.5)};
   position: absolute;
   width: 100%;
@@ -67,10 +67,10 @@ export default function Loading() {
   );
 }
 
-export const FullScreenLoading = () => {
+export const FullContainerLoading = () => {
   return (
-    <FullScreenLoadingWrapper>
+    <FullContainerLoadingWrapper>
       <Loading />
-    </FullScreenLoadingWrapper>
+    </FullContainerLoadingWrapper>
   );
 };

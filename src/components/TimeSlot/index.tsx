@@ -7,7 +7,7 @@ import type { schemas } from '@/services/type';
 import type { Type } from '@/utils/type';
 import type { z } from 'zod';
 
-import { FullScreenLoading } from '@/components/Loading/RippleLoading';
+import { FullContainerLoading } from '@/components/Loading/RippleLoading';
 import PopOver from '@/components/Popover';
 import theme from '@/provider/theme/theme';
 import { percentageOfFigma, rwdFontSize } from '@/utils/css';
@@ -179,7 +179,7 @@ export default function TimeSlot({
             </Column>
           </Column>
         ))}
-      {isLoading && <FullScreenLoading />}
+      {isLoading && <FullContainerLoading />}
     </Container>
   );
 }

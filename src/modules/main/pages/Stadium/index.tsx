@@ -11,7 +11,7 @@ import PositionIcon from '@/assets/icons/Position';
 import { RippleButton } from '@/components';
 import { useDateTimePicker } from '@/components/DateTimePicker';
 import DateTimePickerModal from '@/components/DateTimePicker/Modal';
-import Loading from '@/components/Loading/RippleLoading';
+import { FullContainerLoading } from '@/components/Loading/RippleLoading';
 import Select from '@/components/Select';
 import { useScrollToEnd } from '@/hooks/useElement';
 import useError from '@/hooks/useError';
@@ -23,8 +23,6 @@ import ListItem from '@/modules/main/pages/Stadium/components/ListItem';
 import { useBrowseStadium } from '@/modules/main/pages/Stadium/services';
 import theme from '@/provider/theme/theme';
 import { useCity, useDistrict, useSports } from '@/services/useFilters';
-import { hexToRgb } from '@/utils';
-import { flexCenter } from '@/utils/css';
 
 const ContentContainer = styled.div`
   width: 100%;
@@ -55,14 +53,6 @@ const ListContainer = styled.div`
   width: 100%;
   height: 100%;
   overflow: scroll;
-`;
-
-const LoadingWrapper = styled.div`
-  background-color: ${hexToRgb('#000000', 0.5)};
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  ${flexCenter}
 `;
 
 export default function Stadium() {
@@ -242,11 +232,7 @@ export default function Stadium() {
             </MapContainer>
 
             <StadiumsContainer>
-              {isFetching && (
-                <LoadingWrapper>
-                  <Loading />
-                </LoadingWrapper>
-              )}
+              {isFetching && <FullContainerLoading />}
               <ListContainer ref={scrollElement}>
                 {stadiums?.map(({ id, name, business_hours, city, district, sports }) => (
                   <Fragment key={id}>
