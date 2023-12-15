@@ -1,17 +1,20 @@
-import { format, setHours } from 'date-fns';
-import { range } from 'lodash';
+import { format, parse, setHours } from 'date-fns';
+import { isEqual, pickBy, range } from 'lodash';
 import { Fragment, useState } from 'react';
 import { DayPicker } from 'react-day-picker';
 import styled from 'styled-components';
 
+import type { schemas } from '@/services/type';
 import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
+import type { z } from 'zod';
 
 import 'react-day-picker/dist/style.css';
 
 import theme from '@/provider/theme/theme';
 import { flexCenter, percentageOfFigma, rwdFontSize } from '@/utils/css';
+import { toISOString } from '@/utils/function/date';
 
-interface DateTimePickerProps {
+export interface DateTimePickerProps {
   date: Date[] | undefined;
   setDate: Dispatch<SetStateAction<Date[] | undefined>>;
   focus: Date | undefined;
@@ -78,6 +81,22 @@ const TagTag = styled.label.withConfig({
   font-family: Roboto;
 `;
 
+export const toDateTimeRange = (
+  times: DateTimePickerProps['times'],
+): z.infer<(typeof schemas)['DateTimeRange']>[] => {
+  return Object.keys(times)
+    .map((date) =>
+      times[date].map((time) => {
+        const [start, end] = time.split('-');
+        return {
+          start_time: toISOString(parse(`${date} ${start}`, 'yyyy/MM/dd HH:mm', new Date())),
+          end_time: toISOString(parse(`${date} ${end}`, 'yyyy/MM/dd HH:mm', new Date())),
+        };
+      }),
+    )
+    .flat();
+};
+
 export default function DateTimePicker({
   date,
   setDate,
@@ -105,10 +124,15 @@ export default function DateTimePicker({
       } else {
         if (times[date].length === 1)
           setDate((prev) => prev?.filter((d) => format(d, 'yyyy/MM/dd') !== date));
-        setTimes((prev) => ({
-          ...prev,
-          [date]: prev[date].filter((t) => t !== time),
-        }));
+        setTimes((prev) =>
+          pickBy(
+            {
+              ...prev,
+              [date]: prev[date].filter((t) => t !== time),
+            },
+            (v) => !isEqual(v, []),
+          ),
+        );
       }
     }
   };

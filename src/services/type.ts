@@ -372,6 +372,16 @@ const EditVenueInput = z
   })
   .partial()
   .passthrough();
+const DateTimeRange = z
+  .object({
+    start_time: z.string().datetime({ offset: true }),
+    end_time: z.string().datetime({ offset: true }),
+  })
+  .passthrough();
+const BrowseCourtByVenueIdParams = z
+  .object({ time_ranges: z.union([z.array(DateTimeRange), z.null()]) })
+  .partial()
+  .passthrough();
 const Court = z
   .object({
     id: z.number().int(),
@@ -421,12 +431,6 @@ const Response_Sequence_Sport__ = z
   .object({ data: z.union([z.array(Sport), z.null()]), error: z.union([ErrorMessage, z.null()]) })
   .partial()
   .passthrough();
-const DateTimeRange = z
-  .object({
-    start_time: z.string().datetime({ offset: true }),
-    end_time: z.string().datetime({ offset: true }),
-  })
-  .passthrough();
 const TechnicalType = z.enum(['ENTRY', 'INTERMEDIATE', 'ADVANCED']);
 const BrowseReservationSortBy = z.enum(['vacancy', 'time']);
 const app__processor__http__reservation__BrowseReservationParameters = z
@@ -461,7 +465,7 @@ const Reservation = z
     google_event_id: z.union([z.string(), z.null()]).optional(),
   })
   .passthrough();
-const BrowseReservationOutput = z
+const app__processor__http__reservation__BrowseReservationOutput = z
   .object({
     data: z.array(Reservation),
     total_count: z.number().int(),
@@ -469,9 +473,9 @@ const BrowseReservationOutput = z
     offset: z.number().int(),
   })
   .passthrough();
-const Response_BrowseReservationOutput_ = z
+const app__utils__response__Response_BrowseReservationOutput___1 = z
   .object({
-    data: z.union([BrowseReservationOutput, z.null()]),
+    data: z.union([app__processor__http__reservation__BrowseReservationOutput, z.null()]),
     error: z.union([ErrorMessage, z.null()]),
   })
   .partial()
@@ -547,6 +551,16 @@ const app__processor__http__court__BrowseReservationParameters = z
   .object({
     time_ranges: z.union([z.array(DateTimeRange), z.null()]),
     start_date: z.union([z.string(), z.null()]),
+  })
+  .partial()
+  .passthrough();
+const app__processor__http__court__BrowseReservationOutput = z
+  .object({ start_date: z.string(), reservations: z.array(Reservation) })
+  .passthrough();
+const app__utils__response__Response_BrowseReservationOutput___2 = z
+  .object({
+    data: z.union([app__processor__http__court__BrowseReservationOutput, z.null()]),
+    error: z.union([ErrorMessage, z.null()]),
   })
   .partial()
   .passthrough();
@@ -796,6 +810,8 @@ export const schemas = {
   ReadVenueOutput,
   Response_ReadVenueOutput_,
   EditVenueInput,
+  DateTimeRange,
+  BrowseCourtByVenueIdParams,
   Court,
   Response_Sequence_Court__,
   District,
@@ -808,13 +824,12 @@ export const schemas = {
   BatchDeleteAlbumInput,
   Sport,
   Response_Sequence_Sport__,
-  DateTimeRange,
   TechnicalType,
   BrowseReservationSortBy,
   app__processor__http__reservation__BrowseReservationParameters,
   Reservation,
-  BrowseReservationOutput,
-  Response_BrowseReservationOutput_,
+  app__processor__http__reservation__BrowseReservationOutput,
+  app__utils__response__Response_BrowseReservationOutput___1,
   ReservationMemberStatus,
   ReservationMemberSource,
   ReservationMember,
@@ -825,6 +840,8 @@ export const schemas = {
   Response_Sequence_ReservationMemberWithName__,
   BatchEditCourtInput,
   app__processor__http__court__BrowseReservationParameters,
+  app__processor__http__court__BrowseReservationOutput,
+  app__utils__response__Response_BrowseReservationOutput___2,
   AddReservationInput,
   AddReservationOutput,
   Response_AddReservationOutput_,
@@ -1272,9 +1289,7 @@ const endpoints = makeApi([
     path: '/api/court/:court_id/reservation/browse',
     alias: 'browse_reservation_by_court_id_api_court__court_id__reservation_browse_post',
     description: `這隻 func 如果給了 start_date 會直接 return start_date ~ start_date + 7 的資料，
-要透過 time range 搜尋的話要給 start_date &#x3D; null
-
-time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
+要透過 time range 搜尋的話要給 start_date &#x3D; null`,
     requestFormat: 'json',
     parameters: [
       {
@@ -1288,7 +1303,7 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
         schema: z.number().int(),
       },
     ],
-    response: Response,
+    response: app__utils__response__Response_BrowseReservationOutput___2,
     errors: [
       {
         status: 422,
@@ -1964,11 +1979,16 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
     ],
   },
   {
-    method: 'get',
+    method: 'post',
     path: '/api/venue/:venue_id/court',
-    alias: 'browse_court_by_venue_id_api_venue__venue_id__court_get',
+    alias: 'browse_court_by_venue_id_api_venue__venue_id__court_post',
     requestFormat: 'json',
     parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: BrowseCourtByVenueIdParams,
+      },
       {
         name: 'venue_id',
         type: 'Path',
@@ -2109,7 +2129,7 @@ time format 要給 naive datetime, e.g. &#x60;2023-11-11T11:11:11&#x60;`,
         schema: app__processor__http__reservation__BrowseReservationParameters,
       },
     ],
-    response: Response_BrowseReservationOutput_,
+    response: app__utils__response__Response_BrowseReservationOutput___1,
     errors: [
       {
         status: 422,

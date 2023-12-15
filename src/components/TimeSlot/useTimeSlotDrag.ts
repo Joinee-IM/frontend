@@ -1,4 +1,4 @@
-import { range } from 'lodash';
+import { isEqual, range } from 'lodash';
 import { useEffect, useState } from 'react';
 
 type ModeType = 'straight' | 'diagonal';
@@ -9,7 +9,7 @@ function SignWithZero(number: number, nullish = 1) {
 }
 
 export default function useTimeSlotDrag(
-  init: boolean[][],
+  init: (boolean | null)[][],
   mode: ModeType = 'straight',
   { onMouseDown, onMouseEnter, OnMouseUp }: ConfigType = {},
 ) {
@@ -30,10 +30,11 @@ export default function useTimeSlotDrag(
   };
 
   useEffect(() => {
-    setCells((prev) => (prev.flat().length === init.flat().length ? prev : init));
+    setCells((prev) => (isEqual(prev, init) ? prev : init));
   }, [init]);
 
   const handleUnitMouseDown = (x: number, y: number) => {
+    if (cells[x][y] === null) return;
     if (mode === 'straight') {
       resetTimeSlot();
     }
@@ -49,6 +50,10 @@ export default function useTimeSlotDrag(
 
   const handleUnitMouseEnter = (x: number, y: number) => {
     if (dragStart && start) {
+      if (cells[x][y] === null) {
+        setDragStart(false);
+        OnMouseUp?.();
+      }
       setCells(
         prevCells.map((column, columnIndex) =>
           (mode === 'straight' && columnIndex === start[0]) ||

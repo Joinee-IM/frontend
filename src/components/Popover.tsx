@@ -30,16 +30,16 @@ const ContentWrapper = styled.div`
   column-gap: ${percentageOfFigma(20).max};
 `;
 
-export default function PopOver({ content, icon, footer, children, ...rest }: PopOverProps) {
+export default function PopOver({ content, icon, footer, children, style, ...rest }: PopOverProps) {
   return (
     <Popover
       content={
-        <InfoReminderWrapper>
+        <InfoReminderWrapper style={style}>
           <ContentWrapper>
-            <IconWrapper>{icon}</IconWrapper>
+            {icon && <IconWrapper>{icon}</IconWrapper>}
             {content}
           </ContentWrapper>
-          <ButtonWrapper>{footer}</ButtonWrapper>
+          {footer && <ButtonWrapper>{footer}</ButtonWrapper>}
         </InfoReminderWrapper>
       }
       {...rest}

@@ -1,5 +1,8 @@
 import styled, { keyframes } from 'styled-components';
 
+import { hexToRgb } from '@/utils';
+import { flexCenter } from '@/utils/css';
+
 const ripple = keyframes`
   0% {
     top: 36px;
@@ -48,6 +51,14 @@ const LoadingWrapper = styled.div`
   }
 `;
 
+const FullScreenLoadingWrapper = styled.div`
+  background-color: ${hexToRgb('#000000', 0.5)};
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  ${flexCenter}
+`;
 export default function Loading() {
   return (
     <LoadingWrapper>
@@ -56,3 +67,11 @@ export default function Loading() {
     </LoadingWrapper>
   );
 }
+
+export const FullScreenLoading = () => {
+  return (
+    <FullScreenLoadingWrapper>
+      <Loading />
+    </FullScreenLoadingWrapper>
+  );
+};

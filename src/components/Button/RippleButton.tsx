@@ -24,7 +24,6 @@ const RippleButtonBase = styled(ThemeButton).withConfig({
   padding: 0.375em 0.75em;
   border-radius: 0.5em;
   width: fit-content;
-  height: fit-content;
   white-space: nowrap;
   box-sizing: ${({ borderBox }) => (borderBox ? 'border-box' : 'content-box')};
   ${flexCenter};
@@ -39,7 +38,9 @@ const RippleButtonBase = styled(ThemeButton).withConfig({
           border: none;
           padding: 0.5em !important;
         `
-      : css``}
+      : css`
+          height: fit-content;
+        `}
 `;
 
 export default function RippleButton<T extends ButtonType>({
