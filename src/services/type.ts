@@ -1339,32 +1339,6 @@ const endpoints = makeApi([
     ],
   },
   {
-    method: 'patch',
-    path: '/api/court/batch',
-    alias: 'batch_edit_court_api_court_batch_patch',
-    requestFormat: 'json',
-    parameters: [
-      {
-        name: 'body',
-        type: 'Body',
-        schema: BatchEditCourtInput,
-      },
-      {
-        name: 'auth-token',
-        type: 'Header',
-        schema: auth_token,
-      },
-    ],
-    response: Response,
-    errors: [
-      {
-        status: 422,
-        description: `Validation Error`,
-        schema: HTTPValidationError,
-      },
-    ],
-  },
-  {
     method: 'get',
     path: '/api/district',
     alias: 'browse_district_api_district_get',
