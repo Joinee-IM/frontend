@@ -56,7 +56,6 @@ const FullScreenLoadingWrapper = styled.div`
   position: absolute;
   width: 100%;
   height: 100%;
-  z-index: 10000;
   ${flexCenter}
 `;
 export default function Loading() {
