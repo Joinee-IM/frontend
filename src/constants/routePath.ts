@@ -24,6 +24,7 @@ export const ROUTES = {
     },
     'user-info': 'user-info/:account_id',
     reserve: { route: 'reserve/:mode', info: ':reservation_id' },
+    partner: 'partner',
   },
   entry: '/entry',
   auth: {

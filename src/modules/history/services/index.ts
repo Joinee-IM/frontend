@@ -3,15 +3,15 @@ import type { z } from 'zod';
 
 import api from '@/services';
 
-type BrowseParamsProps = Exclude<
-  z.infer<(typeof schemas)['app__processor__http__reservation__BrowseReservationParameters']>,
+type BrowseHistoryParamsProps = Exclude<
+  z.infer<(typeof schemas)['ViewMyReservationParams']>,
   z.ZodTypeAny
 >;
 
-export const useBrowseHistory = (account_id: number, params: BrowseParamsProps) => {
+export const useBrowseHistory = (params: BrowseHistoryParamsProps) => {
   const { data, ...rest } = api.useImmutableInfiniteQuery(
     '/api/view/my-reservation',
-    { account_id, ...params },
+    params,
     undefined,
     {
       getPageParamList: () => ['limit', 'offset'],

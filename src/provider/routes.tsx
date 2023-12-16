@@ -131,6 +131,13 @@ const router = createBrowserRouter([
               },
             ],
           },
+          {
+            path: routePath('index.partner'),
+            async lazy() {
+              const Partner = await import('@/modules/main/pages/Partner');
+              return { Component: Partner.default };
+            },
+          },
         ],
       },
       {

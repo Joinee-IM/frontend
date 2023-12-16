@@ -86,11 +86,12 @@ export default function Filter({
   setWord,
   twoStepsFilter = true,
   customControl,
+  ...rest
 }: UnSearchableFilterProps | SearchableFilterProps) {
   const [filterOpen, setFilterOpen] = useState(false);
 
   return (
-    <ToolBarWrapper>
+    <ToolBarWrapper {...rest}>
       <ToolBar>
         <FilterWrapper visible={twoStepsFilter ? filterOpen : true}>{filters}</FilterWrapper>
         <IconWrapper>

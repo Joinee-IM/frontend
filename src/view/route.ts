@@ -18,13 +18,6 @@ const viewChildrenRoutes: {
     },
   },
   {
-    path: 'flipcard',
-    async lazy() {
-      const FlipCard = await import('@/view/components/FlipCard');
-      return { Component: FlipCard.default };
-    },
-  },
-  {
     path: 'dropzone',
     async lazy() {
       const DropZone = await import('@/view/components/DropZone');
