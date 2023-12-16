@@ -18,7 +18,13 @@ interface DataType extends z.infer<(typeof schemas)['ViewMyReservation']> {
 
 export default function History() {
   const { account_id } = useParams();
-  const { histories } = useBrowseHistory(Number(account_id), { limit: 10, offset: 0 });
+  const { histories } = useBrowseHistory({
+    limit: 10,
+    offset: 0,
+    account_id: Number(account_id),
+    sort_by: 'time',
+    order: 'DESC',
+  });
   const navigate = useNavigate();
 
   const columns: ColumnsType<DataType> = [
