@@ -1,20 +1,17 @@
 import { Pagination } from 'antd';
-import { motion } from 'framer-motion';
-import { useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Fragment, useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import BallIcon from '@/assets/icons/Ball';
 import ReserveIcon from '@/assets/icons/Reserve';
 import SortIcon from '@/assets/icons/Sort';
-import Image from '@/assets/stadium.jpeg';
 import Select from '@/components/Select';
-import { SquareTag } from '@/components/Tag';
 import useFilter from '@/hooks/useFilter';
 import Filter from '@/modules/main/components/Filter';
+import GalleryItem from '@/modules/main/pages/Venue/components/GalleryItem';
 import { useBrowseVenue } from '@/modules/main/pages/Venue/services';
 import { useSports } from '@/services/useFilters';
-import { backgroundCenter } from '@/utils/css';
 
 type GalleryProps = React.ComponentProps<typeof GalleryWrapper>;
 
@@ -33,62 +30,12 @@ const GalleryContent = styled.div`
   gap: 8px;
 `;
 
-const Item = styled.div`
-  aspect-ratio: 1.1;
-  background-color: aliceblue;
-  background-image: url(${Image});
-  ${backgroundCenter}
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-  .gallery_item_info {
-    /* transform: translate(0, 22px); */
-    transition: all 0.3s ease-in-out;
-  }
-  &:hover {
-    & .gallery_item_info {
-      /* transform: translate(0, 0px); */
-      background-color: ${({ theme }) => theme.main[300]};
-    }
-  }
-`;
-
-const ItemTag = styled(SquareTag).withConfig({
-  shouldForwardProp: (prop) => !['reservable'].includes(prop),
-})<{ reservable: boolean }>`
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background-color: ${({ theme, reservable }) => (reservable ? theme.sub[300] : theme.red[300])};
-`;
-
-const ItemInfo = styled(motion.div).attrs({ className: 'gallery_item_info' })`
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 10px 18px;
-  color: ${({ theme }) => theme.white};
-  background-color: ${({ theme }) => theme.main[500]};
-  display: flex;
-  flex-direction: column;
-  row-gap: 4px;
-`;
-
-const ItemInfoTitle = styled.div`
-  font-weight: 600;
-`;
-const ItemInfoContent = styled.div`
-  font-size: 9px;
-`;
-
 export default function Gallery({ children }: GalleryProps) {
   const { stadium_id } = useParams();
   const limit = useMemo(() => 9, []);
   const [offset, setOffset] = useState(0);
   const { sport, setSport, isReservable, setIsReservable, name, setName } = useFilter();
   const [word, setWord] = useState<string | undefined>(undefined);
-  const navigate = useNavigate();
 
   const { venues, count } = useBrowseVenue({
     limit,
@@ -145,15 +92,16 @@ export default function Gallery({ children }: GalleryProps) {
     >
       <GalleryContent>
         {venues?.map((venue, index) => (
-          <Item key={index} onClick={() => navigate(`${venue.id}`)}>
-            <ItemTag reservable={venue.is_reservable}>
-              {venue.is_reservable ? '可預約' : '不可預約'}
-            </ItemTag>
-            <ItemInfo>
-              <ItemInfoTitle>{venue.name}</ItemInfoTitle>
-              <ItemInfoContent>{`${venue.floor}F．可容納 ${venue.capacity} 人．${venue.current_user_count} 人正在使用中`}</ItemInfoContent>
-            </ItemInfo>
-          </Item>
+          <Fragment key={index}>
+            <GalleryItem
+              venue_id={venue.id}
+              is_reservable={venue.is_reservable}
+              name={venue.name}
+              floor={venue.floor}
+              capacity={venue.capacity}
+              current_user_count={venue.current_user_count}
+            />
+          </Fragment>
         ))}
       </GalleryContent>
       {children}
