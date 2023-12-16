@@ -2,7 +2,8 @@ import { Card as CardAntd, Form, InputNumber, Select, Switch } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import TextArea from 'antd/es/input/TextArea';
 import { differenceInHours, format, setHours } from 'date-fns';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
+import { useCookies } from 'react-cookie';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -17,8 +18,12 @@ import GridForm from '@/components/Grid/FormGrid';
 import { useLoading } from '@/components/Loading/PageLoading';
 import { SearchSelect } from '@/components/Select';
 import { RoundTag, RoundTagWrapper } from '@/components/Tag';
+import { ENV } from '@/constants';
 import {
+  useBrowseReservationMembers,
   useCreateReservation,
+  useJoinReservation,
+  useLeaveReservation,
   useReservationInfo,
   useSearchAccount,
 } from '@/modules/main/pages/Reserve/services';
@@ -28,6 +33,7 @@ import { hexToRgb } from '@/utils';
 import { flexCenter, percentageOfFigma, rwdFontSize } from '@/utils/css';
 import { toISOString } from '@/utils/function/date';
 import { toTechnicalLevel } from '@/utils/function/map';
+import toMemberStatus from '@/utils/function/map/toMemberStatus';
 import calculateTotalCost from '@/utils/function/money';
 
 interface ReservationFormDataType {
@@ -81,9 +87,16 @@ export default function Reserve() {
     mode: 'edit' | 'create' | 'info';
     reservation_id: string;
   }>();
-  const { data: reservation } = useReservationInfo(
-    reservation_id ? Number(reservation_id) : undefined,
-  );
+  const {
+    data: reservation,
+    refetch,
+    isFetching: fetchingReservation,
+  } = useReservationInfo(reservation_id ? Number(reservation_id) : undefined);
+  const {
+    data: members,
+    refetch: refetchReservationMembers,
+    isFetching: fetchingReservationMembers,
+  } = useBrowseReservationMembers(reservation?.data?.id);
 
   const [searchParams] = useSearchParams();
   const stadium_id = useMemo(
@@ -103,12 +116,27 @@ export default function Reserve() {
     offset: 0,
     stadium_id: Number(stadium_id),
   });
-  const { data: courts, isLoading: fetchingCourts } = useVenueCourts(Number(venue_id));
+  const {
+    data: courts,
+    isLoading: fetchingCourts,
+    mutate: getCourts,
+  } = useVenueCourts(Number(venue_id));
+
+  useEffect(() => {
+    getCourts({});
+  }, [getCourts, venue_id]);
+
   const { data: stadium, isLoading: fetchingStadiumInfo } = useStadiumInfo(Number(stadium_id));
   const { data: venue, isLoading: fetchingVenueInfo } = useVenueInfo(Number(venue_id));
   const { mutateAsync } = useSearchAccount();
   const { mutateAsync: createReservation, isLoading: createReservationLoading } =
     useCreateReservation(Number(court_id));
+  const { mutateAsync: joinReservation, isLoading: loadingJoinReservation } = useJoinReservation(
+    reservation?.data?.invitation_code ?? '',
+  );
+  const { mutateAsync: leaveReservation, isLoading: loadingLeaveReservation } = useLeaveReservation(
+    Number(reservation?.data?.id),
+  );
   const navigate = useNavigate();
 
   const data = useMemo(() => {
@@ -146,14 +174,15 @@ export default function Reserve() {
       小單位編號:
         court_id &&
         (mode === 'info' ? (
-          courts?.data?.find((court) => court.id === Number(court_id))?.number
+          `第 ${courts?.data?.find((court) => court.id === Number(court_id))?.number} ${venue?.data
+            ?.court_type}`
         ) : (
           <Form.Item name="court_id" initialValue={Number(court_id)}>
             <Select
               style={{ width: '100%' }}
               options={courts?.data?.map((court) => ({
                 value: Number(court.id),
-                label: court.number,
+                label: `第 ${court.number} ${venue?.data?.court_type}`,
               }))}
             />
           </Form.Item>
@@ -196,7 +225,13 @@ export default function Reserve() {
         }),
       邀請的成員:
         mode === 'info' ? (
-          ''
+          <RoundTagWrapper>
+            {members?.data?.map((member, index) => (
+              <RoundTag key={index} style={{ backgroundColor: toMemberStatus(member.status) }}>
+                {member.nickname}
+              </RoundTag>
+            ))}
+          </RoundTagWrapper>
         ) : (
           <Form.Item name="member_ids" initialValue={[]}>
             <SearchSelect
@@ -212,7 +247,9 @@ export default function Reserve() {
             />
           </Form.Item>
         ),
-      ...(mode === 'info' && { 邀請連結: reservation?.data?.invitation_code }),
+      ...(mode === 'info' && {
+        邀請連結: `${ENV.domain}reserve/${reservation?.data?.invitation_code}`,
+      }),
       尋找球友:
         mode === 'info' ? (
           reservation?.data?.vacancy !== -1 ? (
@@ -284,6 +321,7 @@ export default function Reserve() {
     court_id,
     courts?.data,
     date,
+    members?.data,
     mode,
     mutateAsync,
     reservation?.data,
@@ -291,6 +329,7 @@ export default function Reserve() {
     stadium_id,
     stadiums,
     time,
+    venue?.data?.court_type,
     venue?.data?.fee_rate,
     venue?.data?.fee_type,
     venue?.data?.name,
@@ -298,6 +337,8 @@ export default function Reserve() {
     venue_id,
     venues,
   ]);
+
+  const [cookie] = useCookies(['id', 'user-role']);
 
   const handleReserve = useCallback(async () => {
     try {
@@ -316,6 +357,23 @@ export default function Reserve() {
       console.log(e);
     }
   }, [createReservation, date, form, navigate, time]);
+
+  const handleJoinReserve = useCallback(async () => {
+    await joinReservation(undefined);
+    await refetch();
+    await refetchReservationMembers();
+  }, [joinReservation, refetch, refetchReservationMembers]);
+
+  const handleLeaveReserve = useCallback(async () => {
+    await leaveReservation(null as never);
+    await refetch();
+    await refetchReservationMembers();
+  }, [leaveReservation, refetch, refetchReservationMembers]);
+
+  const isMember = useMemo(
+    () => members?.data?.find((member) => member.account_id === cookie.id),
+    [cookie.id, members?.data],
+  );
 
   const action = useMemo(() => {
     switch (mode) {
@@ -351,9 +409,15 @@ export default function Reserve() {
           </>
         );
       case 'info':
-        return (
+        console.log(isMember);
+        return isMember ? (
           <>
-            <RippleButton category="outlined" palette="red">
+            <RippleButton
+              category="outlined"
+              palette="red"
+              onClick={handleLeaveReserve}
+              loading={loadingLeaveReservation}
+            >
               退出
             </RippleButton>
             <RippleButton
@@ -364,16 +428,44 @@ export default function Reserve() {
               編輯預約
             </RippleButton>
           </>
+        ) : (
+          <RippleButton
+            category="solid"
+            palette="main"
+            onClick={handleJoinReserve}
+            loading={loadingJoinReservation}
+          >
+            加入
+          </RippleButton>
         );
       default:
         break;
     }
-  }, [createReservationLoading, handleReserve, mode, navigate, reservation_id]);
+  }, [
+    createReservationLoading,
+    handleJoinReserve,
+    handleLeaveReserve,
+    handleReserve,
+    isMember,
+    loadingJoinReservation,
+    loadingLeaveReservation,
+    mode,
+    navigate,
+    reservation_id,
+  ]);
 
   const { context } = useLoading(
-    [fetchingStadiums, fetchVenues, fetchingCourts, fetchingVenueInfo, fetchingStadiumInfo],
-    Loading,
-    '正在生成預約表單',
+    [
+      fetchingStadiums,
+      fetchVenues,
+      fetchingCourts,
+      fetchingVenueInfo,
+      fetchingStadiumInfo,
+      fetchingReservation,
+      fetchingReservationMembers,
+    ],
+    mode === 'create' ? Loading : undefined,
+    mode === 'create' ? '正在生成預約表單' : '請稍候',
   );
 
   return (

@@ -1,23 +1,22 @@
 import { Tabs as AntdTabs } from 'antd';
+import { Fragment, type ReactNode } from 'react';
 
 import type { TabsProps as AntdTabProps } from 'antd';
-import type { ReactNode } from 'react';
 
 type TabItemProps = Exclude<AntdTabProps['items'], undefined>[number] & {
   index: string;
   children: ReactNode;
 };
 
-interface TabsProps extends Omit<AntdTabProps, 'children'> {
-  children: { props: TabItemProps } | ({ props: TabItemProps } | null | undefined)[];
-}
-
 export const TabPane = (props: TabItemProps) => {
-  return { ...props, type: '', props: '' };
+  return <Fragment {...props}></Fragment>;
 };
 
-export const Tabs = ({ children, ...rest }: TabsProps) => {
-  const tabs = [children].flat().filter((item) => !!item) as { props: TabItemProps }[];
+export const Tabs = ({ children, ...rest }: AntdTabProps) => {
+  const tabs = [children]
+    .flat()
+    .flat()
+    .filter((item) => !!item) as { props: TabItemProps }[];
 
   return (
     <AntdTabs

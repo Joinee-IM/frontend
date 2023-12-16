@@ -140,11 +140,16 @@ export default function Header() {
         ) : (
           <>
             <MenuItemWrapper selected={MODULE_TO_ROUTE.stadium.some((path) => path.test(pathname))}>
-              <MenuItem type="link" category="link" palette="main">
+              <MenuItem type="link" category="link" palette="main" onClick={() => navigate(`/`)}>
                 尋找場地
               </MenuItem>
             </MenuItemWrapper>
-            <MenuItem type="link" category="link" palette="main">
+            <MenuItem
+              type="link"
+              category="link"
+              palette="main"
+              onClick={() => navigate(`/partner`)}
+            >
               尋找球友
             </MenuItem>
             <MenuItem type="link" category="link" palette="main">

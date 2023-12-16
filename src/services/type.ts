@@ -158,7 +158,7 @@ const StadiumSearchParameters = z
     district_id: z.union([z.number(), z.null()]),
     sport_id: z.union([z.number(), z.null()]),
     time_ranges: z.union([z.array(WeekTimeRange), z.null()]),
-    limit: z.number().int().gt(0).lt(50).default(10),
+    limit: z.number().int().gt(0).lt(50),
     offset: z.number().int().gte(0),
   })
   .partial()
@@ -441,8 +441,8 @@ const app__processor__http__reservation__BrowseReservationParameters = z
     stadium_id: z.union([z.number(), z.null()]),
     time_ranges: z.union([z.array(DateTimeRange), z.null()]),
     technical_level: z.union([TechnicalType, z.null()]),
-    limit: z.number().int().gt(0).lt(50).default(10),
-    offset: z.number().int().gte(0),
+    limit: z.union([z.number(), z.null()]),
+    offset: z.union([z.number(), z.null()]),
     sort_by: BrowseReservationSortBy.default('time'),
     order: Sorter.default('DESC'),
   })
@@ -469,8 +469,8 @@ const app__processor__http__reservation__BrowseReservationOutput = z
   .object({
     data: z.array(Reservation),
     total_count: z.number().int(),
-    limit: z.number().int(),
-    offset: z.number().int(),
+    limit: z.union([z.number(), z.null()]).optional(),
+    offset: z.union([z.number(), z.null()]).optional(),
   })
   .passthrough();
 const app__utils__response__Response_BrowseReservationOutput___1 = z
@@ -615,7 +615,7 @@ const ViewMyReservationParams = z
     source: z.union([ReservationMemberSource, z.null()]).optional(),
     sort_by: ViewMyReservationSortBy.optional().default('time'),
     order: Sorter.optional().default('DESC'),
-    limit: z.number().int().gt(0).lt(50).optional().default(10),
+    limit: z.number().int().gt(0).lt(50).optional(),
     offset: z.number().int().gte(0).optional(),
   })
   .passthrough();
@@ -1878,7 +1878,7 @@ const endpoints = makeApi([
       {
         name: 'limit',
         type: 'Query',
-        schema: z.number().int().optional().default(10),
+        schema: z.number().int().optional(),
       },
       {
         name: 'offset',

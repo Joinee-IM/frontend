@@ -11,6 +11,7 @@ import ImageIcon from '@/assets/icons/Image';
 import Person from '@/assets/user.png';
 import { RippleButton } from '@/components';
 import AuthButton from '@/components/Button/AuthButton';
+import { PageTitle } from '@/components/Title';
 import Upload, { UploadImageTitle } from '@/components/Upload';
 import { useGoogleLogin } from '@/modules/auth/service';
 import { Container } from '@/modules/main/components';
@@ -19,12 +20,6 @@ import Section from '@/modules/main/pages/UserInfo/components/Section';
 import SecuritySection from '@/modules/main/pages/UserInfo/SecuritySection';
 import { useEditAvatar, useUserInfo } from '@/modules/main/pages/UserInfo/services';
 import { flexCenter, percentageOfFigma } from '@/utils/css';
-
-const Title = styled.div`
-  font-size: max(20px, 2.29vw);
-  font-weight: 600;
-  letter-spacing: 1.8px;
-`;
 
 const ContentWrapper = styled(motion.div)`
   width: 100%;
@@ -90,7 +85,7 @@ export default function UserInfo() {
 
   return (
     <Container>
-      <Title>個人檔案</Title>
+      <PageTitle>個人檔案</PageTitle>
       {data?.data && (
         <ContentWrapper
           initial={{ opacity: 0 }}

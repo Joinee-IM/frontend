@@ -9,7 +9,7 @@ export const PageTitle = styled.div`
 `;
 
 export const Container = styled.div`
-  padding: 6vh clamp(30px, 12.7vw, 200px);
+  padding: ${percentageOfFigma(85).vh} clamp(30px, 12.7vw, 200px);
   width: 100%;
   box-sizing: border-box;
   display: flex;

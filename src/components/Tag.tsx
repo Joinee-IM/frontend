@@ -18,15 +18,17 @@ export const SquareTag = styled.div`
 export const RoundTag = styled.div`
   ${flexCenter}
   ${rwdFontSize(14)};
+  line-height: 1em;
   padding: 0.5em 1em;
   border-radius: 1.3em;
   background: #cbc09f;
   color: white;
   flex-shrink: 0;
+  column-gap: ${10 / 14}em;
 `;
 
 export const RoundTagWrapper = styled.div`
   display: flex;
-  column-gap: 4px;
+  column-gap: ${percentageOfFigma(6).max};
   overflow: hidden;
 `;
