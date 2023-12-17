@@ -19,11 +19,10 @@ import { toISOString } from '@/utils/function/date';
 interface ActionProps {
   mode: 'edit' | 'create' | 'info';
   form: FormInstance<ReservationFormDataType>;
-  court_id: number;
   reservation_id: number;
 }
 
-export default function Action({ mode, form, court_id, reservation_id }: ActionProps) {
+export default function Action({ mode, form, reservation_id }: ActionProps) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const date = searchParams.get('date');
@@ -31,6 +30,9 @@ export default function Action({ mode, form, court_id, reservation_id }: ActionP
   const [cookie] = useCookies(['id', 'user-role']);
 
   const { data: reservation, refetch } = useReservationInfo(reservation_id);
+
+  const court_id = reservation?.data?.court_id ?? searchParams.get('court_id');
+
   const { mutateAsync: createReservation, isLoading: createReservationLoading } =
     useCreateReservation(Number(court_id));
   const { data: members, refetch: refetchReservationMembers } = useBrowseReservationMembers(

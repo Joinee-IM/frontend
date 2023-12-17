@@ -23,33 +23,31 @@ import toMemberStatus from '@/utils/function/map/toMemberStatus';
 import calculateTotalCost from '@/utils/function/money';
 
 interface FormDataProps {
-  stadium_id: number;
-  venue_id: number;
-  court_id: number;
   mode: 'edit' | 'create' | 'info';
   reservation?: z.infer<(typeof schemas)['Reservation']> | null;
 }
 
-export default function useReservationForm({
-  stadium_id,
-  venue_id,
-  court_id,
-  mode,
-  reservation,
-}: FormDataProps) {
+export default function useReservationForm({ mode, reservation }: FormDataProps) {
   const [searchParams] = useSearchParams();
   const date = searchParams.get('date');
   const time = searchParams.get('time')?.split(',').map(Number);
+  const stadium_id = reservation?.stadium_id ?? searchParams.get('stadium_id');
+  const venue_id = reservation?.venue_id ?? searchParams.get('venue_id');
+  const court_id = reservation?.court_id ?? searchParams.get('court_id');
 
-  const { data: stadium, isLoading: fetchingStadiumInfo } = useStadiumInfo(stadium_id);
-  const { data: venue, isLoading: fetchingVenueInfo } = useVenueInfo(venue_id);
+  const { data: stadium, isLoading: fetchingStadiumInfo } = useStadiumInfo(Number(stadium_id));
+  const { data: venue, isLoading: fetchingVenueInfo } = useVenueInfo(Number(venue_id));
   const { stadiums, isLoading: fetchingStadiums } = useBrowseStadium({ limit: 20, offset: 0 });
   const { venues, isLoading: fetchingVenues } = useBrowseVenue({
     limit: 20,
     offset: 0,
-    stadium_id,
+    stadium_id: Number(stadium_id),
   });
-  const { data: courts, mutate: getCourts, isLoading: fetchingCourts } = useVenueCourts(venue_id);
+  const {
+    data: courts,
+    mutate: getCourts,
+    isLoading: fetchingCourts,
+  } = useVenueCourts(Number(venue_id));
   const { data: members, isFetching: fetchingReservationMembers } = useBrowseReservationMembers(
     reservation?.id,
   );

@@ -65,32 +65,27 @@ const SumContainer = styled.div`
 `;
 
 export default function Reserve() {
+  const [form] = useForm<ReservationFormDataType>();
   const { mode, reservation_id } = useParams<{
     mode: 'edit' | 'create' | 'info';
     reservation_id: string;
   }>();
-  const [searchParams] = useSearchParams();
-  if (isNil(mode)) throw Error();
 
   const { data: reservation, isFetching: fetchingReservation } = useReservationInfo(
     Number(reservation_id),
   );
 
-  const stadium_id = reservation?.data?.stadium_id ?? searchParams.get('stadium_id');
+  const [searchParams] = useSearchParams();
+  if (isNil(mode)) throw Error();
   const venue_id = reservation?.data?.venue_id ?? searchParams.get('venue_id');
-  const court_id = reservation?.data?.court_id ?? searchParams.get('court_id');
   const date = searchParams.get('date');
   const time = searchParams.get('time')?.split(',').map(Number);
 
   const { data: venue } = useVenueInfo(Number(venue_id));
   const { data, isLoading } = useReservationForm({
-    stadium_id: Number(stadium_id),
-    venue_id: Number(venue_id),
-    court_id: Number(court_id),
     mode,
     reservation: reservation?.data,
   });
-  const [form] = useForm<ReservationFormDataType>();
 
   const { context } = useLoading(
     [isLoading, fetchingReservation],
@@ -132,12 +127,7 @@ export default function Reserve() {
             </SumContainer>
           )}
           <ButtonWrapper>
-            <Action
-              mode={mode}
-              form={form}
-              court_id={Number(court_id)}
-              reservation_id={Number(reservation_id)}
-            />
+            <Action mode={mode} form={form} reservation_id={Number(reservation_id)} />
           </ButtonWrapper>
         </Card>
       </Container>
