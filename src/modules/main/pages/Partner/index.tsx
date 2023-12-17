@@ -1,5 +1,5 @@
 import { debounce } from 'lodash';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 
 import BuildingIcon from '@/assets/icons/Building';
@@ -66,10 +66,6 @@ export default function Partner() {
     limit: 30,
     offset: 0,
   });
-
-  useEffect(() => {
-    console.log('offset', offset);
-  }, [offset]);
 
   return (
     <Container

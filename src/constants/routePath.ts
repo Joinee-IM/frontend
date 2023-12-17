@@ -14,19 +14,8 @@ function search<T>(target: T, keys: string[]) {
   else return search(path, keys.slice(1));
 }
 
-// 對應 modules 裡資料夾的結構
+// 對應 routes 裡資料夾的結構 (有畫面才會有路徑)
 export const ROUTES = {
-  index: {
-    route: '/',
-    stadium: {
-      route: '/',
-      venue: { route: 'stadium/:stadium_id/venue', detail: ':venue_id' },
-    },
-    'user-info': 'user-info/:account_id',
-    reserve: { route: 'reserve/:mode', info: ':reservation_id' },
-    partner: 'partner',
-  },
-  entry: '/entry',
   auth: {
     route: 'auth',
     login: 'login',
@@ -35,15 +24,27 @@ export const ROUTES = {
       role: 'role/:mode',
       account: 'account',
       'send-mail': 'send-mail',
-      success: 'success',
+      verified: 'verified',
     },
-    forgetPassword: {
+    'forget-password': {
       route: 'forget-password',
       'send-mail': 'send-mail',
       'reset-password': 'reset-password',
     },
   },
-  history: '/history/:account_id',
+  entry: '/entry',
+  main: {
+    route: '/',
+    partner: 'partner',
+    venue: {
+      route: 'stadium/:stadium_id/venue',
+      '[venue_id]': ':venue_id',
+    },
+    reservation: { route: 'reservation/:mode', info: ':reservation_id' },
+    'user-info': 'user-info/:account_id',
+    history: '/history/:account_id',
+    manage: { route: 'manage/:account_id', create: 'create/stadium', venue: 'venue/:venue_id' },
+  },
   lessor: {
     route: '/',
     manage: {

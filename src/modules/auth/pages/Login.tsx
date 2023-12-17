@@ -49,7 +49,7 @@ export default function Login() {
   const handleButtonPress = async (values: FieldType) => {
     const { email, password } = values;
     if (email && password) {
-      const { data } = await login(
+      await login(
         { email, password },
         {
           onSuccess(data) {
@@ -58,8 +58,7 @@ export default function Login() {
           },
         },
       );
-      if (data?.role === 'NORMAL') navigate('/');
-      else navigate(`/manage/${data?.account_id}`);
+      navigate('/');
     }
   };
 

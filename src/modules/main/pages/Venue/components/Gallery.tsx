@@ -90,7 +90,7 @@ export default function Gallery({ children }: GalleryProps) {
   const [word, setWord] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
 
-  const { venues, count, isFetching } = useBrowseVenue({
+  const { venues, count } = useBrowseVenue({
     limit,
     offset,
     stadium_id: Number(stadium_id),
@@ -99,8 +99,6 @@ export default function Gallery({ children }: GalleryProps) {
     name,
   });
   const { data: sports } = useSports();
-
-  if (isFetching) return <div>isFetching...</div>;
 
   return (
     <Filter
