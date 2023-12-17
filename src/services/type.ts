@@ -1878,12 +1878,12 @@ const endpoints = makeApi([
       {
         name: 'limit',
         type: 'Query',
-        schema: z.number().int().optional(),
+        schema: z.number().int().gt(0).lt(50).optional(),
       },
       {
         name: 'offset',
         type: 'Query',
-        schema: z.number().int().optional(),
+        schema: z.number().int().gte(0).optional(),
       },
     ],
     response: Response_BrowseVenueOutput_,

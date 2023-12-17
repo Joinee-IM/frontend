@@ -82,7 +82,7 @@ export default function History() {
       dataIndex: '',
       key: 'x',
       render: (_, record) => (
-        <a onClick={() => navigate(`/reserve/info/${record.reservation_id}`)}>
+        <a onClick={() => navigate(`/reservation/info/${record.reservation_id}`)}>
           <DirectionRightIcon />
         </a>
       ),

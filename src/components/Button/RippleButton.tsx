@@ -21,11 +21,12 @@ function ThemeButton<T extends ButtonType>({ ...rest }: RippleButtonProps<T>) {
 const RippleButtonBase = styled(ThemeButton).withConfig({
   shouldForwardProp: (prop) => !['borderBox'].includes(prop),
 })<{ borderBox?: boolean }>`
-  padding: 0.375em 0.75em;
+  padding: 0.6em 1em;
   border-radius: 0.5em;
   width: fit-content;
   white-space: nowrap;
   box-sizing: ${({ borderBox }) => (borderBox ? 'border-box' : 'content-box')};
+  line-height: 1em;
   ${flexCenter};
   ${rwdFontSize(16)};
   ${({ category, palette }) => getTheme({ category, palette })};
