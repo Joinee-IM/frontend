@@ -2,7 +2,7 @@ export { default as Login } from './pages/Login';
 export { default as Signup } from './pages/signup';
 export { default as Role } from './pages/signup/Role';
 export { default as SendMail } from './pages/signup/SendMail';
-export { default as Success } from './pages/signup/Success';
+export { default as Verified } from './pages/signup/Success';
 
 import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';

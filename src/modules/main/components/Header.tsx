@@ -84,6 +84,7 @@ export default function Header() {
     (key: UserSelect) => {
       switch (key) {
         case '歷史紀錄':
+          navigate(`/history/${cookies.id}`);
           break;
         case '個人檔案':
           navigate(`/user-info/${cookies.id}`);
@@ -110,7 +111,9 @@ export default function Header() {
       <MenuWrapper>
         {cookies['user-role'] === 'PROVIDER' ? (
           <>
-            <MenuItemWrapper selected={MODULE_TO_ROUTE.manager.some((path) => path.test(pathname))}>
+            <MenuItemWrapper
+              selected={MODULE_TO_ROUTE.managerCrate.some((path) => path.test(pathname))}
+            >
               <Select
                 selectedKeys={[]}
                 items={managerSelect.map((label) => ({
@@ -126,7 +129,7 @@ export default function Header() {
                 </MenuItem>
               </Select>
             </MenuItemWrapper>
-            <MenuItemWrapper>
+            <MenuItemWrapper selected={MODULE_TO_ROUTE.manage.some((path) => path.test(pathname))}>
               <MenuItem
                 type="link"
                 category="link"
@@ -144,14 +147,16 @@ export default function Header() {
                 尋找場地
               </MenuItem>
             </MenuItemWrapper>
-            <MenuItem
-              type="link"
-              category="link"
-              palette="main"
-              onClick={() => navigate(`/partner`)}
-            >
-              尋找球友
-            </MenuItem>
+            <MenuItemWrapper selected={MODULE_TO_ROUTE.partner.some((path) => path.test(pathname))}>
+              <MenuItem
+                type="link"
+                category="link"
+                palette="main"
+                onClick={() => navigate(`/partner`)}
+              >
+                尋找球友
+              </MenuItem>
+            </MenuItemWrapper>
             <MenuItem type="link" category="link" palette="main">
               <BellOutlined />
             </MenuItem>

@@ -1,5 +1,5 @@
 import { format, getHours, parseISO } from 'date-fns';
-import { range } from 'lodash';
+import { isNumber, range } from 'lodash';
 import { useRef } from 'react';
 import styled from 'styled-components';
 
@@ -26,7 +26,7 @@ interface TimeSlotProps extends Type<typeof Container> {
 type UnitStatus = 'normal' | 'selected' | 'disabled' | number;
 
 const unitBackground = (unitStatus: UnitStatus) => {
-  if (typeof unitStatus === 'number') {
+  if (isNumber(unitStatus)) {
     return theme.sub[
       Math.min(Math.ceil(unitStatus / 2) * 200 - 100, 700) as unknown as keyof typeof theme.sub
     ];

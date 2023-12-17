@@ -2,6 +2,7 @@ import type { schemas } from '@/services/type';
 import type { z } from 'zod';
 
 import api from '@/services';
+import { getNextPageParam, getPreviousPageParam } from '@/utils/service/browse';
 
 export const useBrowseReservation = (
   params: z.infer<
@@ -14,30 +15,8 @@ export const useBrowseReservation = (
     undefined,
     {
       getPageParamList: () => [],
-      getPreviousPageParam: (next) => {
-        if (next.data) {
-          if (next.data.offset === 0) return undefined;
-          else
-            return {
-              body: {
-                ...params,
-                offset: Number(next.data?.offset) - Number(next.data?.limit),
-              },
-            };
-        } else return undefined;
-      },
-      getNextPageParam: (last) => {
-        if (last.data && last.data.offset && last.data.limit) {
-          if (last.data.offset + last.data.limit >= last.data.total_count) return undefined;
-          else
-            return {
-              body: {
-                ...params,
-                offset: Number(last.data?.offset) + Number(last.data?.limit),
-              },
-            };
-        } else return undefined;
-      },
+      getPreviousPageParam: (next) => getPreviousPageParam(next, params),
+      getNextPageParam: (last) => getNextPageParam(last, params),
     },
   );
   return {

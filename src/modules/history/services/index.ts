@@ -2,6 +2,7 @@ import type { schemas } from '@/services/type';
 import type { z } from 'zod';
 
 import api from '@/services';
+import { getNextPageParam } from '@/utils/service/browse';
 
 type BrowseHistoryParamsProps = Exclude<
   z.infer<(typeof schemas)['ViewMyReservationParams']>,
@@ -15,18 +16,7 @@ export const useBrowseHistory = (params: BrowseHistoryParamsProps) => {
     undefined,
     {
       getPageParamList: () => ['limit', 'offset'],
-      getNextPageParam: (last) => {
-        if (last.data) {
-          if (last.data.offset + last.data.limit >= last.data.total_count) return undefined;
-          else
-            return {
-              body: {
-                ...params,
-                offset: Number(last.data?.offset) + Number(last.data?.limit),
-              },
-            };
-        } else return undefined;
-      },
+      getNextPageParam: (last) => getNextPageParam(last, params),
     },
   );
   return { histories: data?.pages.flatMap((page) => page.data?.data ?? []), ...rest };

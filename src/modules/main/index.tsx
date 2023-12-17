@@ -1,13 +1,14 @@
-import { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
-import { Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
 import Background from '@/assets/background.jpg';
 import MODULE_TO_ROUTE from '@/constants/module';
+import useRoutes from '@/hooks/useRoutes';
+import Manage from '@/modules/lessor/pages/Manage';
 import Header from '@/modules/main/components/Header';
+import { Stadium } from '@/modules/main/pages';
 import { backgroundCenter } from '@/utils/css';
-import useClick from '@/view/hooks/useClick';
 
 const Container = styled.div`
   width: 100vw;
@@ -44,19 +45,8 @@ const ScrollContainer = styled.div`
 `;
 
 export default function Main() {
-  const navigate = useNavigate();
-  const [, setCookie] = useCookies(['id', 'user-role']);
-  const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
-  const account_id = searchParams.get('account_id') as unknown as number;
-  useClick();
-  useEffect(() => {
-    // for google login
-    if (account_id) {
-      setCookie('id', account_id, { path: '/' });
-      navigate('/');
-    }
-  }, [account_id, navigate, setCookie]);
+  useRoutes();
 
   return (
     <Container>
@@ -71,3 +61,8 @@ export default function Main() {
     </Container>
   );
 }
+
+export const Home = () => {
+  const [cookie] = useCookies(['id', 'user-role']);
+  return cookie['user-role'] === 'PROVIDER' ? <Manage /> : <Stadium />;
+};
