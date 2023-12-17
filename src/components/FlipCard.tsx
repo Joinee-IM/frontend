@@ -47,7 +47,7 @@ const Back = styled(Front)`
 const Icon = styled.div`
   position: absolute;
   top: -0.2em;
-  left: -0.1em;
+  left: -0.3em;
   ${rwdFontSize(60)};
 `;
 
