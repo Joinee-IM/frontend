@@ -2,6 +2,8 @@ import { Form, Input, Modal, Select } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import TextArea from 'antd/es/input/TextArea';
 import { useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import CalendarIcon from '@/assets/icons/Calendar';
@@ -57,6 +59,8 @@ export default function CreateStadium() {
   const [previews, setPreviews] = useState<string[]>([]);
   const { data, mutate: addStadium } = useUploadStadium();
   const { mutate: addAlbum } = useAddAlbum(Number(data?.data?.id), 'STADIUM');
+  const navigate = useNavigate();
+  const [cookies] = useCookies(['id']);
 
   const handleUpload: UploadProps['uploader'] = async ({ file, onSuccess: uploadSuccess }) => {
     if (file instanceof File) {
@@ -77,42 +81,44 @@ export default function CreateStadium() {
       await form.validateFields();
       const { name, address, district_id, contact_number, description, city_id } =
         form.getFieldsValue();
-      addStadium({
-        name,
-        district_id,
-        contact_number,
-        description,
-        address: `${cities?.data?.find((data) => data.id === city_id)?.name}${districts?.data?.find(
-          (data) => data.id === district_id,
-        )?.name}${address}`,
-        business_hours: [
-          {
-            weekday: 1,
-            start_time: '08:00:00Z',
-            end_time: '17:00:00Z',
-          },
-          {
-            weekday: 2,
-            start_time: '08:00:00Z',
-            end_time: '17:00:00Z',
-          },
-          {
-            weekday: 3,
-            start_time: '08:00:00Z',
-            end_time: '17:00:00Z',
-          },
-          {
-            weekday: 4,
-            start_time: '08:00:00Z',
-            end_time: '17:00:00Z',
-          },
-          {
-            weekday: 5,
-            start_time: '08:00:00Z',
-            end_time: '17:00:00Z',
-          },
-        ],
-      });
+      addStadium(
+        {
+          name,
+          district_id,
+          contact_number,
+          description,
+          address: `${cities?.data?.find((data) => data.id === city_id)
+            ?.name}${districts?.data?.find((data) => data.id === district_id)?.name}${address}`,
+          business_hours: [
+            {
+              weekday: 1,
+              start_time: '08:00:00Z',
+              end_time: '17:00:00Z',
+            },
+            {
+              weekday: 2,
+              start_time: '08:00:00Z',
+              end_time: '17:00:00Z',
+            },
+            {
+              weekday: 3,
+              start_time: '08:00:00Z',
+              end_time: '17:00:00Z',
+            },
+            {
+              weekday: 4,
+              start_time: '08:00:00Z',
+              end_time: '17:00:00Z',
+            },
+            {
+              weekday: 5,
+              start_time: '08:00:00Z',
+              end_time: '17:00:00Z',
+            },
+          ],
+        },
+        { onSuccess: () => navigate(`/manage/${cookies.id}`) },
+      );
     } catch (error) {
       console.log(error);
     }
