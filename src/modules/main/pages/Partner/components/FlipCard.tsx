@@ -103,7 +103,7 @@ export default function FlipCardInPartner({
             style={{ alignSelf: 'flex-end', marginRight: '0.5em', marginBottom: '0.5em' }}
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/reserve/info/${id}`);
+              navigate(`/reservation/info/${id}`);
             }}
           >
             加入
