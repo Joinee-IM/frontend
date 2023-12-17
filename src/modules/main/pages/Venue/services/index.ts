@@ -2,6 +2,7 @@ import type { schemas } from '@/services/type';
 import type { z } from 'zod';
 
 import api from '@/services';
+import { getNextPageParam } from '@/utils/service/browse';
 
 interface BrowseVenueProps {
   name?: string;
@@ -20,18 +21,7 @@ export const useBrowseVenue = (params: BrowseVenueProps) => {
     { queries: params },
     {
       getPageParamList: () => [],
-      getNextPageParam: (last) => {
-        if (last.data) {
-          if (last.data.offset + last.data.limit >= last.data.total_count) return undefined;
-          else
-            return {
-              body: {
-                ...params,
-                offset: Number(last.data?.offset) + Number(last.data?.limit),
-              },
-            };
-        } else return undefined;
-      },
+      getNextPageParam: (last) => getNextPageParam(last, params),
       enabled: !!params.stadium_id,
     },
   );

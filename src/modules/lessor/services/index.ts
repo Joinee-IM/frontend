@@ -2,6 +2,7 @@ import type { schemas } from '@/services/type';
 import type { z } from 'zod';
 
 import api from '@/services';
+import { getNextPageParam } from '@/utils/service/browse';
 
 interface LessorBrowseStadiumProps {
   city_id?: number;
@@ -38,12 +39,7 @@ export const useLessorBrowseStadium = (params: LessorBrowseStadiumProps) => {
     { queries: params },
     {
       getPageParamList: () => [],
-      getNextPageParam: (last) => {
-        if (last.data && last.data.offset && last.data.limit) {
-          if (last.data.offset + last.data.limit >= last.data.total_count) return undefined;
-          else return { ...params, offset: Number(last.data?.offset) + Number(last.data?.limit) };
-        } else return undefined;
-      },
+      getNextPageParam: (last) => getNextPageParam(last, params),
     },
   );
   return {
@@ -59,12 +55,7 @@ export const useLessorBrowseVenue = (params: LessorBrowseVenueProps) => {
     { queries: params },
     {
       getPageParamList: () => [],
-      getNextPageParam: (last) => {
-        if (last.data && last.data.offset && last.data.limit) {
-          if (last.data.offset + last.data.limit >= last.data.total_count) return undefined;
-          else return { ...params, offset: Number(last.data?.offset) + Number(last.data?.limit) };
-        } else return undefined;
-      },
+      getNextPageParam: (last) => getNextPageParam(last, params),
     },
   );
   return {
@@ -80,12 +71,7 @@ export const useLessorBrowseCourt = (params: LessorBrowseCourtProps) => {
     { queries: params },
     {
       getPageParamList: () => [],
-      getNextPageParam: (last) => {
-        if (last.data && last.data.offset && last.data.limit) {
-          if (last.data.offset + last.data.limit >= last.data.total_count) return undefined;
-          else return { ...params, offset: Number(last.data?.offset) + Number(last.data?.limit) };
-        } else return undefined;
-      },
+      getNextPageParam: (last) => getNextPageParam(last, params),
     },
   );
   return {
