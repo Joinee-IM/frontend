@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import type { schemas } from '@/services/type';
 import type { z } from 'zod';
 
-import { DirectionLeftIcon, DirectionRightIcon } from '@/assets/icons/Direction';
+import { DirectionRightIcon } from '@/assets/icons/Direction';
 import { RippleButton } from '@/components/Button';
 import FlipCardComponent from '@/components/FlipCard';
 import { FormGrid } from '@/components/Grid';
@@ -65,18 +65,22 @@ export default function FlipCardInPartner({
               paddingRight: 0,
               gridTemplateColumns: 'repeat(2, 1fr)',
             }}
-            onClick={(e) => e.stopPropagation()}
           />
-          <RippleButton category="icon" palette="gray" style={{ alignSelf: 'flex-end' }}>
+          <RippleButton
+            category="icon"
+            palette="gray"
+            style={{ alignSelf: 'flex-end' }}
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/reservation/info/${id}`);
+            }}
+          >
             <DirectionRightIcon />
           </RippleButton>
         </>
       }
       back={
         <>
-          <RippleButton category="icon" palette="gray" style={{ alignSelf: 'flex-end' }}>
-            <DirectionLeftIcon />
-          </RippleButton>
           <FormGrid
             data={{
               技術水準: (
@@ -90,23 +94,22 @@ export default function FlipCardInPartner({
               主揪備註: remark ? remark : '無',
             }}
             style={{
-              padding: `${percentageOfFigma(27).max} ${percentageOfFigma(15).max}`,
-              paddingLeft: 0,
+              padding: `${percentageOfFigma(27).max} ${percentageOfFigma(45).max}`,
+              paddingRight: 0,
               gridTemplateColumns: 'repeat(2, 1fr)',
             }}
             labelStyles={{ 主揪備註: { alignSelf: 'flex-start' } }}
-            onClick={(e) => e.stopPropagation()}
           />
           <RippleButton
-            category="solid"
-            palette="main"
-            style={{ alignSelf: 'flex-end', marginRight: '0.5em', marginBottom: '0.5em' }}
+            category="icon"
+            palette="gray"
+            style={{ alignSelf: 'flex-end' }}
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/reservation/info/${id}`);
             }}
           >
-            加入
+            <DirectionRightIcon />
           </RippleButton>
         </>
       }
