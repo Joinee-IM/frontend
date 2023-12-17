@@ -8,6 +8,7 @@ import ReserveIcon from '@/assets/icons/Reserve';
 import SortIcon from '@/assets/icons/Sort';
 import Select from '@/components/Select';
 import useFilter from '@/hooks/useFilter';
+import useSorter, { options } from '@/hooks/useSorter';
 import { Container, PageTitle } from '@/modules/main/components';
 import Filter from '@/modules/main/components/Filter';
 import { useStadiumInfo } from '@/modules/main/pages/Stadium/services';
@@ -24,12 +25,13 @@ const GalleryContent = styled.div`
 
 export default function VenueList() {
   const { stadium_id } = useParams();
-  const { data: info } = useStadiumInfo(Number(stadium_id));
   const limit = useMemo(() => 9, []);
   const [offset, setOffset] = useState(0);
-  const { sport, setSport, isReservable, setIsReservable, name, setName } = useFilter();
   const [word, setWord] = useState<string | undefined>(undefined);
+  const { sort, setSort, order, setOrder, splitSorter } = useSorter();
+  const { sport, setSport, isReservable, setIsReservable, name, setName } = useFilter();
 
+  const { data: info } = useStadiumInfo(Number(stadium_id));
   const { venues, count } = useBrowseVenue({
     limit,
     offset,
@@ -37,6 +39,8 @@ export default function VenueList() {
     is_reservable: isReservable,
     sport_id: sport,
     name,
+    sort_by: sort,
+    order,
   });
   const { data: sports } = useSports();
 
@@ -52,13 +56,15 @@ export default function VenueList() {
           <>
             <Select
               title="排序"
-              items={[
-                '價格由高至低排序',
-                '價格由低至高排序',
-                '使用人數由高至低排序',
-                '使用人數由低至高排序',
-              ].map((label, index) => ({ label, key: String(index + 1) }))}
+              selectedKeys={sort && order ? [`${sort}+${order}`] : []}
+              items={options}
               icon={<SortIcon />}
+              onSelect={({ key }) => {
+                const [s, o] = splitSorter(key);
+                console.log(key, s, 0);
+                setSort(s);
+                setOrder(o);
+              }}
             />
             {' · '}
             <Select
