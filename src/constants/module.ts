@@ -1,6 +1,8 @@
 const MODULE_TO_ROUTE = {
   stadium: [/^\/$/, /^\/stadium\/\d+\/venue$/, /^\/stadium\/\d+\/venue\/\d+$/],
-  manager: [/^\/manager\/create$/],
+  partner: [/^\/partner$/],
+  managerCrate: [/^\/manage\/\d+\/create/],
+  manage: [/^\/$/, /^\/manage\/\d+$/],
   background: [/^\/reserve/, /\/manage\/\d+\/[^/]+(?:\/[^/]+)?$/],
 };
 
