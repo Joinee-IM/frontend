@@ -2,13 +2,12 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import type { Type } from '@/utils/type';
-
+import FireIcon from '@/assets/icons/Fire';
 import { SquareTag } from '@/components/Tag';
 import { useAlbum } from '@/services/useInfo';
-import { backgroundCenter } from '@/utils/css';
+import { backgroundCenter, rwdFontSize } from '@/utils/css';
 
-interface GalleryItemProps extends Type<typeof Item> {
+interface GalleryItemProps {
   name: string;
   venue_id: number;
   is_reservable: boolean;
@@ -20,8 +19,7 @@ interface GalleryItemProps extends Type<typeof Item> {
 const Item = styled.div.withConfig({
   shouldForwardProp: (prop) => !['image'].includes(prop),
 })<{ image: string }>`
-  aspect-ratio: 1.1;
-  background-color: aliceblue;
+  aspect-ratio: 1.27;
   background-image: ${({ image }) => `url(${image})`};
   ${backgroundCenter}
   position: relative;
@@ -53,22 +51,27 @@ const ItemInfo = styled(motion.div).attrs({ className: 'gallery_item_info' })`
   bottom: 0;
   width: 100%;
   box-sizing: border-box;
-  padding: 10px 18px;
+  padding: 1.25em 1.5em;
   color: ${({ theme }) => theme.white};
   background-color: ${({ theme }) => theme.main[500]};
   display: flex;
   flex-direction: column;
   row-gap: 4px;
+  ${rwdFontSize(14)};
 `;
 
 const ItemInfoTitle = styled.div`
   font-weight: 600;
-`;
-const ItemInfoContent = styled.div`
-  font-size: 9px;
+  ${rwdFontSize(20)};
 `;
 
-export default function GalleryItem({
+const ItemInfoContent = styled.div`
+  display: flex;
+  align-items: center;
+  column-gap: 2px;
+`;
+
+export default function ListItem({
   venue_id,
   is_reservable,
   name,
@@ -84,7 +87,13 @@ export default function GalleryItem({
       <ItemTag reservable={is_reservable}>{is_reservable ? '可預約' : '不可預約'}</ItemTag>
       <ItemInfo>
         <ItemInfoTitle>{name}</ItemInfoTitle>
-        <ItemInfoContent>{`${floor}F．可容納 ${capacity} 人．${current_user_count} 人正在使用中`}</ItemInfoContent>
+        <ItemInfoContent>
+          {floor}F．可容納 {capacity} 人．
+          <ItemInfoContent style={{ fontWeight: 600 }}>
+            <FireIcon fontSize="0.3em" />
+            {current_user_count} 人正在使用中
+          </ItemInfoContent>
+        </ItemInfoContent>
       </ItemInfo>
     </Item>
   );

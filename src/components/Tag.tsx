@@ -1,14 +1,11 @@
 import styled from 'styled-components';
 
-import { MOBILE_WITH } from '@/constants/rwd';
 import { flexCenter, percentageOfFigma, rwdFontSize } from '@/utils/css';
 
 export const SquareTag = styled.div`
-  font-size: ${percentageOfFigma(20).max};
-  padding: 0.375em 0.75em;
-  @media (max-width: ${MOBILE_WITH}px) {
-    font-size: min(15px, ${percentageOfFigma(20).max});
-  }
+  ${rwdFontSize(20)};
+  line-height: 1em;
+  padding: 0.5em 0.8em;
   border-radius: 0.5em;
   color: ${({ theme }) => theme.white};
   ${flexCenter};
