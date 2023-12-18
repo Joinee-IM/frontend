@@ -8,9 +8,8 @@ import type { schemas } from '@/services/type';
 import type { Type } from '@/utils/type';
 import type { z } from 'zod';
 
-import { RippleButton } from '..';
-
 import SeekForPlayerIcon from '@/assets/icons/SeekForPlayer';
+import { RippleButton } from '@/components';
 import { FullContainerLoading } from '@/components/Loading/RippleLoading';
 import PopOver from '@/components/Popover';
 import theme from '@/provider/theme/theme';
