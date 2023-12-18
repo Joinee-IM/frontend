@@ -1,4 +1,4 @@
-import { eachHourOfInterval, format, getHours, parse, setDay, startOfToday } from 'date-fns';
+import { format, getHours, parse, setDay, startOfToday } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 import { isEqual, range } from 'lodash';
 
@@ -21,12 +21,12 @@ export const getWeekday = (number: number, replacement = '週') =>
   format(setDay(new Date(), number), 'EEEE', { locale: zhTW }).replace('星期', replacement);
 
 const SEPARATOR = '-';
-const hourIn = (interval: string, target: number) => {
-  const timeRange = interval.split(SEPARATOR);
-  const start = parse(timeRange[0], 'HH:mm', new Date());
-  const end = parse(timeRange[1], 'HH:mm', new Date());
-  return eachHourOfInterval({ start, end }).map(getHours).includes(target);
-};
+// const hourIn = (interval: string, target: number) => {
+//   const timeRange = interval.split(SEPARATOR);
+//   const start = parse(timeRange[0], 'HH:mm', new Date());
+//   const end = parse(timeRange[1], 'HH:mm', new Date());
+//   return eachHourOfInterval({ start, end }).map(getHours).includes(target);
+// };
 
 function processBusinessHourStartEnd(time: Time) {
   const start = format(parse(time.start_time, 'HH:mm:ss', new Date()), 'HH:mm');
@@ -54,7 +54,7 @@ export class BusinessHours {
     return this.findLargestAvailableTimeRange();
   }
   private findLatestAvailableTime() {
-    if (!this.times?.length) return '';
+    if (!this.times?.length) return { '': '' };
     const times = Object.values(this.timeMap);
     const weekdays = Object.keys(this.timeMap).map(Number);
 
@@ -65,30 +65,16 @@ export class BusinessHours {
 
     if (每一天的時間都一樣 && 是連續天數) {
       const startDay = getWeekday(weekdays[0]);
-      const EndDay = getWeekday(weekdays[weekdays.length - 1]);
-      return `${startDay}至${EndDay} ${times[0].join(' ')}`;
+      const endDay = getWeekday(weekdays[weekdays.length - 1]);
+      return { [`${startDay}至${endDay}`]: times[0].join(' ') };
     } else {
       const today = startOfToday().getDay();
-      const nowHour = getHours(new Date());
-      const result = weekdays.reduce<string[]>((acc, curr, index) => {
-        if (curr >= today) {
-          // 比今天還後面的星期
-          if (curr === today) {
-            // 和今天同一星期的需比較時間
-            if (times[index].findIndex((time) => hourIn(time, nowHour)) >= 0) {
-              // 有比「現在時間」更後面的時段
-              acc = [
-                ...acc,
-                `${getWeekday(curr)} ${times[index]
-                  .slice(times[index].findIndex((time) => hourIn(time, nowHour)))
-                  .join(' ')}`,
-              ];
-            }
-          } else acc = [...acc, `${getWeekday(curr)} ${times[index].join(' ')}`];
-        }
-        return acc;
-      }, []);
-      return result.join(' 🏀 ');
+      const index = weekdays.findIndex((week) => week === today);
+      const rotateWeekdays = [...weekdays.slice(index), ...weekdays.slice(0, index)];
+      const result = rotateWeekdays.reduce<Record<string, string>>((acc, curr, index) => {
+        return { ...acc, [`${getWeekday(curr)}`]: times[index].join(', ') };
+      }, {});
+      return result;
     }
   }
   private findLargestAvailableTimeRange() {

@@ -10,6 +10,7 @@ import GridForm from '@/components/Grid/FormGrid';
 import { RoundTag, RoundTagWrapper } from '@/components/Tag';
 import { useStadiumInfo } from '@/modules/main/pages/Stadium/services';
 import { useAlbum } from '@/services/useInfo';
+import { BusinessHours } from '@/utils/function/time';
 
 interface DetailModalProps extends Type<typeof Modal> {
   stadiumId: number;
@@ -45,7 +46,7 @@ const ButtonWrapper = styled.div`
 
 const TimeGrid = styled.div`
   display: grid;
-  grid-template-columns: auto;
+  grid-template-columns: 0.5fr 1fr;
   align-items: center;
   row-gap: 10px;
 `;
@@ -54,6 +55,7 @@ const Label = styled.div`
   grid-column: 1 / 2;
   align-self: baseline;
   padding-right: 1em;
+  font-weight: 600;
 `;
 
 const Time = styled.div`
@@ -83,6 +85,7 @@ export default function DetailModal({ open, onCancel, stadiumId }: DetailModalPr
   );
 
   if (isFetching) return <></>;
+  const businessHours = new BusinessHours(info?.data?.business_hours).latestAvailableTime;
 
   return (
     <Modal
@@ -97,12 +100,19 @@ export default function DetailModal({ open, onCancel, stadiumId }: DetailModalPr
       <GridForm
         data={{
           地址: info?.data?.address,
-          營業時間: (
-            <TimeGrid>
-              <Label>週一</Label>
-              <Time>08:00-10:00・08:00-10:00・08:00-10:00・08:00-10:00</Time>
-            </TimeGrid>
-          ),
+          營業時間:
+            typeof businessHours === 'string' ? (
+              businessHours
+            ) : (
+              <TimeGrid>
+                {Object.entries(businessHours).map(([week, time]) => (
+                  <>
+                    <Label>{week}</Label>
+                    <Time>{time}</Time>
+                  </>
+                ))}
+              </TimeGrid>
+            ),
           提供的運動項目: (
             <RoundTagWrapper>
               {info?.data?.sports?.map((tag, index) => <RoundTag key={index}>{tag}</RoundTag>)}
