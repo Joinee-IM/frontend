@@ -44,6 +44,15 @@ export const buttonTheme = {
       hover: { background: ColorTheme.sub[300] },
       active: { background: ColorTheme.sub[700] },
     },
+    red: {
+      normal: {
+        background: ColorTheme.red[500],
+        text: ColorTheme.white,
+        border: 'transparent',
+      },
+      hover: { background: ColorTheme.red[700] },
+      active: { background: ColorTheme.red[300] },
+    },
   },
   outlined: {
     main: {
@@ -52,12 +61,8 @@ export const buttonTheme = {
         border: ColorTheme.main[500],
         text: ColorTheme.main[500],
       },
-      hover: {
-        background: ColorTheme.main[100],
-      },
-      active: {
-        background: ColorTheme.main[300],
-      },
+      hover: { background: ColorTheme.main[100] },
+      active: { background: ColorTheme.main[300] },
     },
     sub: {
       normal: {
@@ -65,12 +70,8 @@ export const buttonTheme = {
         border: ColorTheme.sub[500],
         text: ColorTheme.sub[500],
       },
-      hover: {
-        background: ColorTheme.sub[100],
-      },
-      active: {
-        background: ColorTheme.sub[300],
-      },
+      hover: { background: ColorTheme.sub[100] },
+      active: { background: ColorTheme.sub[300] },
     },
     gray: {
       normal: {
@@ -78,12 +79,8 @@ export const buttonTheme = {
         border: ColorTheme.gray[700],
         text: ColorTheme.gray[700],
       },
-      hover: {
-        background: ColorTheme.gray[100],
-      },
-      active: {
-        background: ColorTheme.gray[300],
-      },
+      hover: { background: ColorTheme.gray[100] },
+      active: { background: ColorTheme.gray[300] },
     },
     red: {
       normal: {
@@ -91,12 +88,8 @@ export const buttonTheme = {
         border: ColorTheme.red[700],
         text: ColorTheme.red[700],
       },
-      hover: {
-        background: ColorTheme.red[100],
-      },
-      active: {
-        background: ColorTheme.red[300],
-      },
+      hover: { background: ColorTheme.red[100] },
+      active: { background: ColorTheme.red[300] },
     },
   },
   link: {
@@ -105,24 +98,16 @@ export const buttonTheme = {
         background: 'transparent',
         text: ColorTheme.main[500],
       },
-      hover: {
-        text: ColorTheme.main[300],
-      },
-      active: {
-        text: ColorTheme.main[700],
-      },
+      hover: { text: ColorTheme.main[300] },
+      active: { text: ColorTheme.main[700] },
     },
     gray: {
       normal: {
         background: 'transparent',
         text: ColorTheme.gray[500],
       },
-      hover: {
-        text: ColorTheme.gray[300],
-      },
-      active: {
-        text: ColorTheme.gray[700],
-      },
+      hover: { text: ColorTheme.gray[300] },
+      active: { text: ColorTheme.gray[700] },
     },
     table: {
       normal: {
