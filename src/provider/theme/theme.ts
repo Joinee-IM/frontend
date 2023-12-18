@@ -28,7 +28,7 @@ const theme = {
     '500': '#DE6D62' as HEX,
     '700': '#C83434' as HEX,
   },
-
+  blue: '#BCE8F0',
   white: '#FFFFFF',
   black: '#000000',
 } satisfies ThemeType;
