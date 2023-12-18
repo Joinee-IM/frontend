@@ -60,6 +60,7 @@ export default function Partner() {
     offset,
     sport_id: sport,
     stadium_id: stadiumId,
+    has_vacancy: true,
   });
 
   const { stadiums } = useBrowseStadium({

@@ -439,6 +439,7 @@ const app__processor__http__reservation__BrowseReservationParameters = z
     district_id: z.union([z.number(), z.null()]),
     sport_id: z.union([z.number(), z.null()]),
     stadium_id: z.union([z.number(), z.null()]),
+    has_vacancy: z.union([z.boolean(), z.null()]),
     time_ranges: z.union([z.array(DateTimeRange), z.null()]),
     technical_level: z.union([TechnicalType, z.null()]),
     limit: z.union([z.number(), z.null()]),
