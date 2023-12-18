@@ -68,7 +68,7 @@ const ItemInfoTitle = styled.div`
 const ItemInfoContent = styled.div`
   display: flex;
   align-items: center;
-  column-gap: 2px;
+  column-gap: 5px;
 `;
 
 export default function ListItem({

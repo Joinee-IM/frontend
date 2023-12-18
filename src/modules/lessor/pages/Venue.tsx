@@ -145,7 +145,7 @@ export default function Venue() {
   return (
     <>
       {context}
-      <Background image={album?.data?.[0].url}>
+      <Background image={album?.data?.[0]?.url ?? ''}>
         <TitleWrapper>
           <Title>{`${stadium?.data?.name} / ${venue?.data?.name}`}</Title>
           <ItemTag reservable={venue?.data?.is_reservable}>

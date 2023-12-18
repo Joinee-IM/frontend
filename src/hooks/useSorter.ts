@@ -6,10 +6,10 @@ import type { z } from 'zod';
 export type Sorter = `${string}+${z.infer<(typeof schemas)['Sorter']>}`;
 
 export const options: { label: string; key: Sorter }[] = [
-  { label: '價格由高至低排序', key: 'FEE_RATE+DESC' },
-  { label: '價格由低至高排序', key: 'FEE_RATE+ASC' },
-  // { label: '使用人數由高至低排序', key: 'CURRENT_USER_COUNT+DESC' },
-  // { label: '使用人數由低至高排序', key: 'CURRENT_USER_COUNT+ASC' },
+  // { label: '價格由高至低排序', key: 'FEE_RATE+DESC' },
+  // { label: '價格由低至高排序', key: 'FEE_RATE+ASC' },
+  { label: '使用人數由高至低排序', key: 'CURRENT_USER_COUNT+DESC' },
+  { label: '使用人數由低至高排序', key: 'CURRENT_USER_COUNT+ASC' },
 ];
 
 export default function useSorter() {

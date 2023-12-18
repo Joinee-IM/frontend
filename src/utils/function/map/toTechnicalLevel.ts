@@ -8,7 +8,7 @@ export default function toTechnicalLevel(technicalLevel: TechnicalLevelType) {
     case 'ENTRY':
       return '入門';
     case 'INTERMEDIATE':
-      return '中度';
+      return '中等';
     case 'ADVANCED':
       return '進階';
     default:
