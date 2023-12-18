@@ -6,9 +6,11 @@ import type { TablePaginationConfig } from 'antd';
 import type { Dispatch, Key, SetStateAction } from 'react';
 
 import BuildingIcon from '@/assets/icons/Building';
+import InfoIcon from '@/assets/icons/Info';
 import PositionIcon from '@/assets/icons/Position';
 import { RippleButton } from '@/components';
 import { useLoading } from '@/components/Loading/PageLoading';
+import PopOver from '@/components/Popover';
 import Select from '@/components/Select';
 import useFilter from '@/hooks/useFilter';
 import CourtTable from '@/modules/lessor/pages/Manage/Court';
@@ -89,14 +91,30 @@ export default function Manage() {
             </RippleButton>
           )}
           {selectedRowKeys.some((key) => data.find((row) => row.key === key)?.is_published) && (
-            <RippleButton
-              category="outlined"
-              palette="red"
-              onClick={handleBatchEdit(unitType)(false, selectedRowKeys.map(Number))}
-              loading={isLoading}
+            <PopOver
+              placement="topRight"
+              icon={<InfoIcon fontSize="1.3em" color={theme.red[700]} />}
+              content={
+                <div style={{ width: '300px' }}>
+                  下架此場館後，其包含之所有場地將一併下架，您確定要下架此場館嗎？
+                </div>
+              }
+              footer={
+                <RippleButton
+                  category="solid"
+                  palette="red"
+                  onClick={handleBatchEdit(unitType)(false, selectedRowKeys.map(Number))}
+                  loading={isLoading}
+                >
+                  確認
+                </RippleButton>
+              }
+              trigger="click"
             >
-              下架
-            </RippleButton>
+              <RippleButton category="outlined" palette="red">
+                下架
+              </RippleButton>
+            </PopOver>
           )}
         </>
       ) : undefined,

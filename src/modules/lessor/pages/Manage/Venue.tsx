@@ -1,6 +1,7 @@
 import { Table } from 'antd';
 import { isEqual } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
+import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 
 import type { TableBaseProps, VenueTableItem } from '@/modules/lessor/pages/Manage/types';
@@ -21,6 +22,7 @@ export default function VenueTable({
   const navigate = useNavigate();
   const limit = useMemo(() => 10, []);
   const [offset, setOffset] = useState(0);
+  const [cookies] = useCookies(['id', 'user-role']);
 
   const { venues, count } = useLessorBrowseVenue({ limit, offset });
   const columns: ColumnsType<VenueTableItem> = [
@@ -68,7 +70,7 @@ export default function VenueTable({
         <RippleButton
           category="icon"
           palette="gray"
-          onClick={() => navigate(`venue/${record.venue_id}`)}
+          onClick={() => navigate(`/manage/${cookies.id}/venue/${record.venue_id}`)}
         >
           <DirectionRightIcon />
         </RippleButton>
