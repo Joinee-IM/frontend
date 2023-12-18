@@ -101,9 +101,7 @@ export default function Cover({ isAuth }: { isAuth: boolean }) {
             <Slogan>Jöinee, go on a journey!</Slogan>
           </SloganWrapper>
           <ButtonGroup>
-            <Button onClick={() => navigate('/auth/login')}>
-              {t('entry.button.browseStadium')}
-            </Button>
+            <Button onClick={() => navigate('/')}>{t('entry.button.browseStadium')}</Button>
             <Button onClick={() => navigate('/auth/login')}>{t('entry.button.login')}</Button>
           </ButtonGroup>
         </TitleWrapper>
