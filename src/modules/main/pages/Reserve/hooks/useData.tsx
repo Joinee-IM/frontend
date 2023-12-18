@@ -19,7 +19,7 @@ import {
 import { useBrowseStadium, useStadiumInfo } from '@/modules/main/pages/Stadium/services';
 import { useBrowseVenue, useVenueCourts, useVenueInfo } from '@/modules/main/pages/Venue/services';
 import { toTechnicalLevel } from '@/utils/function/map';
-import toMemberStatus from '@/utils/function/map/toMemberStatus';
+import toMemberStatus, { toMemberIcon } from '@/utils/function/map/toMemberStatus';
 import calculateTotalCost from '@/utils/function/money';
 
 interface FormDataProps {
@@ -144,6 +144,7 @@ export default function useReservationForm({ mode, reservation }: FormDataProps)
           <RoundTagWrapper>
             {members?.data?.map((member, index) => (
               <RoundTag key={index} style={{ backgroundColor: toMemberStatus(member.status) }}>
+                {toMemberIcon(member.status)}
                 {member.nickname}
               </RoundTag>
             ))}

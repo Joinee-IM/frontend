@@ -55,7 +55,6 @@ const Label = styled.div`
   grid-column: 1 / 2;
   align-self: baseline;
   padding-right: 1em;
-  font-weight: 600;
 `;
 
 const Time = styled.div`
