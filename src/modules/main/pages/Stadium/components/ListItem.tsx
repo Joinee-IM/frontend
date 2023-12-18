@@ -108,6 +108,8 @@ export default function ListItem({
     }
   }, [markerFocus]);
 
+  const businessHour = new BusinessHours(times).latestAvailableTime;
+
   return (
     <ListItemWrapper
       ref={scrollIntoViewRef}
@@ -127,7 +129,10 @@ export default function ListItem({
       <InfoWrapper>
         <Title>{title}</Title>
         <StadiumInfo>
-          {address} · {new BusinessHours(times).latestAvailableTime}
+          {address} ·{' '}
+          {Object.entries(businessHour)
+            .map(([week, time]) => `${week} ${time}`)
+            .join(' 🏀 ')}
         </StadiumInfo>
         <RoundTagWrapper ref={element}>
           {tags
