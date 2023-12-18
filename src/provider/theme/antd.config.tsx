@@ -45,6 +45,14 @@ export default function AntdProvider({ children }: { children: ReactNode }) {
             controlItemBgActiveHover: theme.sub[300],
             colorPrimary: 'white',
           },
+          Input: {
+            colorPrimary: theme.sub[500],
+            colorPrimaryHover: theme.sub[500],
+          },
+          Select: {
+            colorPrimary: theme.sub[500],
+            colorPrimaryHover: theme.sub[500],
+          },
         },
       }}
     >
