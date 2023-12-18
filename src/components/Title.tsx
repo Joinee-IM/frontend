@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import LogoIcon from '@/assets/icons/Logo';
@@ -13,6 +14,7 @@ const TitleWrapper = styled.div`
   ${rwdFontSize(30)};
   font-weight: 400;
   color: ${({ theme }) => theme.main[700]};
+  cursor: pointer;
 `;
 
 const Logo = styled(LogoIcon)`
@@ -20,8 +22,9 @@ const Logo = styled(LogoIcon)`
 `;
 
 export default function Title({ children, ...rest }: TitleProps) {
+  const navigate = useNavigate();
   return (
-    <TitleWrapper {...rest}>
+    <TitleWrapper {...rest} onClick={() => navigate('/')}>
       <Logo />
       {children ?? 'Jöinee'}
     </TitleWrapper>
