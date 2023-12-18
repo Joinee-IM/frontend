@@ -1,12 +1,15 @@
 import { format, getHours, parseISO } from 'date-fns';
 import { isNumber, range } from 'lodash';
 import { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import type { schemas } from '@/services/type';
 import type { Type } from '@/utils/type';
 import type { z } from 'zod';
 
+import SeekForPlayerIcon from '@/assets/icons/SeekForPlayer';
+import { RippleButton } from '@/components';
 import { FullContainerLoading } from '@/components/Loading/RippleLoading';
 import PopOver from '@/components/Popover';
 import theme from '@/provider/theme/theme';
@@ -37,7 +40,7 @@ const unitBackground = (unitStatus: UnitStatus) => {
       case 'selected':
         return theme.main[500];
       case 'normal':
-        return theme.main[100];
+        return theme.blue;
       default:
         unitStatus satisfies never;
         return theme.main[100];
@@ -136,7 +139,7 @@ export default function TimeSlot({
 }: TimeSlotProps) {
   const element = useRef<HTMLDivElement>(null);
   const reservationsTimeMap = reservationToTimeMap(reservationInfos);
-
+  const navigate = useNavigate();
   return (
     <Container ref={element} {...rest}>
       {date.length === cells.length &&
@@ -153,11 +156,42 @@ export default function TimeSlot({
                   reservationsTimeMap[
                     `${format(date[cIndex], 'yyyy/MM/dd')} ${timeRange?.[uIndex]}`
                   ];
-                return (
+                return info?.vacancy > 0 ? (
+                  <PopOver
+                    content={
+                      <div style={{ width: '220px' }}>
+                        該時段已被預約，成員 {info?.member_count} 人，目前正在徵求球友。
+                      </div>
+                    }
+                    key={uIndex}
+                    style={{ padding: `${percentageOfFigma(9).max}` }}
+                    {...(!info ? { open: false } : {})}
+                    footer={
+                      <RippleButton
+                        category="solid"
+                        palette="sub"
+                        icon={<SeekForPlayerIcon />}
+                        onClick={() => navigate(`/reservation/info/${info.id}`)}
+                      >
+                        報名加入
+                      </RippleButton>
+                    }
+                  >
+                    <Unit
+                      onMouseDown={() => handleUnitMouseDown(cIndex, uIndex)}
+                      onMouseEnter={() => handleUnitMouseEnter(cIndex, uIndex)}
+                      time={cIndex === 0 ? timeRange?.[uIndex + 1] : ''}
+                      unitStatus={
+                        info?.member_count ??
+                        (selected === null ? 'disabled' : selected ? 'selected' : 'normal')
+                      }
+                    />
+                  </PopOver>
+                ) : (
                   <PopOver
                     content={
                       <div style={{ width: '200px' }}>
-                        該時段已被預約，成員 {info?.member_count} 人，目前正在徵求球友。
+                        該時段已被預約，成員 {info?.member_count} 人，目前不開放報名加入。
                       </div>
                     }
                     key={uIndex}

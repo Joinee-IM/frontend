@@ -125,7 +125,7 @@ const TimeSlotWrapper = styled.div`
   gap: 24px;
   align-items: center;
   width: 100%;
-  padding-bottom: ${percentageOfFigma(40)};
+  padding-bottom: ${percentageOfFigma(40).max};
 `;
 
 export default function Venue() {
