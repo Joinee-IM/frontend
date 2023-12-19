@@ -111,7 +111,7 @@ export default function Filter({
                       onClose?.();
                     }}
                   >
-                    <CloseIcon fontSize="1.5em" />
+                    <CloseIcon fontSize="1em" />
                   </RippleButton>
                 ))}
               {searchable && (

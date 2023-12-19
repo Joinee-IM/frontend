@@ -52,6 +52,8 @@ const MenuItem = styled(RippleButton).withConfig({
   font-size: clamp(14px, 1.27vw, 20px);
   font-weight: 400;
   box-sizing: border-box;
+  font-weight: bold;
+  color: gray;
 `;
 
 const userSelect: UserSelect[] = ['歷史紀錄', '個人檔案', '登出'];
@@ -124,7 +126,15 @@ export default function Header() {
                   handleLessorSelect(key as ManagerSelect);
                 }}
               >
-                <MenuItem type="link" category="link" palette="main">
+                <MenuItem
+                  type="link"
+                  category="link"
+                  palette={
+                    MODULE_TO_ROUTE.managerCrate.some((path) => path.test(pathname))
+                      ? 'main'
+                      : 'gray'
+                  }
+                >
                   新增設施
                 </MenuItem>
               </Select>
@@ -133,7 +143,9 @@ export default function Header() {
               <MenuItem
                 type="link"
                 category="link"
-                palette="main"
+                palette={
+                  MODULE_TO_ROUTE.manage.some((path) => path.test(pathname)) ? 'main' : 'gray'
+                }
                 onClick={() => navigate(`/manage/${cookies.id}`)}
               >
                 管理現有設施
@@ -143,7 +155,14 @@ export default function Header() {
         ) : (
           <>
             <MenuItemWrapper selected={MODULE_TO_ROUTE.stadium.some((path) => path.test(pathname))}>
-              <MenuItem type="link" category="link" palette="main" onClick={() => navigate(`/`)}>
+              <MenuItem
+                type="link"
+                category="link"
+                palette={
+                  MODULE_TO_ROUTE.stadium.some((path) => path.test(pathname)) ? 'main' : 'gray'
+                }
+                onClick={() => navigate(`/`)}
+              >
                 尋找場地
               </MenuItem>
             </MenuItemWrapper>
@@ -151,7 +170,9 @@ export default function Header() {
               <MenuItem
                 type="link"
                 category="link"
-                palette="main"
+                palette={
+                  MODULE_TO_ROUTE.partner.some((path) => path.test(pathname)) ? 'main' : 'gray'
+                }
                 onClick={() => navigate(`/partner`)}
               >
                 尋找球友

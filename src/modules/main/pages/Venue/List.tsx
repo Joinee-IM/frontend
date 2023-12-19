@@ -77,7 +77,6 @@ export default function VenueList() {
               }))}
               onSelect={({ key }) => setSport(Number(key))}
             />
-            <Select title="容納人數" items={[]}></Select>
             <Select
               title="開放預約"
               selectedKeys={isReservable !== undefined ? [isReservable ? '1' : '2'] : []}
