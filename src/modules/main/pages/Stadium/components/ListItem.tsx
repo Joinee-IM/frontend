@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 
 import type { Time } from '@/utils/function/time';
@@ -21,26 +21,21 @@ interface ListItemProps extends Type<typeof InfoWrapper> {
 }
 
 const ListItemWrapper = styled.div.withConfig({
-  shouldForwardProp: (prop) => !['degree', 'animated'].includes(prop),
-})<{ degree: number; animated: boolean }>`
+  shouldForwardProp: (prop) => !['animated'].includes(prop),
+})<{ animated: boolean }>`
   width: 100%;
   display: flex;
   box-sizing: border-box;
   column-gap: 10px;
   cursor: pointer;
   border: 8px solid transparent;
-  ${({ animated, degree, theme }) =>
+  &:hover {
+    background-color: ${({ theme }) => theme.gray[300]};
+  }
+  ${({ animated, theme }) =>
     animated &&
     css`
-      border-image: conic-gradient(
-          from ${degree}deg,
-          rgba(255, 225, 238, 0.1),
-          ${theme.main[300]} 0.1turn,
-          ${theme.main[300]} 0.15turn,
-          rgba(255, 225, 238, 0.1) 0.25turn
-        )
-        10;
-      /* background-color: ${theme.gray[100]}; */
+      background-color: ${theme.gray[100]};
     `}
 `;
 
@@ -83,23 +78,10 @@ export default function ListItem({
   ...rest
 }: ListItemProps) {
   const { data } = useAlbum(stadium_id, 'STADIUM');
-  const [degree, setDegree] = useState(0);
   const element = useRef<HTMLDivElement>(null);
   const scrollIntoViewRef = useRef<HTMLDivElement>(null);
 
   const allowChildNum = useAllowChildren(element);
-
-  useEffect(() => {
-    if (markerFocus) {
-      const interval = setInterval(() => {
-        setDegree((prev) => {
-          if (prev === 360) return 0;
-          else return prev + 14.4;
-        });
-      }, 50);
-      return () => clearInterval(interval);
-    } else setDegree(0);
-  }, [markerFocus]);
 
   useEffect(() => {
     const { current } = scrollIntoViewRef;
@@ -114,16 +96,9 @@ export default function ListItem({
     <ListItemWrapper
       ref={scrollIntoViewRef}
       {...rest}
-      degree={degree}
       animated={markerFocus}
-      onMouseEnter={() => {
-        // setHover(true);
-        handleMouseEnter();
-      }}
-      onMouseLeave={() => {
-        // setHover(false);
-        handleMouseLeave();
-      }}
+      onMouseEnter={() => handleMouseEnter()}
+      onMouseLeave={() => handleMouseLeave()}
     >
       <DemoImage src={data?.data?.[0]?.url ?? ''} style={{ height: '100px' }} />
       <InfoWrapper>
