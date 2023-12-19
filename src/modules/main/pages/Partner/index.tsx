@@ -153,7 +153,7 @@ export default function Partner() {
                 title="行政區"
                 selectedKeys={district ? [String(district)] : []}
                 icon={<BuildingIcon />}
-                loading={loadingDistrict}
+                loading={loadingDistrict && city !== undefined}
                 items={districts?.data?.map((district) => ({
                   label: district.name,
                   key: String(district.id),
