@@ -10,8 +10,10 @@ import type { Key } from 'react';
 
 import { DirectionRightIcon } from '@/assets/icons/Direction';
 import { RippleButton } from '@/components';
+import { RoundTag, RoundTagWrapper } from '@/components/Tag';
 import { pagination } from '@/modules/lessor/pages/Manage';
 import { useLessorBrowseCourt } from '@/modules/lessor/services';
+import theme from '@/provider/theme/theme';
 
 export default function CourtTable({
   setData,
@@ -42,7 +44,37 @@ export default function CourtTable({
     {
       title: '狀態',
       dataIndex: 'is_published',
-      render: (_, { is_published }) => <div>{is_published ? '已上架' : '已下架'}</div>,
+      render: (_, { is_published }) => (
+        <div>
+          {is_published ? (
+            <RoundTagWrapper>
+              <RoundTag
+                style={{
+                  backgroundColor: 'white',
+                  color: theme.sub[500],
+                  borderStyle: 'solid',
+                  borderColor: theme.sub[500],
+                }}
+              >
+                已上架
+              </RoundTag>
+            </RoundTagWrapper>
+          ) : (
+            <RoundTagWrapper>
+              <RoundTag
+                style={{
+                  backgroundColor: 'white',
+                  color: '#cbc09f',
+                  borderStyle: 'solid',
+                  borderColor: '#cbc09f',
+                }}
+              >
+                已下架
+              </RoundTag>
+            </RoundTagWrapper>
+          )}
+        </div>
+      ),
       sorter: (a, b) => Number(a.is_published) - Number(b.is_published),
       filters: [
         {
