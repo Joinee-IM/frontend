@@ -1,5 +1,6 @@
 import { GoogleMap, InfoWindowF, MarkerF, useLoadScript } from '@react-google-maps/api';
 import { getDay, parse } from 'date-fns';
+import { isNil } from 'lodash';
 import { median } from 'mathjs';
 import { Fragment, useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -16,6 +17,7 @@ import Select from '@/components/Select';
 import { useScrollToEnd } from '@/hooks/useElement';
 import useError from '@/hooks/useError';
 import useFilter from '@/hooks/useFilter';
+import useGeoLocation from '@/hooks/useGeoLocation';
 import { Container, PageTitle } from '@/modules/main/components';
 import Filter from '@/modules/main/components/Filter';
 import DetailModal from '@/modules/main/pages/Stadium/components/DetailModal';
@@ -103,19 +105,27 @@ export default function Stadium() {
     name,
     time_ranges: timeRanges,
   });
+  const { latitude, longitude } = useGeoLocation();
   const onLoad = (map: google.maps.Map) => {
     const bounds = new google.maps.LatLngBounds();
     stadiums?.forEach(({ lat, long: lng }) => bounds.extend({ lat, lng }));
+    if (!isNil(latitude) && !isNil(longitude)) bounds.extend({ lat: latitude, lng: longitude });
     map.fitBounds(bounds);
   };
+
   const center = useMemo(
     () => ({
-      lat: stadiums?.length ? median(stadiums.map((stadium) => stadium.lat)) : 25.01755436724564,
-      lng: stadiums?.length ? median(stadiums?.map((stadium) => stadium.long)) : 21.53976252477511,
+      lat:
+        latitude ??
+        (stadiums?.length ? median(stadiums.map((stadium) => stadium.lat)) : 25.01755436724564),
+      lng:
+        longitude ??
+        (stadiums?.length ? median(stadiums?.map((stadium) => stadium.long)) : 21.53976252477511),
     }),
-    [stadiums],
+    [latitude, longitude, stadiums],
   );
   const [markerFocus, setMarkerFocus] = useState(0);
+  const [itemHover, setItemHover] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const scrollElement = useScrollToEnd(() => {
     if (hasNextPage) {
@@ -211,16 +221,18 @@ export default function Stadium() {
                 >
                   {stadiums?.map(({ name, id, lat, long: lng }) => (
                     <MarkerF
-                      // onMouseOver={() => setMarkerFocus(id)}
-                      // onMouseOut={() => setMarkerFocus(0)}
                       onClick={() => {
                         setMarkerFocus(id);
                       }}
-                      animation={id === markerFocus ? google.maps.Animation.BOUNCE : undefined}
+                      animation={
+                        id === markerFocus || id === itemHover
+                          ? google.maps.Animation.BOUNCE
+                          : undefined
+                      }
                       key={id}
                       position={{ lat, lng }}
                     >
-                      {id === markerFocus ? (
+                      {id === markerFocus || id === itemHover ? (
                         <InfoWindowF onCloseClick={() => setMarkerFocus(0)} position={{ lat, lng }}>
                           <div>{name}</div>
                         </InfoWindowF>
@@ -238,8 +250,11 @@ export default function Stadium() {
                   <Fragment key={id}>
                     <ListItem
                       markerFocus={markerFocus === id}
-                      handleMouseEnter={() => setMarkerFocus(id)}
-                      handleMouseLeave={() => setMarkerFocus(0)}
+                      handleMouseEnter={() => {
+                        setItemHover(id);
+                        setMarkerFocus(0);
+                      }}
+                      handleMouseLeave={() => setItemHover(0)}
                       title={name}
                       address={city + district}
                       times={business_hours}

@@ -1,5 +1,5 @@
 import { Image, Modal } from 'antd';
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -104,11 +104,11 @@ export default function DetailModal({ open, onCancel, stadiumId }: DetailModalPr
               businessHours
             ) : (
               <TimeGrid>
-                {Object.entries(businessHours).map(([week, time]) => (
-                  <>
+                {Object.entries(businessHours).map(([week, time], index) => (
+                  <Fragment key={index}>
                     <Label>{week}</Label>
                     <Time>{time}</Time>
-                  </>
+                  </Fragment>
                 ))}
               </TimeGrid>
             ),
