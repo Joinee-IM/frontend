@@ -18,7 +18,7 @@ const CardBackground = styled(motion.div)`
   background-color: white;
   border-radius: 10px;
   box-shadow: 0px 4px 4px 0px ${hexToRgb('#000000', 0.25)};
-  padding: 5% 80px 3%;
+  padding: 4% 80px 3%;
   box-sizing: border-box;
   ${flexCenter}
   flex-direction: column;

@@ -29,7 +29,7 @@ const CharacterWrapper = styled.div.withConfig({
   align-items: center;
   &:hover {
     img {
-      filter: brightness(${({ chosen }) => (chosen ? '100%' : '60%')});
+      filter: brightness(${({ chosen }) => (chosen ? '100%' : '70%')});
     }
     div {
       color: ${({ theme }) => theme.main[500]};
@@ -46,7 +46,7 @@ const Label = styled.div.withConfig({
 const Character = styled.img.withConfig({
   shouldForwardProp: (prop) => !['chosen'].includes(prop),
 })<{ chosen: boolean }>`
-  filter: brightness(${({ chosen }) => (chosen ? '100%' : '20%')});
+  filter: brightness(${({ chosen }) => (chosen ? '100%' : '50%')});
   width: clamp(100px, ${percentageOfFigma(140).vw}, 140px);
   border-radius: 50%;
   aspect-ratio: 1;
@@ -71,7 +71,9 @@ export default function Role() {
 
   return (
     <Card>
-      <div>{mode === 'create' ? '選擇你的角色' : '已成功用 Google 帳號登入，請選擇您的角色'}</div>
+      <div>
+        {mode === 'create' ? '請選擇您的角色：' : '已成功用 Google 帳號登入，請選擇您的角色：'}
+      </div>
       <RadioGroup>
         <CharacterWrapper onClick={() => setRole('NORMAL')} chosen={role === 'NORMAL'}>
           <Character src={Player} chosen={role === 'NORMAL'} />
@@ -88,7 +90,7 @@ export default function Role() {
         borderBox={true}
         disabled={!role}
         htmlType="submit"
-        style={{ width: '100%', marginTop: '20px' }}
+        style={{ width: '100%', marginTop: '35px', marginBottom: '20px' }}
         onClick={
           mode === 'create' ? () => navigate(`/auth/signup/account?role=${role}`) : handleEdit
         }
