@@ -177,7 +177,11 @@ export default function Manage() {
                 }}
               >
                 {units.map((unit, index) => (
-                  <Radio.Button value={unit} key={index} style={{ borderColor: theme.sub[500] }}>
+                  <Radio.Button
+                    value={unit}
+                    key={index}
+                    style={{ borderColor: theme.sub[500], fontSize: '13px' }}
+                  >
                     {unit}
                   </Radio.Button>
                 ))}
@@ -195,7 +199,7 @@ export default function Manage() {
                 title="行政區"
                 selectedKeys={district ? [String(district)] : []}
                 icon={<BuildingIcon />}
-                loading={loadingDistrict}
+                loading={loadingDistrict && city !== undefined}
                 items={districts?.data?.map((district) => ({
                   label: district.name,
                   key: String(district.id),

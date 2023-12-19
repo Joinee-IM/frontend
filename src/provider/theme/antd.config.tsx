@@ -30,6 +30,7 @@ export default function AntdProvider({ children }: { children: ReactNode }) {
             buttonSolidCheckedHoverBg: theme.sub[100],
             colorPrimary: theme.sub[500],
             colorPrimaryHover: theme.sub[500],
+            colorText: theme.sub[500],
           },
           Switch: {
             colorPrimary: theme.sub[500],
@@ -38,6 +39,11 @@ export default function AntdProvider({ children }: { children: ReactNode }) {
           Checkbox: {
             colorPrimary: theme.sub[500],
             colorPrimaryHover: theme.sub[500],
+          },
+          Dropdown: {
+            controlItemBgActive: theme.sub[500],
+            controlItemBgActiveHover: theme.sub[300],
+            colorPrimary: 'white',
           },
         },
       }}
