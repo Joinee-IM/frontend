@@ -346,7 +346,7 @@ export default function Venue() {
                       const query = [
                         `stadium_id=${stadium_id}`,
                         `venue_id=${venue_id}`,
-                        `court_id=${courts?.data?.[0].id}`,
+                        `court_id=${courtId}`,
                         `date=${format(date, 'yyyy/MM/dd')}`,
                         `time=${time?.join(',')}`,
                       ];
