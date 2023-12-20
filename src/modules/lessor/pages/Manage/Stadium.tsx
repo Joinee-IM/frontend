@@ -96,6 +96,7 @@ export default function StadiumTable({
         <RippleButton
           category="icon"
           palette="gray"
+          disabled
           // onClick={() => navigate(`venue/${record.stadium_id}`)}
         >
           <DirectionRightIcon />

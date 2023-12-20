@@ -155,9 +155,9 @@ export default function getTheme<T extends ButtonType>({ category, palette }: Bu
       }
     }
     &:disabled {
-      border-color: #d9d9d9 !important;
+      border-color: ${category === 'icon' ? 'transparent' : '#d9d9d9'} !important;
       color: rgba(0, 0, 0, 0.25) !important;
-      background-color: rgba(0, 0, 0, 0.04) !important;
+      background-color: ${category === 'icon' ? 'transparent' : 'rgba(0, 0, 0, 0.04)'} !important;
     }
   `;
 }

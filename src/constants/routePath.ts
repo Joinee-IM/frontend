@@ -43,14 +43,12 @@ export const ROUTES = {
     reservation: { route: 'reservation/:mode', info: ':reservation_id' },
     'user-info': 'user-info/:account_id',
     history: '/history/:account_id',
-    manage: { route: 'manage/:account_id', create: 'create/stadium', venue: 'venue/:venue_id' },
-  },
-  lessor: {
-    route: '/',
     manage: {
       route: 'manage/:account_id',
+      create: 'create/stadium',
       venue: 'venue/:venue_id',
-      create: { route: 'create', stadium: 'stadium' },
+      'create-venue': 'create/venue',
+      'create-court': 'create/court',
     },
   },
   notFound: '*',

@@ -38,7 +38,10 @@ export default function useError<T extends Error | ZodiosError | null>(
   useEffect(() => {
     if (error) {
       void message.error(
-        contents?.[error.message as Errors] ?? INIT_MESSAGES[error.message as Errors],
+        contents?.[error.message as Errors] ??
+          (INIT_MESSAGES[error.message as Errors]
+            ? INIT_MESSAGES[error.message as Errors]
+            : error.message),
       );
       handleError?.();
     }
