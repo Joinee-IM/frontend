@@ -22,6 +22,12 @@ const theme = {
     '500': '#6EA9A8' as HEX,
     '700': '#3C6E71' as HEX,
   },
+  pink: {
+    '100': '#FDF9F6' as HEX,
+    '300': '#F5E5E1' as HEX,
+    '500': '#E0C2C2' as HEX,
+    '700': '#A1616C' as HEX,
+  },
   red: {
     '100': '#FCE3D6' as HEX,
     '300': '#EE9684' as HEX,
@@ -32,6 +38,7 @@ const theme = {
   dirt: '#CBC09F',
   white: '#FFFFFF',
   black: '#000000',
+  brown: '#cbc09f',
 } satisfies ThemeType;
 
 export type Theme = typeof theme;
