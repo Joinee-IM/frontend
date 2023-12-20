@@ -65,7 +65,7 @@ export default function Role() {
   const account_id = searchParams.get('account_id');
   const { mutate } = useEditAccount(Number(account_id));
 
-  const handleEdit = (select_role) => {
+  const handleEdit = (select_role: Role) => {
     mutate(
       { role },
       { onSuccess: () => navigate(`/?account_id=${account_id}&role=${select_role}`) },
