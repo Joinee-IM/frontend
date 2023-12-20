@@ -77,8 +77,10 @@ export default function Header() {
           navigate(`/manage/${cookies.id}/create/stadium`);
           break;
         case '新增場地':
+          navigate(`/manage/${cookies.id}/create/venue`);
           break;
         case '新增小單位':
+          navigate(`/manage/${cookies.id}/create/court`);
           break;
         default:
           break;

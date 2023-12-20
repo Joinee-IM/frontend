@@ -77,53 +77,60 @@ export default function CreateStadium() {
     }
   };
 
-  const handleAddStadium = async () => {
-    try {
-      await form.validateFields();
-      const { name, address, district_id, contact_number, description, city_id } =
-        form.getFieldsValue();
-      addStadium(
-        {
-          name,
-          district_id,
-          contact_number,
-          description,
-          address: `${cities?.data?.find((data) => data.id === city_id)
-            ?.name}${districts?.data?.find((data) => data.id === district_id)?.name}${address}`,
-          business_hours: [
-            {
-              weekday: 1,
-              start_time: '08:00:00Z',
-              end_time: '17:00:00Z',
+  const handleAddStadium =
+    (next = false) =>
+    async () => {
+      try {
+        await form.validateFields();
+        const { name, address, district_id, contact_number, description, city_id } =
+          form.getFieldsValue();
+        addStadium(
+          {
+            name,
+            district_id,
+            contact_number,
+            description,
+            address: `${cities?.data?.find((data) => data.id === city_id)
+              ?.name}${districts?.data?.find((data) => data.id === district_id)?.name}${address}`,
+            business_hours: [
+              {
+                weekday: 1,
+                start_time: '08:00:00Z',
+                end_time: '17:00:00Z',
+              },
+              {
+                weekday: 2,
+                start_time: '08:00:00Z',
+                end_time: '17:00:00Z',
+              },
+              {
+                weekday: 3,
+                start_time: '08:00:00Z',
+                end_time: '17:00:00Z',
+              },
+              {
+                weekday: 4,
+                start_time: '08:00:00Z',
+                end_time: '17:00:00Z',
+              },
+              {
+                weekday: 5,
+                start_time: '08:00:00Z',
+                end_time: '17:00:00Z',
+              },
+            ],
+          },
+          {
+            onSuccess(data) {
+              if (next) navigate(`/manage/${cookies.id}/create/venue?stadium_id=${data?.data?.id}`);
+              else navigate(`/manage/${cookies.id}`);
             },
-            {
-              weekday: 2,
-              start_time: '08:00:00Z',
-              end_time: '17:00:00Z',
-            },
-            {
-              weekday: 3,
-              start_time: '08:00:00Z',
-              end_time: '17:00:00Z',
-            },
-            {
-              weekday: 4,
-              start_time: '08:00:00Z',
-              end_time: '17:00:00Z',
-            },
-            {
-              weekday: 5,
-              start_time: '08:00:00Z',
-              end_time: '17:00:00Z',
-            },
-          ],
-        },
-        { onSuccess: () => navigate(`/manage/${cookies.id}`) },
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
+          },
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
   useEffect(() => {
     if (data?.data?.id) {
@@ -263,10 +270,10 @@ export default function CreateStadium() {
               }
               footer={
                 <>
-                  <RippleButton category="outlined" palette="main" onClick={handleAddStadium}>
+                  <RippleButton category="outlined" palette="main" onClick={handleAddStadium()}>
                     上架場館
                   </RippleButton>
-                  <RippleButton category="solid" palette="main">
+                  <RippleButton category="solid" palette="main" onClick={handleAddStadium(true)}>
                     繼續上架
                   </RippleButton>
                 </>
