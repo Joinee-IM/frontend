@@ -78,9 +78,13 @@ export default function Action({ mode, form, reservation_id }: ActionProps) {
   };
 
   const handleJoinReserve = async () => {
-    await joinReservation(undefined);
-    await refetch();
-    await refetchReservationMembers();
+    if (!cookie.id) {
+      navigate('/auth/login');
+    } else {
+      await joinReservation(undefined);
+      await refetch();
+      await refetchReservationMembers();
+    }
   };
 
   const handleLeaveReserve = async () => {
