@@ -345,7 +345,7 @@ export default function CreateStadium() {
                 />
               </Form.Item>
             ),
-            場館相片: (
+            場地相片: (
               <>
                 <RippleButton
                   icon={<PlusIcon />}
