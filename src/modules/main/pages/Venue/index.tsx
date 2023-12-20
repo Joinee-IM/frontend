@@ -334,9 +334,6 @@ export default function Venue() {
                   </RippleButton>
                 </TimeSlotWrapper>
                 <ButtonWrapper>
-                  <RippleButton category="outlined" palette="gray">
-                    取消
-                  </RippleButton>
                   <RippleButton
                     category="solid"
                     palette="main"
