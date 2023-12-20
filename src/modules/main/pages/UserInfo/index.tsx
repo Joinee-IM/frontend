@@ -71,7 +71,6 @@ export default function UserInfo() {
   }) => {
     if (file instanceof File) {
       try {
-        console.log(file);
         await mutateAsync({ image: file }, { onError: uploadError });
         uploadSuccess?.(file);
         setImageModal(false);
