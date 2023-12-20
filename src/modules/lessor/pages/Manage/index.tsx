@@ -17,6 +17,8 @@ import CourtTable from '@/modules/lessor/pages/Manage/Court';
 import StadiumTable from '@/modules/lessor/pages/Manage/Stadium';
 import VenueTable from '@/modules/lessor/pages/Manage/Venue';
 import {
+  useBatchEditCourts,
+  useBatchEditStadiums,
   useBatchEditVenues,
   useLessorBrowseCourt,
   useLessorBrowseStadium,
@@ -53,27 +55,31 @@ export default function Manage() {
   const units: UnitType[] = ['場館', '場地', '小單位'];
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
 
-  const { mutateAsync, isLoading } = useBatchEditVenues();
+  const { mutateAsync: mutateVenue, isLoading: EditingVenues } = useBatchEditVenues();
+  const { mutateAsync: mutateStadium, isLoading: EditingStadiums } = useBatchEditStadiums();
+  const { mutateAsync: mutateCourt, isLoading: EditingCourts } = useBatchEditCourts();
 
   const handleBatchEdit = useCallback(
     (unitType: UnitType) => (is_published: boolean, ids: number[]) => async () => {
       switch (unitType) {
         case '場館':
-          void refetchStadiums();
+          await mutateStadium({ is_published, stadium_ids: ids });
+          await refetchStadiums();
           break;
         case '場地':
-          await mutateAsync({ is_published, venue_ids: ids });
+          await mutateVenue({ is_published, venue_ids: ids });
           await refetchVenues();
           break;
         case '小單位':
-          void refetchCourts();
+          await mutateCourt({ is_published, court_ids: ids });
+          await refetchCourts();
           break;
         default:
           break;
       }
       setSelectedRowKeys([]);
     },
-    [mutateAsync, refetchCourts, refetchStadiums, refetchVenues],
+    [mutateCourt, mutateStadium, mutateVenue, refetchCourts, refetchStadiums, refetchVenues],
   );
 
   const control = useMemo(
@@ -85,7 +91,7 @@ export default function Manage() {
               category="outlined"
               palette="main"
               onClick={handleBatchEdit(unitType)(true, selectedRowKeys.map(Number))}
-              loading={isLoading}
+              loading={EditingStadiums || EditingVenues || EditingCourts}
             >
               上架
             </RippleButton>
@@ -112,7 +118,7 @@ export default function Manage() {
                   category="solid"
                   palette="red"
                   onClick={handleBatchEdit(unitType)(false, selectedRowKeys.map(Number))}
-                  loading={isLoading}
+                  loading={EditingStadiums || EditingVenues || EditingCourts}
                 >
                   確認
                 </RippleButton>
@@ -126,7 +132,15 @@ export default function Manage() {
           )}
         </>
       ) : undefined,
-    [data, handleBatchEdit, isLoading, selectedRowKeys, unitType],
+    [
+      EditingCourts,
+      EditingStadiums,
+      EditingVenues,
+      data,
+      handleBatchEdit,
+      selectedRowKeys,
+      unitType,
+    ],
   );
 
   const table = (unitType: UnitType) => {
