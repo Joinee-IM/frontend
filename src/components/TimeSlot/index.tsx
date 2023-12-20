@@ -25,9 +25,17 @@ interface TimeSlotProps extends Type<typeof Container> {
   handleUnitMouseDown: (x: number, y: number) => void;
   handleUnitMouseEnter: (x: number, y: number) => void;
   draggable?: boolean;
+  weekOnly?: boolean;
 }
 
-type UnitStatus = 'normal' | 'selected' | 'disabled' | 'unreservable' | number;
+type UnitStatus =
+  | 'normal'
+  | 'selected'
+  | 'disabled'
+  | 'unreservable'
+  | 'provider-normal'
+  | 'provider-selected'
+  | number;
 
 const unitBackground = (unitStatus: UnitStatus) => {
   if (isNumber(unitStatus)) {
@@ -39,10 +47,12 @@ const unitBackground = (unitStatus: UnitStatus) => {
       case 'unreservable':
         return theme.dirt;
       case 'disabled':
+      case 'provider-normal':
         return theme.gray[100];
       case 'selected':
         return theme.main[500];
       case 'normal':
+      case 'provider-selected':
         return theme.blue;
       default:
         unitStatus satisfies never;
@@ -138,6 +148,7 @@ export default function TimeSlot({
   isLoading,
   handleUnitMouseDown,
   handleUnitMouseEnter,
+  weekOnly = false,
   ...rest
 }: TimeSlotProps) {
   const reservationsTimeMap = reservationToTimeMap(reservationInfos);
@@ -150,8 +161,12 @@ export default function TimeSlot({
         cells.map((dateCells, cIndex) => (
           <Column key={cIndex}>
             <Label>
-              {format(date[cIndex], 'MM/dd')}
-              <br />
+              {!weekOnly && (
+                <>
+                  {format(date[cIndex], 'MM/dd')}
+                  <br />
+                </>
+              )}
               {getWeekday(Number(format(date[cIndex], 'i')), '')}
             </Label>
             <Column>
@@ -191,7 +206,11 @@ export default function TimeSlot({
                       onMouseEnter={() => handleUnitMouseEnter(cIndex, uIndex)}
                       time={cIndex === 0 ? timeRange?.[uIndex + 1] : ''}
                       unitStatus={
-                        info?.vacancy < 0
+                        cookies['user-role'] === 'PROVIDER'
+                          ? selected
+                            ? 'provider-selected'
+                            : 'provider-normal'
+                          : info?.vacancy < 0
                           ? 'unreservable'
                           : info?.member_count ??
                             (selected === null ? 'disabled' : selected ? 'selected' : 'normal')

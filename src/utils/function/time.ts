@@ -6,6 +6,7 @@ import type { schemas } from '@/services/type';
 import type { z } from 'zod';
 
 export type Time = z.infer<(typeof schemas)['BusinessHour']>;
+export type TimeOmit = Pick<Time, 'weekday' | 'start_time' | 'end_time'>;
 
 /**
  *
@@ -28,16 +29,16 @@ export const hourIn = (interval: string, target: number) => {
   return eachHourOfInterval({ start, end }).map(getHours).includes(target);
 };
 
-function processBusinessHourStartEnd(time: Time) {
+function processBusinessHourStartEnd(time: Time | TimeOmit) {
   const start = format(parse(time.start_time, 'HH:mm:ss', new Date()), 'HH:mm');
   const end = format(parse(time.end_time, 'HH:mm:ss', new Date()), 'HH:mm');
   return `${start}${SEPARATOR}${end}`;
 }
 
 export class BusinessHours {
-  times?: Time[];
+  times?: Time[] | TimeOmit[];
   timeMap: Record<number, string[]>;
-  constructor(times?: Time[]) {
+  constructor(times?: Time[] | TimeOmit[]) {
     this.times = times;
     this.timeMap =
       this.times?.reduce<Record<Time['weekday'], string[]>>((acc, curr) => {
@@ -71,8 +72,9 @@ export class BusinessHours {
       const today = startOfToday().getDay();
       const index = weekdays.findIndex((week) => week === today);
       const rotateWeekdays = [...weekdays.slice(index), ...weekdays.slice(0, index)];
+      const rotateTimes = [...times.slice(index), ...times.slice(0, index)];
       const result = rotateWeekdays.reduce<Record<string, string>>((acc, curr, index) => {
-        return { ...acc, [`${getWeekday(curr)}`]: times[index].join(', ') };
+        return { ...acc, [`${getWeekday(curr)}`]: rotateTimes[index].join(', ') };
       }, {});
       return result;
     }

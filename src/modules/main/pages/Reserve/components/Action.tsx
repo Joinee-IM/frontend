@@ -61,7 +61,6 @@ export default function Action({ mode, form, reservation_id }: ActionProps) {
           technical_level,
           member_ids,
         } = form.getFieldsValue();
-        console.log(vacancy, technical_level, member_ids);
         const { data } = await createReservation({
           start_time: toISOString(setHours(new Date(date), Number(time?.[0]))),
           end_time: toISOString(setHours(new Date(date), Number(time?.[time?.length - 1]) + 1)),

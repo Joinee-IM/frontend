@@ -189,7 +189,6 @@ export default function Venue() {
     const overReservationalInterval = venue?.data?.reservation_interval
       ? addDays(new Date(), venue?.data?.reservation_interval)
       : null;
-    console.log(timeRange, availableTime);
     return dates.map(
       (date) =>
         timeRange?.slice(1).map((time) =>

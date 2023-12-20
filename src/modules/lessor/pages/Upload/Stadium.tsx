@@ -1,7 +1,9 @@
 import { Form, Input, Modal, Select } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import TextArea from 'antd/es/input/TextArea';
-import { useEffect, useState } from 'react';
+import { eachDayOfInterval, endOfWeek, format, setHours, startOfWeek } from 'date-fns';
+import { isNil, range } from 'lodash';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -14,6 +16,8 @@ import { Card, Title } from '@/components/Form';
 import GridForm from '@/components/Grid/FormGrid';
 import { useLoading } from '@/components/Loading/PageLoading';
 import PopOver from '@/components/Popover';
+import TimeSlot from '@/components/TimeSlot';
+import useTimeSlotDrag from '@/components/TimeSlot/useTimeSlotDrag';
 import Upload, { UploadImageTitle, type UploadProps } from '@/components/Upload';
 import useError from '@/hooks/useError';
 import useFilter from '@/hooks/useFilter';
@@ -24,6 +28,24 @@ import { useCity, useDistrict } from '@/services/useFilters';
 import { useAddAlbum } from '@/services/useInfo';
 import { flexCenter, percentageOfFigma } from '@/utils/css';
 import { getBase64 } from '@/utils/function/image';
+import { BusinessHours, type TimeOmit } from '@/utils/function/time';
+
+const TimeGrid = styled.div`
+  display: grid;
+  grid-template-columns: 0.6fr 1fr;
+  align-items: center;
+  row-gap: 10px;
+`;
+
+const Label = styled.div`
+  grid-column: 1 / 2;
+  align-self: baseline;
+  padding-right: 1em;
+`;
+
+const Time = styled.div`
+  grid-column: 2 / 3;
+`;
 
 interface CreateStadiumFormDataType {
   name: string;
@@ -62,6 +84,26 @@ export default function CreateStadium() {
   const { mutate: addAlbum } = useAddAlbum(Number(data?.data?.id), 'STADIUM');
   const navigate = useNavigate();
   const [cookies] = useCookies(['id']);
+  const [timeSlotOpen, setTimeSlotOpen] = useState(false);
+  const [businessHour, setBusinessHour] = useState<TimeOmit[]>([]);
+
+  const timeRange = useMemo(() => range(0, 24), []);
+  const dates = useMemo(
+    () =>
+      eachDayOfInterval({
+        start: startOfWeek(new Date()),
+        end: endOfWeek(new Date()),
+      }),
+    [],
+  );
+  const init = useMemo<(boolean | null)[][]>(() => {
+    return dates.map(() => timeRange?.slice(1).map(() => false) ?? []);
+  }, [dates, timeRange]);
+
+  const { cells, setCells, handleUnitMouseDown, handleUnitMouseEnter } = useTimeSlotDrag(
+    init,
+    'diagonal',
+  );
 
   const handleUpload: UploadProps['uploader'] = async ({ file, onSuccess: uploadSuccess }) => {
     if (file instanceof File) {
@@ -92,33 +134,7 @@ export default function CreateStadium() {
             description,
             address: `${cities?.data?.find((data) => data.id === city_id)
               ?.name}${districts?.data?.find((data) => data.id === district_id)?.name}${address}`,
-            business_hours: [
-              {
-                weekday: 1,
-                start_time: '08:00:00Z',
-                end_time: '17:00:00Z',
-              },
-              {
-                weekday: 2,
-                start_time: '08:00:00Z',
-                end_time: '17:00:00Z',
-              },
-              {
-                weekday: 3,
-                start_time: '08:00:00Z',
-                end_time: '17:00:00Z',
-              },
-              {
-                weekday: 4,
-                start_time: '08:00:00Z',
-                end_time: '17:00:00Z',
-              },
-              {
-                weekday: 5,
-                start_time: '08:00:00Z',
-                end_time: '17:00:00Z',
-              },
-            ],
+            business_hours: businessHour,
           },
           {
             onSuccess(data) {
@@ -139,6 +155,52 @@ export default function CreateStadium() {
       }
     }
   }, [addAlbum, data?.data?.id, images]);
+
+  const handleBusinessHourOk = () => {
+    const time = cells.reduce(
+      (acc, curr, weekday) => ({
+        ...acc,
+        [weekday === 0 ? 7 : weekday]: curr
+          .map((time, index, array) => {
+            if (index === 0 && time) return array[1] ? index : [index, index];
+            if (index === array.length - 1 && time)
+              return array[array.length - 2] ? index : [index, index];
+            if (time && (!array[index - 1] || !array[index + 1]))
+              return !array[index - 1] && !array[index + 1] ? [index, index] : index;
+          })
+          .flat()
+          .filter((time) => !isNil(time))
+          .reduce<{ weekday: number; start_time?: string; end_time?: string }[]>(
+            (acc, curr, index) => {
+              if ((index + 1) % 2 === 1) {
+                return [
+                  ...acc,
+                  {
+                    weekday: weekday === 0 ? 7 : weekday,
+                    start_time: format(setHours(new Date('2023-12-21'), Number(curr)), 'HH:mm:ss'),
+                  },
+                ];
+              } else {
+                return [
+                  ...acc.slice(0, acc.length - 1),
+                  {
+                    ...acc[acc.length - 1],
+                    end_time:
+                      curr === 0
+                        ? '23:59:59Z'
+                        : format(setHours(new Date('2023-12-21'), Number(curr) + 1), 'HH:mm:ss'),
+                  },
+                ];
+              }
+            },
+            [],
+          ),
+      }),
+      {},
+    );
+    setBusinessHour(Object.values(time).flat() as TimeOmit[]);
+    setTimeSlotOpen(false);
+  };
 
   const { context } = useLoading([loadingCity]);
   const { context: errorContext } = useError(error, { NotFound: '請輸入正確地址' });
@@ -203,8 +265,23 @@ export default function CreateStadium() {
               ),
               營業時間: (
                 <TimeWrapper>
-                  {'週一到週日 08:00 - 22:00'}
-                  <RippleButton category="icon" palette="gray">
+                  {!!businessHour.length && (
+                    <TimeGrid>
+                      {Object.entries(new BusinessHours(businessHour).latestAvailableTime).map(
+                        ([week, time], index) => (
+                          <Fragment key={index}>
+                            <Label>{week}</Label>
+                            <Time>{time}</Time>
+                          </Fragment>
+                        ),
+                      )}
+                    </TimeGrid>
+                  )}
+                  <RippleButton
+                    category="icon"
+                    palette="gray"
+                    onClick={() => setTimeSlotOpen(true)}
+                  >
                     <CalendarIcon fontSize="0.5em" />
                   </RippleButton>
                 </TimeWrapper>
@@ -286,6 +363,43 @@ export default function CreateStadium() {
             </PopOver>
           </ButtonWrapper>
         </Card>
+        <Modal
+          centered
+          open={timeSlotOpen}
+          footer={
+            <ButtonWrapper>
+              <RippleButton
+                category="outlined"
+                palette="gray"
+                onClick={() => {
+                  setCells(init);
+                  setTimeSlotOpen(false);
+                }}
+              >
+                取消
+              </RippleButton>
+              <RippleButton category="solid" palette="main" onClick={handleBusinessHourOk}>
+                確認
+              </RippleButton>
+            </ButtonWrapper>
+          }
+          onCancel={() => setTimeSlotOpen(false)}
+          width={900}
+          closable={false}
+          style={{ maxHeight: '80vh', overflow: 'scroll' }}
+        >
+          <TimeSlot
+            {...{
+              cells,
+              handleUnitMouseDown,
+              handleUnitMouseEnter,
+              date: dates,
+              timeRange,
+            }}
+            weekOnly={true}
+            style={{ padding: `0 ${percentageOfFigma(70).max} ${percentageOfFigma(40).max}` }}
+          />
+        </Modal>
       </Container>
     </>
   );

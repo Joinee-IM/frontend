@@ -65,7 +65,6 @@ export default function VenueList() {
                 icon={<SortIcon />}
                 onSelect={({ key }) => {
                   const [s, o] = splitSorter(key);
-                  console.log(key, s, 0);
                   setSort(s);
                   setOrder(o);
                 }}

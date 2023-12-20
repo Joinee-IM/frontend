@@ -145,7 +145,6 @@ export default function Venue() {
 
   const init = useMemo<(boolean | null)[][]>(() => {
     const reserved = reservationToTimeRange(data?.data?.reservations);
-    console.log(timeRange, availableTime);
     return dates.map(
       (date) =>
         timeRange?.slice(1).map((time) =>
