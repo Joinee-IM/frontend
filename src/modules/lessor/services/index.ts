@@ -82,3 +82,5 @@ export const useLessorBrowseCourt = (params: LessorBrowseCourtProps) => {
 };
 
 export const useBatchEditVenues = () => api.usePatch('/api/venue/batch');
+export const useBatchEditStadiums = () => api.usePatch('/api/stadium/batch');
+export const useBatchEditCourts = () => api.usePatch('/api/court/batch');

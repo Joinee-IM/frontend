@@ -342,16 +342,16 @@ export default function CreateStadium() {
               icon={<HelpIcon fontSize="2em" color={theme.main[700]} />}
               content={
                 <div style={{ width: '400px' }}>
-                  您的場館目前沒有場地可供使用者使用/預約，請按繼續上架接著上架場地。
+                  這個場館有場地需要上架嗎？請按繼續新增以新增場地。
                 </div>
               }
               footer={
                 <>
-                  <RippleButton category="outlined" palette="main" onClick={handleAddStadium()}>
-                    上架場館
+                  <RippleButton category="outlined" palette="main" onClick={handleAddStadium(true)}>
+                    繼續新增
                   </RippleButton>
-                  <RippleButton category="solid" palette="main" onClick={handleAddStadium(true)}>
-                    繼續上架
+                  <RippleButton category="solid" palette="main" onClick={handleAddStadium()}>
+                    上架場館
                   </RippleButton>
                 </>
               }
