@@ -60,7 +60,11 @@ export default function Partner() {
     offset,
     sport_id: sport,
     stadium_id: stadiumId,
+    city_id: city,
+    district_id: district,
     has_vacancy: true,
+    sort_by: 'time',
+    order: 'ASC',
   });
 
   const { stadiums } = useBrowseStadium({
@@ -153,7 +157,7 @@ export default function Partner() {
                 title="行政區"
                 selectedKeys={district ? [String(district)] : []}
                 icon={<BuildingIcon />}
-                loading={loadingDistrict}
+                loading={loadingDistrict && city !== undefined}
                 items={districts?.data?.map((district) => ({
                   label: district.name,
                   key: String(district.id),

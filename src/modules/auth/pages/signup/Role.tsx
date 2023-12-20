@@ -65,8 +65,11 @@ export default function Role() {
   const account_id = searchParams.get('account_id');
   const { mutate } = useEditAccount(Number(account_id));
 
-  const handleEdit = () => {
-    mutate({ role }, { onSuccess: () => navigate(`/?account_id=${account_id}`) });
+  const handleEdit = (select_role: Role) => {
+    mutate(
+      { role },
+      { onSuccess: () => navigate(`/?account_id=${account_id}&role=${select_role}`) },
+    );
   };
 
   return (
@@ -92,7 +95,9 @@ export default function Role() {
         htmlType="submit"
         style={{ width: '100%', marginTop: '35px', marginBottom: '20px' }}
         onClick={
-          mode === 'create' ? () => navigate(`/auth/signup/account?role=${role}`) : handleEdit
+          mode === 'create'
+            ? () => navigate(`/auth/signup/account?role=${role}`)
+            : () => handleEdit(role)
         }
       >
         {mode === 'create' ? '下一步' : '儲存'}

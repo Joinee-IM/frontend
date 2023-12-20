@@ -68,7 +68,7 @@ export default function DetailModal({ open, onCancel, stadiumId }: DetailModalPr
   const Footer = useMemo(
     () => (
       <ButtonWrapper>
-        <RippleButton category="outlined" palette="gray">
+        <RippleButton category="outlined" palette="gray" onClick={onCancel}>
           關閉
         </RippleButton>
         <RippleButton

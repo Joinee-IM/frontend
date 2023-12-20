@@ -1,5 +1,5 @@
 import { BellOutlined, UserOutlined } from '@ant-design/icons';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useCookies } from 'react-cookie';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -56,13 +56,18 @@ const MenuItem = styled(RippleButton).withConfig({
   color: gray;
 `;
 
-const userSelect: UserSelect[] = ['歷史紀錄', '個人檔案', '登出'];
+// const userSelect: UserSelect[] = ['歷史紀錄', '個人檔案', '登出'];
+
 const managerSelect: ManagerSelect[] = ['新增場館', '新增場地', '新增小單位'];
 
 export default function Header() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [cookies, , removeCookie] = useCookies(['id', 'user-role']);
+  const userSelect = useMemo(
+    () => [...(cookies['user-role'] === 'NORMAL' ? ['歷史紀錄'] : []), '個人檔案', '登出'],
+    [cookies],
+  );
   const { mutate: logout } = useLogout();
 
   const handleLessorSelect = useCallback(

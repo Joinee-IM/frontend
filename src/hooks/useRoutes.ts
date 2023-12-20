@@ -8,14 +8,16 @@ export default function useRoutes() {
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
   const account_id = searchParams.get('account_id') as unknown as number;
+  const role = searchParams.get('role') as unknown as number;
 
   useEffect(() => {
     // for google login
     if (account_id) {
       setCookie('id', account_id, { path: '/' });
+      setCookie('user-role', role, { path: '/' });
       navigate('/');
     }
-  }, [account_id, navigate, setCookie]);
+  }, [account_id, navigate, role, setCookie]);
 
   useEffect(() => {
     if (cookie['user-role'] === 'NORMAL' && pathname.startsWith('/manage')) {
