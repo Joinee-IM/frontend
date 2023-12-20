@@ -9,18 +9,15 @@ import styled from 'styled-components';
 import type { UploadProps } from '@/components/Upload';
 import type { FeeType } from '@/utils/function/map';
 
-import HelpIcon from '@/assets/icons/Help';
 import PlusIcon from '@/assets/icons/Plus';
 import { ButtonWrapper, RippleButton } from '@/components/Button';
 import { Card, Title } from '@/components/Form';
 import { GeneralGrid } from '@/components/Grid';
 import GridForm from '@/components/Grid/FormGrid';
-import PopOver from '@/components/Popover';
 import Upload, { UploadImageTitle } from '@/components/Upload';
 import { useUploadVenue } from '@/modules/lessor/pages/Upload/services';
 import { useLessorBrowseStadium } from '@/modules/lessor/services';
 import { AlbumWrapper, ImagePreview } from '@/modules/main/pages/Stadium/components/DetailModal';
-import theme from '@/provider/theme/theme';
 import { useSports } from '@/services/useFilters';
 import { useAddAlbum } from '@/services/useInfo';
 import { flexCenter, percentageOfFigma } from '@/utils/css';
@@ -197,6 +194,7 @@ export default function CreateStadium() {
               <Form.Item
                 name="stadium_id"
                 {...(stadium_id && { initialValue: Number(stadium_id) })}
+                rules={[{ required: true, message: '' }]}
               >
                 <Select
                   style={{ width: '100%' }}
@@ -388,30 +386,9 @@ export default function CreateStadium() {
           }}
         />
         <ButtonWrapper>
-          <PopOver
-            placement="topRight"
-            icon={<HelpIcon fontSize="2em" color={theme.main[700]} />}
-            content={
-              <div style={{ width: '400px' }}>
-                您的場館目前沒有場地可供使用者使用/預約，請按繼續上架接著上架場地。
-              </div>
-            }
-            footer={
-              <>
-                <RippleButton category="outlined" palette="main" onClick={handleAddVenue()}>
-                  上架場館
-                </RippleButton>
-                <RippleButton category="solid" palette="main" onClick={handleAddVenue(true)}>
-                  繼續上架
-                </RippleButton>
-              </>
-            }
-            trigger="click"
-          >
-            <RippleButton category="solid" palette="main">
-              下一步
-            </RippleButton>
-          </PopOver>
+          <RippleButton category="solid" palette="main" onClick={handleAddVenue()}>
+            下一步
+          </RippleButton>
         </ButtonWrapper>
       </Card>
     </Container>
