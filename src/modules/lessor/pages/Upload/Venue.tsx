@@ -299,7 +299,7 @@ export default function CreateStadium() {
               <Form.Item
                 name="sport_equipments"
                 initialValue={''}
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: false, message: '' }]}
               >
                 <TextArea rows={4} placeholder="請列出有提供的器材，若無可不填" />
               </Form.Item>
@@ -324,9 +324,12 @@ export default function CreateStadium() {
               <Form.Item
                 name="facilities"
                 initialValue={''}
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: false, message: '' }]}
               >
-                <TextArea rows={4} placeholder="請列出提供的設備，如：淋浴間、吹風機" />
+                <TextArea
+                  rows={4}
+                  placeholder="請列出提供的設備，如：淋浴間、吹風機等，若無可不填"
+                />
               </Form.Item>
             ),
             運動項目: (
