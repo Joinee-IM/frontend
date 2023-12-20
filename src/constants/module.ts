@@ -3,7 +3,7 @@ const MODULE_TO_ROUTE = {
   partner: [/^\/partner$/],
   managerCrate: [/^\/manage\/\d+\/create/],
   manage: [/^\/$/, /^\/manage\/\d+$/],
-  background: [/^\/reservation/, /\/manage\/\d+\/[^/]+(?:\/[^/]+)?$/],
+  background: [/^\/reservation/, /\/manage\/\d+\/create/],
 };
 
 export default MODULE_TO_ROUTE;

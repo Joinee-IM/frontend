@@ -12,6 +12,7 @@ export default function useTimeSlotDrag(
   init: (boolean | null)[][],
   mode: ModeType = 'straight',
   { onMouseDown, onMouseEnter, OnMouseUp }: ConfigType = {},
+  draggable = true,
 ) {
   const [cells, setCells] = useState(init); //control the whole dragging status
   const [prevCells, setPrevCells] = useState(init); //record the previous status of this-time dragging
@@ -34,6 +35,7 @@ export default function useTimeSlotDrag(
   }, [init]);
 
   const handleUnitMouseDown = (x: number, y: number) => {
+    if (!draggable) return;
     if (cells[x][y] === null) return;
     if (mode === 'straight') {
       resetTimeSlot();

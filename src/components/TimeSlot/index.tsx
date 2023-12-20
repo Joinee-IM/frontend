@@ -1,5 +1,6 @@
 import { format, getHours, parseISO } from 'date-fns';
 import { isNumber, range } from 'lodash';
+import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -23,6 +24,7 @@ interface TimeSlotProps extends Type<typeof Container> {
   isLoading?: boolean;
   handleUnitMouseDown: (x: number, y: number) => void;
   handleUnitMouseEnter: (x: number, y: number) => void;
+  draggable?: boolean;
 }
 
 type UnitStatus = 'normal' | 'selected' | 'disabled' | 'unreservable' | number;
@@ -140,6 +142,8 @@ export default function TimeSlot({
 }: TimeSlotProps) {
   const reservationsTimeMap = reservationToTimeMap(reservationInfos);
   const navigate = useNavigate();
+  const [cookies] = useCookies(['id', 'user-role']);
+
   return (
     <Container {...rest}>
       {date.length === cells.length &&
@@ -169,7 +173,8 @@ export default function TimeSlot({
                     style={{ padding: `${percentageOfFigma(9).max}` }}
                     {...(!info ? { open: false } : {})}
                     footer={
-                      info?.vacancy > 0 && (
+                      info?.vacancy > 0 &&
+                      cookies['user-role'] !== 'PROVIDER' && (
                         <RippleButton
                           category="solid"
                           palette="sub"

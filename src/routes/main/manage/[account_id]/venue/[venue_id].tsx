@@ -6,8 +6,8 @@ export default (
   <Route
     path={routePath('main.manage.venue')}
     lazy={async () => {
-      const Venue = await import('@/modules/lessor/pages/Venue');
-      return { Component: Venue.default };
+      const Detail = await import('@/modules/main/pages/Detail');
+      return { Component: Detail.default };
     }}
   />
 );

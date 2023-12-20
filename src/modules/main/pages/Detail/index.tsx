@@ -1,29 +1,31 @@
-import { Modal, Radio } from 'antd';
-import { eachDayOfInterval, endOfWeek, format, startOfWeek } from 'date-fns';
-import { useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Radio } from 'antd';
+import { addDays, eachDayOfInterval, endOfWeek, format, getDay, startOfWeek } from 'date-fns';
+import { useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { LeftArrowIcon, RightArrowIcon } from '@/assets/icons/Arrow';
-import CalendarIcon from '@/assets/icons/Calendar';
 import FireIcon from '@/assets/icons/Fire';
-import { ButtonWrapper, RippleButton } from '@/components/Button';
-import DateTimePicker, { useDateTimePicker } from '@/components/DateTimePicker';
+import { RippleButton } from '@/components/Button';
 import GridForm from '@/components/Grid/FormGrid';
 import { useLoading } from '@/components/Loading/PageLoading';
 import { TabPane, Tabs } from '@/components/Tab';
 import { RoundTag, RoundTagWrapper, SquareTag } from '@/components/Tag';
-import TimeSlot from '@/components/TimeSlot';
+import TimeSlot, { reservationToTimeRange } from '@/components/TimeSlot';
 import useTimeSlotDrag from '@/components/TimeSlot/useTimeSlotDrag';
 import useDeviceDetector from '@/hooks/useDeviceDetector';
 import { AlbumWrapper, ImagePreview } from '@/modules/main/pages/Stadium/components/DetailModal';
 import { useStadiumInfo } from '@/modules/main/pages/Stadium/services';
-import { useVenueCourts, useVenueInfo } from '@/modules/main/pages/Venue/services';
+import {
+  useCourtReservations,
+  useVenueCourts,
+  useVenueInfo,
+} from '@/modules/main/pages/Venue/services';
 import { useAlbum, useBusinessHour } from '@/services/useInfo';
 import { hexToRgb } from '@/utils';
 import { backgroundCenter, percentageOfFigma } from '@/utils/css';
 import { toFeeType } from '@/utils/function/map';
-import { BusinessHours } from '@/utils/function/time';
+import { BusinessHours, hourIn } from '@/utils/function/time';
 
 const Background = styled.div.withConfig({
   shouldForwardProp: (prop) => !['image'].includes(prop),
@@ -105,6 +107,7 @@ const TimeSlotWrapper = styled.div`
   gap: 24px;
   align-items: center;
   width: 100%;
+  padding-bottom: ${percentageOfFigma(40).max};
 `;
 
 export default function Venue() {
@@ -119,28 +122,61 @@ export default function Venue() {
     Number(venue_id),
     'VENUE',
   );
-  const { data: courts } = useVenueCourts(Number(venue_id));
-  const [calendarOpen, setCalendarOpen] = useState(false);
-  const { date, setDate, focus, setFocus, times, setTimes } = useDateTimePicker();
-  const timeRange = useMemo(
-    () => new BusinessHours(businessHour?.data ?? []).largestAvailableTimeRange,
-    [businessHour?.data],
-  );
-  const dates = useMemo(
-    () =>
-      eachDayOfInterval({
-        start: startOfWeek(new Date()),
-        end: endOfWeek(new Date()),
-      }),
-    [],
-  );
-  const { cells, handleUnitMouseDown, handleUnitMouseEnter } = useTimeSlotDrag(
-    dates.map(() => timeRange?.slice(1).map(() => false) ?? []),
-    'straight',
-  );
+  const { data: courts, mutate: getCourts } = useVenueCourts(Number(venue_id));
+  const [page, setPage] = useState<number>(0);
+  const [courtId, setCourtId] = useState(0);
+  const {
+    data,
+    mutate: getReservations,
+    isLoading: loadingCourtReservations,
+  } = useCourtReservations(courtId);
 
-  const navigate = useNavigate();
-  const { context } = useLoading([fetchingStadium, fetchingVenue, fetchingAlbum, fetchingBusiness]);
+  const [timeRange, availableTime] = useMemo(() => {
+    const hours = new BusinessHours(businessHour?.data ?? []);
+    return [hours.largestAvailableTimeRange, hours.timeMap];
+  }, [businessHour?.data]);
+  const dates = useMemo(() => {
+    const baseDate = new Date();
+    return eachDayOfInterval({
+      start: addDays(startOfWeek(baseDate), page * 7),
+      end: addDays(endOfWeek(baseDate), page * 7),
+    });
+  }, [page]);
+
+  const init = useMemo<(boolean | null)[][]>(() => {
+    const reserved = reservationToTimeRange(data?.data?.reservations);
+    console.log(timeRange, availableTime);
+    return dates.map(
+      (date) =>
+        timeRange?.slice(1).map((time) =>
+          reserved[format(date, 'yyyy/MM/dd')]?.includes(time - 1) || // 已經被預約過的不能預約
+          !availableTime[getDay(date) === 0 ? 7 : getDay(date)]?.some((end) => hourIn(end, time)) // 非營業時間不能預約
+            ? null
+            : false,
+        ) ?? [],
+    );
+  }, [availableTime, data?.data?.reservations, dates, timeRange]);
+  const { cells, handleUnitMouseDown, handleUnitMouseEnter } = useTimeSlotDrag(
+    init,
+    'straight',
+    {},
+    false,
+  );
+  const { context } = useLoading([fetchingAlbum, fetchingBusiness, fetchingStadium, fetchingVenue]);
+
+  useEffect(() => {
+    getCourts({});
+  }, [getCourts]);
+
+  useEffect(() => {
+    if (courtId) {
+      getReservations({ start_date: format(dates[0], 'yyyy-MM-dd') });
+    }
+  }, [courtId, dates, getReservations]);
+
+  useEffect(() => {
+    if (courts?.data?.length) setCourtId(courts?.data?.[0].id);
+  }, [courts?.data]);
 
   return (
     <>
@@ -181,32 +217,26 @@ export default function Venue() {
               <ReservationWrapper>
                 <TimeSlotWrapper style={{ ...(isMobile && { maxHeight: '450px' }) }}>
                   <FilterWrapper>
-                    <Radio.Group defaultValue={courts?.data?.[0].id} buttonStyle="solid">
+                    <Radio.Group
+                      defaultValue={courts?.data?.[0]?.id}
+                      buttonStyle="solid"
+                      onChange={(e) => setCourtId(Number(e.target.value))}
+                    >
                       {courts?.data?.map((court) => (
                         <Radio.Button value={court.id} key={court.id}>
                           {`${court.number} ${venue?.data?.court_type}`}
                         </Radio.Button>
                       ))}
                     </Radio.Group>
-                    {' ・ '}
-                    <RippleButton
-                      category="icon"
-                      palette="gray"
-                      icon={<CalendarIcon fontSize="0.5em" />}
-                      onClick={() => setCalendarOpen(true)}
-                    />
                   </FilterWrapper>
-                  <Modal
-                    centered
-                    open={calendarOpen}
-                    // footer={Footer}
-                    onCancel={() => setCalendarOpen(false)}
-                    width={'fit-content'}
-                    closable={false}
+                  <RippleButton
+                    category="icon"
+                    palette="gray"
+                    style={{ gridColumn: '1/2', gridRow: '2/3' }}
+                    onClick={() => setPage((prev) => prev - 1)}
                   >
-                    <DateTimePicker {...{ date, setDate, focus, setFocus, times, setTimes }} />
-                  </Modal>
-                  <LeftArrowIcon style={{ gridColumn: '1/2', gridRow: '2/3' }} />
+                    <LeftArrowIcon />
+                  </RippleButton>
                   {businessHour?.data && (
                     <TimeSlot
                       {...{
@@ -216,37 +246,20 @@ export default function Venue() {
                         date: dates,
                         timeRange,
                       }}
+                      reservationInfos={data?.data?.reservations}
                       style={{ gridColumn: '2/3', gridRow: '2/3' }}
+                      isLoading={loadingCourtReservations}
                     />
                   )}
-                  <RightArrowIcon style={{ gridColumn: '3/4', gridRow: '2/3' }} />
-                </TimeSlotWrapper>
-                <ButtonWrapper>
-                  <RippleButton category="outlined" palette="gray">
-                    取消
-                  </RippleButton>
                   <RippleButton
-                    category="solid"
-                    palette="main"
-                    disabled={!cells.some((columns) => columns.some((cell) => cell))}
-                    onClick={() => {
-                      const date = dates[cells.findIndex((column) => column.some((cell) => cell))];
-                      const time = timeRange?.filter(
-                        (_, index) => cells.find((column) => column.some((cell) => cell))?.[index],
-                      );
-                      const query = [
-                        `stadium_id=${venue.data?.stadium_id}`,
-                        `venue_id=${venue_id}`,
-                        `court_id=${courts?.data?.[0].id}`,
-                        `date=${format(date, 'yyyy/MM/dd')}`,
-                        `time=${time?.join(',')}`,
-                      ];
-                      navigate(`/reservation/create?${query.join('&')}`);
-                    }}
+                    category="icon"
+                    palette="gray"
+                    style={{ gridColumn: '3/4', gridRow: '2/3' }}
+                    onClick={() => setPage((prev) => prev + 1)}
                   >
-                    確認選擇時段
+                    <RightArrowIcon />
                   </RippleButton>
-                </ButtonWrapper>
+                </TimeSlotWrapper>
               </ReservationWrapper>
             </TabPane>
           ) : undefined}

@@ -1,7 +1,6 @@
 import { Table } from 'antd';
 import { isEqual } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import type { StadiumTableItem, TableBaseProps } from '@/modules/lessor/pages/Manage/types';
 import type { ColumnsType } from 'antd/es/table';
@@ -20,7 +19,7 @@ export default function StadiumTable({
   selectedRowKeys,
   setSelectedRowKeys,
 }: TableBaseProps) {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const limit = useMemo(() => 10, []);
   const [offset, setOffset] = useState(0);
 
@@ -93,11 +92,11 @@ export default function StadiumTable({
     {
       dataIndex: '',
       key: 'x',
-      render: (_, record) => (
+      render: () => (
         <RippleButton
           category="icon"
           palette="gray"
-          onClick={() => navigate(`venue/${record.stadium_id}`)}
+          // onClick={() => navigate(`venue/${record.stadium_id}`)}
         >
           <DirectionRightIcon />
         </RippleButton>
