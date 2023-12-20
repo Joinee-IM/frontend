@@ -98,6 +98,9 @@ const ContentWrapper = styled.div`
   .ant-tabs-ink-bar {
     left: 0;
   }
+  .ant-tabs-tabpane {
+    padding-left: ${percentageOfFigma(109).max} !important;
+  }
 `;
 
 const FilterWrapper = styled.div`
@@ -250,7 +253,9 @@ export default function Venue() {
                 ),
                 小單位: `${venue?.data?.court_count} ${venue?.data?.court_type}`,
                 收費資訊: `${venue?.data?.fee_rate} 元${toFeeType(venue?.data?.fee_type)}`,
-                預約開放時間: `租借日的 ${venue?.data?.reservation_interval} 天前`,
+                ...(venue?.data?.is_reservable && {
+                  預約開放時間: `租借日的 ${venue?.data?.reservation_interval} 天前`,
+                }),
                 設備: venue?.data?.facilities,
                 運動器材租借: venue?.data?.sport_equipments,
               }}
