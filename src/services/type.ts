@@ -158,8 +158,8 @@ const StadiumSearchParameters = z
     district_id: z.union([z.number(), z.null()]),
     sport_id: z.union([z.number(), z.null()]),
     time_ranges: z.union([z.array(WeekTimeRange), z.null()]),
-    limit: z.number().int().gt(0).lt(50),
-    offset: z.number().int().gte(0),
+    limit: z.union([z.number(), z.null()]),
+    offset: z.union([z.number(), z.null()]),
   })
   .partial()
   .passthrough();
@@ -196,8 +196,8 @@ const BrowseStadiumOutput = z
   .object({
     data: z.array(ViewStadium),
     total_count: z.number().int(),
-    limit: z.number().int(),
-    offset: z.number().int(),
+    limit: z.union([z.number(), z.null()]).optional(),
+    offset: z.union([z.number(), z.null()]).optional(),
   })
   .passthrough();
 const Response_BrowseStadiumOutput_ = z
@@ -257,11 +257,11 @@ const Response_Sequence_City__ = z
   .passthrough();
 const stadium_id = z.union([z.number(), z.null()]).optional();
 const is_reservable = z.union([z.boolean(), z.null()]).optional();
-const VenueAvailableSortBy = z.string();
+const VenueAvailableSortBy = z.enum(['CURRENT_USER_COUNT', 'PRICE']);
 const sort_by = VenueAvailableSortBy.optional().default('CURRENT_USER_COUNT');
 const Sorter = z.enum(['ASC', 'DESC']);
 const order = Sorter.optional().default('DESC');
-const FeeType = z.enum(['PER_HOUR', 'PER_PERSON', 'PER_PERSON_PER_HOUR']);
+const FeeType = z.enum(['PER_RESERVATION', 'PER_PERSON', 'PER_HOUR', 'PER_PERSON_PER_HOUR']);
 const Venue = z
   .object({
     id: z.number().int(),
@@ -288,8 +288,8 @@ const BrowseVenueOutput = z
   .object({
     data: z.array(Venue),
     total_count: z.number().int(),
-    limit: z.number().int(),
-    offset: z.number().int(),
+    limit: z.union([z.number(), z.null()]).optional(),
+    offset: z.union([z.number(), z.null()]).optional(),
   })
   .passthrough();
 const Response_BrowseVenueOutput_ = z
@@ -528,6 +528,10 @@ const EditReservationInput = z
   })
   .partial()
   .passthrough();
+const Response_Reservation_ = z
+  .object({ data: z.union([Reservation, z.null()]), error: z.union([ErrorMessage, z.null()]) })
+  .partial()
+  .passthrough();
 const ReservationMemberWithName = z
   .object({
     reservation_id: z.number().int(),
@@ -616,8 +620,8 @@ const ViewMyReservationParams = z
     source: z.union([ReservationMemberSource, z.null()]).optional(),
     sort_by: ViewMyReservationSortBy.optional().default('time'),
     order: Sorter.optional().default('DESC'),
-    limit: z.number().int().gt(0).lt(50).optional(),
-    offset: z.number().int().gte(0).optional(),
+    limit: z.union([z.number(), z.null()]).optional(),
+    offset: z.union([z.number(), z.null()]).optional(),
   })
   .passthrough();
 const ViewMyReservation = z
@@ -637,8 +641,8 @@ const ViewMyReservationOutput = z
   .object({
     data: z.array(ViewMyReservation),
     total_count: z.number().int(),
-    limit: z.number().int(),
-    offset: z.number().int(),
+    limit: z.union([z.number(), z.null()]).optional(),
+    offset: z.union([z.number(), z.null()]).optional(),
   })
   .passthrough();
 const Response_ViewMyReservationOutput_ = z
@@ -837,6 +841,7 @@ export const schemas = {
   ReadReservationOutput,
   Response_ReadReservationOutput_,
   EditReservationInput,
+  Response_Reservation_,
   ReservationMemberWithName,
   Response_Sequence_ReservationMemberWithName__,
   BatchEditCourtInput,
@@ -1610,6 +1615,27 @@ const endpoints = makeApi([
     ],
   },
   {
+    method: 'get',
+    path: '/api/reservation/code/:invitation_code',
+    alias: 'read_reservation_by_invitation_code_api_reservation_code__invitation_code__get',
+    requestFormat: 'json',
+    parameters: [
+      {
+        name: 'invitation_code',
+        type: 'Path',
+        schema: z.string(),
+      },
+    ],
+    response: Response_Reservation_,
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
+  },
+  {
     method: 'post',
     path: '/api/reservation/code/:invitation_code',
     alias: 'join_reservation_api_reservation_code__invitation_code__post',
@@ -1879,12 +1905,12 @@ const endpoints = makeApi([
       {
         name: 'limit',
         type: 'Query',
-        schema: z.number().int().gt(0).lt(50).optional(),
+        schema: stadium_id,
       },
       {
         name: 'offset',
         type: 'Query',
-        schema: z.number().int().gte(0).optional(),
+        schema: stadium_id,
       },
     ],
     response: Response_BrowseVenueOutput_,
