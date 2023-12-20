@@ -54,6 +54,18 @@ export default function AntdProvider({ children }: { children: ReactNode }) {
             colorPrimary: theme.sub[500],
             colorPrimaryHover: theme.sub[500],
           },
+          InputNumber: {
+            activeBorderColor: theme.main[500],
+            handleHoverColor: theme.main[500],
+            hoverBorderColor: theme.main[300],
+            colorError: theme.red[500],
+          },
+          Select: {
+            colorPrimary: theme.sub[500],
+            colorPrimaryHover: theme.sub[500],
+            optionSelectedBg: theme.sub[500],
+            optionSelectedColor: 'white',
+          },
         },
       }}
     >
