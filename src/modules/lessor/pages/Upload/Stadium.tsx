@@ -15,6 +15,7 @@ import GridForm from '@/components/Grid/FormGrid';
 import { useLoading } from '@/components/Loading/PageLoading';
 import PopOver from '@/components/Popover';
 import Upload, { UploadImageTitle, type UploadProps } from '@/components/Upload';
+import useError from '@/hooks/useError';
 import useFilter from '@/hooks/useFilter';
 import { useUploadStadium } from '@/modules/lessor/pages/Upload/services';
 import { AlbumWrapper, ImagePreview } from '@/modules/main/pages/Stadium/components/DetailModal';
@@ -57,7 +58,7 @@ export default function CreateStadium() {
   const [imageModal, setImageModal] = useState(false);
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
-  const { data, mutate: addStadium } = useUploadStadium();
+  const { data, mutate: addStadium, error } = useUploadStadium();
   const { mutate: addAlbum } = useAddAlbum(Number(data?.data?.id), 'STADIUM');
   const navigate = useNavigate();
   const [cookies] = useCookies(['id']);
@@ -133,10 +134,12 @@ export default function CreateStadium() {
   }, [addAlbum, data?.data?.id, images]);
 
   const { context } = useLoading([loadingCity]);
+  const { context: errorContext } = useError(error, { NotFound: '請輸入正確地址' });
 
   const [form] = useForm<CreateStadiumFormDataType>();
   return (
     <>
+      {errorContext}
       {context}
       <Container>
         <Card>

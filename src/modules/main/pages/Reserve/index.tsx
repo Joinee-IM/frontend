@@ -11,9 +11,10 @@ import Loading from '@/assets/create.gif';
 import { ButtonWrapper } from '@/components/Button';
 import GridForm from '@/components/Grid/FormGrid';
 import { useLoading } from '@/components/Loading/PageLoading';
+import useError from '@/hooks/useError';
 import Action from '@/modules/main/pages/Reserve/components/Action';
 import useReservationForm from '@/modules/main/pages/Reserve/hooks/useData';
-import { useReservationInfo } from '@/modules/main/pages/Reserve/services';
+import { useCreateReservation, useReservationInfo } from '@/modules/main/pages/Reserve/services';
 import { useVenueInfo } from '@/modules/main/pages/Venue/services';
 import { hexToRgb } from '@/utils';
 import { flexCenter, percentageOfFigma, rwdFontSize } from '@/utils/css';
@@ -78,6 +79,7 @@ export default function Reserve() {
   const [searchParams] = useSearchParams();
   if (isNil(mode)) throw Error();
   const venue_id = reservation?.data?.venue_id ?? searchParams.get('venue_id');
+  const court_id = reservation?.data?.court_id ?? searchParams.get('court_id');
   const date = searchParams.get('date');
   const time = searchParams.get('time')?.split(',').map(Number);
 
@@ -93,9 +95,14 @@ export default function Reserve() {
     mode === 'create' ? '正在生成預約表單' : '請稍候',
   );
 
+  const { error } = useCreateReservation(Number(court_id));
+
+  const { context: errorContext } = useError(error, undefined);
+
   return (
     <>
       {context}
+      {errorContext}
       <Container>
         <Card>
           <Title>{mode === 'create' ? '預約場地' : '詳細資料'}</Title>

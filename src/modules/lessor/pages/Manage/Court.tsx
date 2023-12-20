@@ -1,15 +1,12 @@
 import { Table } from 'antd';
 import { isEqual } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import type { CourtTableItem, TableBaseProps } from '@/modules/lessor/pages/Manage/types';
 import type { ColumnsType } from 'antd/es/table';
 import type { TableRowSelection } from 'antd/es/table/interface';
 import type { Key } from 'react';
 
-import { DirectionRightIcon } from '@/assets/icons/Direction';
-import { RippleButton } from '@/components';
 import { RoundTag, RoundTagWrapper } from '@/components/Tag';
 import { pagination } from '@/modules/lessor/pages/Manage';
 import { useLessorBrowseCourt } from '@/modules/lessor/services';
@@ -20,7 +17,6 @@ export default function CourtTable({
   selectedRowKeys,
   setSelectedRowKeys,
 }: TableBaseProps) {
-  const navigate = useNavigate();
   const limit = useMemo(() => 10, []);
   const [offset, setOffset] = useState(0);
 
@@ -87,19 +83,6 @@ export default function CourtTable({
         },
       ],
       onFilter: (value, record) => record.is_published === value,
-    },
-    {
-      dataIndex: '',
-      key: 'x',
-      render: (_, record) => (
-        <RippleButton
-          category="icon"
-          palette="gray"
-          onClick={() => navigate(`venue/${record.court_id}`)}
-        >
-          <DirectionRightIcon />
-        </RippleButton>
-      ),
     },
   ];
   const dataSource = useMemo(
