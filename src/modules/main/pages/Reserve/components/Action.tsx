@@ -96,9 +96,14 @@ export default function Action({ mode, form, reservation_id }: ActionProps) {
   };
 
   const handleLeaveReserve = async () => {
-    await leaveReservation(null as never);
-    await refetch();
-    await refetchReservationMembers();
+    try {
+      await leaveReservation(null as never);
+      await refetch();
+      await refetchReservationMembers();
+      navigate(`/history/${cookie.id}`);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   switch (mode) {
