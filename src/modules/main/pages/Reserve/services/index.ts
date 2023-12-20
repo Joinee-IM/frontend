@@ -24,3 +24,10 @@ export const useBrowseReservationMembers = (reservation_id?: number) =>
     { params: { reservation_id: Number(reservation_id) } },
     { enabled: !!reservation_id },
   );
+
+export const useReadReservationByCode = (invitation_code?: string) =>
+  api.useGet(
+    '/api/reservation/code/:invitation_code',
+    { params: { invitation_code: String(invitation_code) } },
+    { enabled: !!invitation_code },
+  );

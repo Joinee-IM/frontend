@@ -1,5 +1,5 @@
 import { setHours } from 'date-fns';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -27,9 +27,17 @@ export default function Action({ mode, form, reservation_id }: ActionProps) {
   const [searchParams] = useSearchParams();
   const date = searchParams.get('date');
   const time = searchParams.get('time')?.split(',').map(Number);
+  const code = searchParams.get('code');
   const [cookie] = useCookies(['id', 'user-role']);
 
   const { data: reservation, refetch } = useReservationInfo(reservation_id);
+
+  useEffect(() => {
+    if (reservation?.data?.vacancy && reservation?.data?.vacancy <= 0 && !code)
+      throw new Response('Not Permission', {
+        status: 403,
+      });
+  }, [code, reservation?.data?.vacancy]);
 
   const court_id = reservation?.data?.court_id ?? searchParams.get('court_id');
 
@@ -88,9 +96,14 @@ export default function Action({ mode, form, reservation_id }: ActionProps) {
   };
 
   const handleLeaveReserve = async () => {
-    await leaveReservation(null as never);
-    await refetch();
-    await refetchReservationMembers();
+    try {
+      await leaveReservation(null as never);
+      await refetch();
+      await refetchReservationMembers();
+      navigate(`/history/${cookie.id}`);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   switch (mode) {
