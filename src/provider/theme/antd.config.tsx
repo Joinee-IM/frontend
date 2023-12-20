@@ -49,7 +49,6 @@ export default function AntdProvider({ children }: { children: ReactNode }) {
             colorPrimary: theme.sub[500],
             colorPrimaryHover: theme.sub[500],
           },
-          Select: { colorPrimary: theme.sub[500], colorPrimaryHover: theme.sub[500] },
           Pagination: {
             colorPrimary: theme.sub[500],
             colorPrimaryHover: theme.sub[500],
