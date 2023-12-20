@@ -41,6 +41,7 @@ export const ROUTES = {
       '[venue_id]': ':venue_id',
     },
     reservation: { route: 'reservation/:mode', info: ':reservation_id' },
+    code: { route: 'reservation/code/:code' },
     'user-info': 'user-info/:account_id',
     history: '/history/:account_id',
     manage: {

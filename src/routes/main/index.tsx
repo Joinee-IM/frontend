@@ -5,6 +5,7 @@ import HistoryRoute from '@/routes/main/history/[account_id]';
 import ProviderRoute from '@/routes/main/manage/[account_id]';
 import PartnerRoute from '@/routes/main/partner';
 import ReservationRoute from '@/routes/main/reservation/[mode]';
+import CodeRoute from '@/routes/main/reservation/code/[code]';
 import VenueRoute from '@/routes/main/stadium/[stadium_id]/venue';
 import UserInfoRoute from '@/routes/main/user-info/[account_id]';
 
@@ -37,6 +38,7 @@ export default (
     {HomeRoute}
     {PartnerRoute}
     {VenueRoute}
+    {CodeRoute}
     {ReservationRoute}
     {UserInfoRoute}
     {HistoryRoute}
