@@ -18,7 +18,7 @@ export const RoundTag = styled.div`
   line-height: 1em;
   padding: 0.5em 1em;
   border-radius: 1.3em;
-  background: #cbc09f;
+  background: ${({ theme }) => theme.dirt};
   color: white;
   flex-shrink: 0;
   column-gap: ${10 / 14}em;
