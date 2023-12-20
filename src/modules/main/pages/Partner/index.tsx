@@ -60,7 +60,11 @@ export default function Partner() {
     offset,
     sport_id: sport,
     stadium_id: stadiumId,
+    city_id: city,
+    district_id: district,
     has_vacancy: true,
+    sort_by: 'time',
+    order: 'ASC',
   });
 
   const { stadiums } = useBrowseStadium({
