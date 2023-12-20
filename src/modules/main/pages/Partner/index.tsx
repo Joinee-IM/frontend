@@ -78,7 +78,10 @@ export default function Partner() {
       <ContentWrapper>
         <Tabs
           tabPosition={'left'}
-          onChange={(key) => setSport(Number(key) ? Number(key) : undefined)}
+          onChange={(key) => {
+            setOffset(0);
+            setSport(Number(key) ? Number(key) : undefined);
+          }}
         >
           <TabPane
             index="0"

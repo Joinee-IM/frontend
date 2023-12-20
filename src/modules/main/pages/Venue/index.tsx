@@ -4,8 +4,11 @@ import {
   eachDayOfInterval,
   endOfWeek,
   format,
+  getDay,
+  isAfter,
   isBefore,
   parseISO,
+  setHours,
   startOfWeek,
 } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
@@ -37,7 +40,7 @@ import { useAlbum, useBusinessHour } from '@/services/useInfo';
 import { hexToRgb } from '@/utils';
 import { backgroundCenter, percentageOfFigma } from '@/utils/css';
 import { toFeeType } from '@/utils/function/map';
-import { BusinessHours } from '@/utils/function/time';
+import { BusinessHours, hourIn } from '@/utils/function/time';
 
 const Background = styled.div.withConfig({
   shouldForwardProp: (prop) => !['image'].includes(prop),
@@ -162,10 +165,10 @@ export default function Venue() {
     isLoading: loadingCourtReservations,
   } = useCourtReservations(courtId);
 
-  const timeRange = useMemo(
-    () => new BusinessHours(businessHour?.data ?? []).largestAvailableTimeRange,
-    [businessHour?.data],
-  );
+  const [timeRange, availableTime] = useMemo(() => {
+    const hours = new BusinessHours(businessHour?.data ?? []);
+    return [hours.largestAvailableTimeRange, hours.timeMap];
+  }, [businessHour?.data]);
   const dates = useMemo(() => {
     const baseDate = dateTimeRange.length
       ? parseISO(
@@ -177,19 +180,31 @@ export default function Venue() {
       end: addDays(endOfWeek(baseDate), page * 7),
     });
   }, [dateTimeRange, page]);
+
   const init = useMemo<(boolean | null)[][]>(() => {
-    const disabled = reservationToTimeRange(data?.data?.reservations);
+    const reserved = reservationToTimeRange(data?.data?.reservations);
+    const overReservationalInterval = venue?.data?.reservation_interval
+      ? addDays(new Date(), venue?.data?.reservation_interval)
+      : null;
+    console.log(timeRange, availableTime);
     return dates.map(
       (date) =>
-        timeRange
-          ?.slice(1)
-          .map((time) =>
-            isBefore(date, new Date()) || disabled[format(date, 'yyyy/MM/dd')]?.includes(time - 1)
-              ? null
-              : false,
-          ) ?? [],
+        timeRange?.slice(1).map((time) =>
+          isBefore(setHours(date, time - 1), new Date()) || // 今天以前的不能預約
+          reserved[format(date, 'yyyy/MM/dd')]?.includes(time - 1) || // 已經被預約過的不能預約
+          (overReservationalInterval ? isAfter(date, overReservationalInterval) : false) || // 超過允許預約天數不能預約
+          !availableTime[getDay(date) === 0 ? 7 : getDay(date)]?.some((end) => hourIn(end, time)) // 非營業時間不能預約
+            ? null
+            : false,
+        ) ?? [],
     );
-  }, [data?.data?.reservations, dates, timeRange]);
+  }, [
+    availableTime,
+    data?.data?.reservations,
+    dates,
+    timeRange,
+    venue?.data?.reservation_interval,
+  ]);
   const { cells, handleUnitMouseDown, handleUnitMouseEnter } = useTimeSlotDrag(init, 'straight');
   const navigate = useNavigate();
   const { context } = useLoading([fetchingAlbum, fetchingBusiness, fetchingStadium, fetchingVenue]);

@@ -66,9 +66,9 @@ export default function StadiumTable({
               <RoundTag
                 style={{
                   backgroundColor: 'white',
-                  color: '#cbc09f',
+                  color: theme.dirt,
                   borderStyle: 'solid',
-                  borderColor: '#cbc09f',
+                  borderColor: theme.dirt,
                 }}
               >
                 已下架

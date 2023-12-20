@@ -1,6 +1,5 @@
 import { format, getHours, parseISO } from 'date-fns';
 import { isNumber, range } from 'lodash';
-import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -26,7 +25,7 @@ interface TimeSlotProps extends Type<typeof Container> {
   handleUnitMouseEnter: (x: number, y: number) => void;
 }
 
-type UnitStatus = 'normal' | 'selected' | 'disabled' | number;
+type UnitStatus = 'normal' | 'selected' | 'disabled' | 'unreservable' | number;
 
 const unitBackground = (unitStatus: UnitStatus) => {
   if (isNumber(unitStatus)) {
@@ -35,6 +34,8 @@ const unitBackground = (unitStatus: UnitStatus) => {
     ];
   } else
     switch (unitStatus) {
+      case 'unreservable':
+        return theme.dirt;
       case 'disabled':
         return theme.gray[100];
       case 'selected':
@@ -137,11 +138,10 @@ export default function TimeSlot({
   handleUnitMouseEnter,
   ...rest
 }: TimeSlotProps) {
-  const element = useRef<HTMLDivElement>(null);
   const reservationsTimeMap = reservationToTimeMap(reservationInfos);
   const navigate = useNavigate();
   return (
-    <Container ref={element} {...rest}>
+    <Container {...rest}>
       {date.length === cells.length &&
         cells.map((dateCells, cIndex) => (
           <Column key={cIndex}>
@@ -156,25 +156,29 @@ export default function TimeSlot({
                   reservationsTimeMap[
                     `${format(date[cIndex], 'yyyy/MM/dd')} ${timeRange?.[uIndex]}`
                   ];
-                return info?.vacancy > 0 ? (
+                return (
                   <PopOver
                     content={
                       <div style={{ width: '220px' }}>
-                        該時段已被預約，成員 {info?.member_count} 人，目前正在徵求球友。
+                        {info?.vacancy > 0
+                          ? `該時段已被預約，成員 ${info?.member_count} 人，目前正在徵求球友。`
+                          : `該時段已被預約，成員 ${info?.member_count} 人，目前不開放報名加入。`}
                       </div>
                     }
                     key={uIndex}
                     style={{ padding: `${percentageOfFigma(9).max}` }}
                     {...(!info ? { open: false } : {})}
                     footer={
-                      <RippleButton
-                        category="solid"
-                        palette="sub"
-                        icon={<SeekForPlayerIcon />}
-                        onClick={() => navigate(`/reservation/info/${info.id}`)}
-                      >
-                        報名加入
-                      </RippleButton>
+                      info?.vacancy > 0 && (
+                        <RippleButton
+                          category="solid"
+                          palette="sub"
+                          icon={<SeekForPlayerIcon fontSize="1.2em" />}
+                          onClick={() => navigate(`/reservation/info/${info.id}`)}
+                        >
+                          報名加入
+                        </RippleButton>
+                      )
                     }
                   >
                     <Unit
@@ -182,29 +186,10 @@ export default function TimeSlot({
                       onMouseEnter={() => handleUnitMouseEnter(cIndex, uIndex)}
                       time={cIndex === 0 ? timeRange?.[uIndex + 1] : ''}
                       unitStatus={
-                        info?.member_count ??
-                        (selected === null ? 'disabled' : selected ? 'selected' : 'normal')
-                      }
-                    />
-                  </PopOver>
-                ) : (
-                  <PopOver
-                    content={
-                      <div style={{ width: '200px' }}>
-                        該時段已被預約，成員 {info?.member_count} 人，目前不開放報名加入。
-                      </div>
-                    }
-                    key={uIndex}
-                    style={{ padding: `${percentageOfFigma(9).max}` }}
-                    {...(!info ? { open: false } : {})}
-                  >
-                    <Unit
-                      onMouseDown={() => handleUnitMouseDown(cIndex, uIndex)}
-                      onMouseEnter={() => handleUnitMouseEnter(cIndex, uIndex)}
-                      time={cIndex === 0 ? timeRange?.[uIndex + 1] : ''}
-                      unitStatus={
-                        info?.member_count ??
-                        (selected === null ? 'disabled' : selected ? 'selected' : 'normal')
+                        info?.vacancy < 0
+                          ? 'unreservable'
+                          : info?.member_count ??
+                            (selected === null ? 'disabled' : selected ? 'selected' : 'normal')
                       }
                     />
                   </PopOver>

@@ -1,4 +1,5 @@
 import { Input } from 'antd';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 import styled from 'styled-components';
 
@@ -43,6 +44,7 @@ const ToolBar = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  overflow: hidden;
 `;
 
 const FilterWrapper = styled.div.withConfig({
@@ -58,6 +60,9 @@ const FilterWrapper = styled.div.withConfig({
   & > * {
     flex-shrink: 0;
   }
+  opacity: ${({ visible }) => (visible ? 1 : 0)};
+  transform: translateY(${({ visible }) => (visible ? 0 : '100%')});
+  transition: all 0.1s linear;
 `;
 
 const IconWrapper = styled.div`
@@ -74,6 +79,7 @@ const IconWrapper = styled.div`
 const SearchWrapper = styled.div`
   align-items: center;
   display: flex;
+  overflow: hidden;
 `;
 
 export default function Filter({
@@ -123,19 +129,30 @@ export default function Filter({
                   >
                     <SearchIcon fontSize="1.5em" />
                   </RippleButton>
-                  {word !== undefined && (
-                    <Input
-                      value={word ?? undefined}
-                      onChange={(e) => setWord?.(e.target.value)}
-                      placeholder="搜尋"
-                      bordered={false}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.nativeEvent.isComposing && word) {
-                          onSearch?.(word);
-                        }
-                      }}
-                    />
-                  )}
+                  <AnimatePresence>
+                    {word !== undefined && (
+                      <motion.div
+                        initial={{ opacity: 1, x: '100%' }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{
+                          duration: 0.2,
+                        }}
+                        style={{ borderBottom: '1px solid black' }}
+                      >
+                        <Input
+                          value={word ?? undefined}
+                          onChange={(e) => setWord?.(e.target.value)}
+                          placeholder="搜尋"
+                          bordered={false}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.nativeEvent.isComposing && word) {
+                              onSearch?.(word);
+                            }
+                          }}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </SearchWrapper>
               )}
             </>

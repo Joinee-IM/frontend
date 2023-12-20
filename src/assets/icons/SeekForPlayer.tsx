@@ -3,8 +3,8 @@ import type { Type } from '@/utils/type';
 export default function SeekForPlayerIcon({ style, ...rest }: Type<'svg'>) {
   return (
     <svg
-      width="1.5em"
-      height="1.5em"
+      width="1em"
+      height="1em"
       viewBox="0 0 177 96"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

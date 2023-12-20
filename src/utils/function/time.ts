@@ -1,4 +1,4 @@
-import { format, getHours, parse, setDay, startOfToday } from 'date-fns';
+import { eachHourOfInterval, format, getHours, parse, setDay, startOfToday } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 import { isEqual, range } from 'lodash';
 
@@ -21,12 +21,12 @@ export const getWeekday = (number: number, replacement = '週') =>
   format(setDay(new Date(), number), 'EEEE', { locale: zhTW }).replace('星期', replacement);
 
 const SEPARATOR = '-';
-// const hourIn = (interval: string, target: number) => {
-//   const timeRange = interval.split(SEPARATOR);
-//   const start = parse(timeRange[0], 'HH:mm', new Date());
-//   const end = parse(timeRange[1], 'HH:mm', new Date());
-//   return eachHourOfInterval({ start, end }).map(getHours).includes(target);
-// };
+export const hourIn = (interval: string, target: number) => {
+  const timeRange = interval.split(SEPARATOR);
+  const start = parse(timeRange[0], 'HH:mm', new Date());
+  const end = parse(timeRange[1], 'HH:mm', new Date());
+  return eachHourOfInterval({ start, end }).map(getHours).includes(target);
+};
 
 function processBusinessHourStartEnd(time: Time) {
   const start = format(parse(time.start_time, 'HH:mm:ss', new Date()), 'HH:mm');

@@ -29,6 +29,7 @@ const theme = {
     '700': '#C83434' as HEX,
   },
   blue: '#BCE8F0',
+  dirt: '#CBC09F',
   white: '#FFFFFF',
   black: '#000000',
 } satisfies ThemeType;
