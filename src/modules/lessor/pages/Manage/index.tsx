@@ -95,9 +95,17 @@ export default function Manage() {
               placement="topRight"
               icon={<InfoIcon fontSize="1.3em" color={theme.red[700]} />}
               content={
-                <div style={{ width: '300px' }}>
-                  下架此場館後，其包含之所有場地將一併下架，您確定要下架此場館嗎？
-                </div>
+                unitType === '場館' ? (
+                  <div style={{ width: '300px' }}>
+                    下架此場館後，其包含之所有場地將一併下架，您確定要下架此場館嗎？
+                  </div>
+                ) : unitType === '場地' ? (
+                  <div style={{ width: '300px' }}>
+                    下架此場地後，其包含之所有小單位將一併下架，您確定要下架此場地嗎？
+                  </div>
+                ) : (
+                  <div style={{ width: '300px' }}>您確定要下架此小單位嗎？</div>
+                )
               }
               footer={
                 <RippleButton
