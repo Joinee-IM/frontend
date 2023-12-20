@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import BallIcon from '@/assets/icons/Ball';
 import ReserveIcon from '@/assets/icons/Reserve';
 import SortIcon from '@/assets/icons/Sort';
+import { useLoading } from '@/components/Loading/PageLoading';
 import Select from '@/components/Select';
 import useFilter from '@/hooks/useFilter';
 import useSorter, { options } from '@/hooks/useSorter';
@@ -31,7 +32,8 @@ export default function VenueList() {
   const { sort, setSort, order, setOrder, splitSorter } = useSorter();
   const { sport, setSport, isReservable, setIsReservable, name, setName } = useFilter();
 
-  const { data: info } = useStadiumInfo(Number(stadium_id));
+  const { data: info, isLoading } = useStadiumInfo(Number(stadium_id));
+  const { context } = useLoading([isLoading]);
   const { venues, count } = useBrowseVenue({
     limit,
     offset,
@@ -45,74 +47,77 @@ export default function VenueList() {
   const { data: sports } = useSports();
 
   return (
-    <Container style={{ height: 'auto' }}>
-      <PageTitle>{info?.data?.name} / 尋找場地</PageTitle>
-      <Filter
-        searchable={true}
-        word={word}
-        setWord={setWord}
-        onSearch={(name) => setName(name)}
-        filters={
-          <>
-            <Select
-              title="排序"
-              selectedKeys={sort && order ? [`${sort}+${order}`] : []}
-              items={options}
-              icon={<SortIcon />}
-              onSelect={({ key }) => {
-                const [s, o] = splitSorter(key);
-                console.log(key, s, 0);
-                setSort(s);
-                setOrder(o);
-              }}
-            />
-            {' · '}
-            <Select
-              title="運動項目"
-              selectedKeys={sport ? [String(sport)] : []}
-              icon={<BallIcon />}
-              items={sports?.data?.map((sport) => ({
-                label: sport.name,
-                key: String(sport.id),
-              }))}
-              onSelect={({ key }) => setSport(Number(key))}
-            />
-            <Select
-              title="開放預約"
-              selectedKeys={isReservable !== undefined ? [isReservable ? '1' : '2'] : []}
-              items={[
-                { label: '需預約', key: '1' },
-                { label: '不需預約', key: '2' },
-              ]}
-              onSelect={({ key }) => setIsReservable(!(Number(key) - 1))}
-              icon={<ReserveIcon />}
-            />
-          </>
-        }
-      >
-        <GalleryContent>
-          {venues?.map((venue, index) => (
-            <Fragment key={index}>
-              <GalleryItem
-                venue_id={venue.id}
-                is_reservable={venue.is_reservable}
-                name={venue.name}
-                floor={venue.floor}
-                capacity={venue.capacity}
-                current_user_count={venue.current_user_count}
+    <>
+      {context}
+      <Container style={{ height: 'auto' }}>
+        <PageTitle>{info?.data?.name} / 尋找場地</PageTitle>
+        <Filter
+          searchable={true}
+          word={word}
+          setWord={setWord}
+          onSearch={(name) => setName(name)}
+          filters={
+            <>
+              <Select
+                title="排序"
+                selectedKeys={sort && order ? [`${sort}+${order}`] : []}
+                items={options}
+                icon={<SortIcon />}
+                onSelect={({ key }) => {
+                  const [s, o] = splitSorter(key);
+                  console.log(key, s, 0);
+                  setSort(s);
+                  setOrder(o);
+                }}
               />
-            </Fragment>
-          ))}
-        </GalleryContent>
-        <Pagination
-          style={{ alignSelf: 'flex-end' }}
-          total={Math.ceil((count ?? 0) / limit)}
-          pageSize={1}
-          showSizeChanger={false}
-          current={Math.floor(offset / limit) + 1}
-          onChange={(number) => setOffset((number - 1) * limit)}
-        />
-      </Filter>
-    </Container>
+              {' · '}
+              <Select
+                title="運動項目"
+                selectedKeys={sport ? [String(sport)] : []}
+                icon={<BallIcon />}
+                items={sports?.data?.map((sport) => ({
+                  label: sport.name,
+                  key: String(sport.id),
+                }))}
+                onSelect={({ key }) => setSport(Number(key))}
+              />
+              <Select
+                title="開放預約"
+                selectedKeys={isReservable !== undefined ? [isReservable ? '1' : '2'] : []}
+                items={[
+                  { label: '需預約', key: '1' },
+                  { label: '不需預約', key: '2' },
+                ]}
+                onSelect={({ key }) => setIsReservable(!(Number(key) - 1))}
+                icon={<ReserveIcon />}
+              />
+            </>
+          }
+        >
+          <GalleryContent>
+            {venues?.map((venue, index) => (
+              <Fragment key={index}>
+                <GalleryItem
+                  venue_id={venue.id}
+                  is_reservable={venue.is_reservable}
+                  name={venue.name}
+                  floor={venue.floor}
+                  capacity={venue.capacity}
+                  current_user_count={venue.current_user_count}
+                />
+              </Fragment>
+            ))}
+          </GalleryContent>
+          <Pagination
+            style={{ alignSelf: 'flex-end' }}
+            total={Math.ceil((count ?? 0) / limit)}
+            pageSize={1}
+            showSizeChanger={false}
+            current={Math.floor(offset / limit) + 1}
+            onChange={(number) => setOffset((number - 1) * limit)}
+          />
+        </Filter>
+      </Container>
+    </>
   );
 }
