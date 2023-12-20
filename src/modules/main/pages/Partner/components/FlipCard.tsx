@@ -21,6 +21,7 @@ const FlipCard = styled(FlipCardComponent)`
   border-radius: 10px;
   background-color: #fdf9f6;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  cursor: grab;
 `;
 
 export default function FlipCardInPartner({
