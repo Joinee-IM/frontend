@@ -32,7 +32,7 @@ import { BusinessHours, type TimeOmit } from '@/utils/function/time';
 
 const TimeGrid = styled.div`
   display: grid;
-  grid-template-columns: 0.6fr 1fr;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
   row-gap: 10px;
 `;

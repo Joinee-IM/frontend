@@ -206,7 +206,7 @@ export default function TimeSlot({
                       onMouseEnter={() => handleUnitMouseEnter(cIndex, uIndex)}
                       time={cIndex === 0 ? timeRange?.[uIndex + 1] : ''}
                       unitStatus={
-                        cookies['user-role'] === 'PROVIDER'
+                        weekOnly
                           ? selected
                             ? 'provider-selected'
                             : 'provider-normal'
