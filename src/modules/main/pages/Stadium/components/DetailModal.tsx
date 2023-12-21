@@ -1,5 +1,6 @@
 import { Image, Modal } from 'antd';
 import { Fragment, useMemo } from 'react';
+import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -65,22 +66,27 @@ export default function DetailModal({ open, onCancel, stadiumId }: DetailModalPr
   const { data: info, isFetching } = useStadiumInfo(stadiumId);
   const { data: album } = useAlbum(stadiumId, 'STADIUM');
   const navigate = useNavigate();
+  const [cookies] = useCookies(['id', 'user-role']);
+
   const Footer = useMemo(
-    () => (
-      <ButtonWrapper>
-        <RippleButton category="outlined" palette="gray" onClick={onCancel}>
-          關閉
-        </RippleButton>
-        <RippleButton
-          category="solid"
-          palette="main"
-          onClick={() => navigate(`/stadium/${stadiumId}/venue`)}
-        >
-          前往選擇場地
-        </RippleButton>
-      </ButtonWrapper>
-    ),
-    [navigate, stadiumId],
+    () =>
+      cookies['user-role'] === 'PROVIDER' ? (
+        <></>
+      ) : (
+        <ButtonWrapper>
+          <RippleButton category="outlined" palette="gray" onClick={onCancel}>
+            關閉
+          </RippleButton>
+          <RippleButton
+            category="solid"
+            palette="main"
+            onClick={() => navigate(`/stadium/${stadiumId}/venue`)}
+          >
+            前往選擇場地
+          </RippleButton>
+        </ButtonWrapper>
+      ),
+    [cookies, navigate, onCancel, stadiumId],
   );
 
   if (isFetching) return <></>;

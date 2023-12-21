@@ -181,13 +181,6 @@ export default function Action({ mode, form, reservation_id }: ActionProps) {
             >
               取消預約
             </RippleButton>
-            <RippleButton
-              category="solid"
-              palette="main"
-              onClick={() => navigate(`/reservation/edit/${reservation_id}`)}
-            >
-              編輯預約
-            </RippleButton>
           </>
         ) : (
           <>

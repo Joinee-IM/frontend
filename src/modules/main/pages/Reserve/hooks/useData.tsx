@@ -1,13 +1,16 @@
-import { Card as CardAntd, Form, InputNumber, Select, Switch } from 'antd';
+import { Card as CardAntd, Form, InputNumber, Select, Switch, Tooltip } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { differenceInHours, format, setHours } from 'date-fns';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useSearchParams } from 'react-router-dom';
 
 import type { schemas } from '@/services/type';
 import type { TechnicalLevelType } from '@/utils/function/map';
 import type { z } from 'zod';
 
+import CopyIcon from '@/assets/icons/Copy';
+import { RippleButton } from '@/components';
 import { GeneralGrid } from '@/components/Grid';
 import { SearchSelect } from '@/components/Select';
 import { RoundTag, RoundTagWrapper } from '@/components/Tag';
@@ -56,6 +59,19 @@ export default function useReservationForm({ mode, reservation }: FormDataProps)
   useEffect(() => {
     getCourts({});
   }, [getCourts, venue_id]);
+
+  const [copy, setCopy] = useState(false);
+
+  useEffect(() => {
+    if (copy) {
+      const timer = setTimeout(() => {
+        setCopy(false);
+      }, 1000);
+      return () => {
+        clearInterval(timer);
+      };
+    }
+  }, [copy]);
 
   return {
     data: {
@@ -150,7 +166,15 @@ export default function useReservationForm({ mode, reservation }: FormDataProps)
             ))}
           </RoundTagWrapper>
         ) : (
-          <Form.Item name="member_ids" initialValue={[]}>
+          <Form.Item
+            name="member_ids"
+            initialValue={
+              members?.data?.map((account) => ({
+                label: account.nickname,
+                value: account.id,
+              })) ?? []
+            }
+          >
             <SearchSelect
               style={{ width: '100%' }}
               fetcher={async (query) => {
@@ -165,7 +189,26 @@ export default function useReservationForm({ mode, reservation }: FormDataProps)
           </Form.Item>
         ),
       ...(mode === 'info' && {
-        邀請連結: `${ENV.domain}/reservation/${reservation?.invitation_code}`,
+        邀請連結: (
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            {`${ENV.domain}/reservation/code/${reservation?.invitation_code}`}
+            <CopyToClipboard
+              text={`${ENV.domain}/reservation/code/${reservation?.invitation_code}`}
+            >
+              <Tooltip title="copy to clipboard" open={copy}>
+                <RippleButton
+                  category="icon"
+                  palette="gray"
+                  onClick={() => {
+                    setCopy(true);
+                  }}
+                >
+                  <CopyIcon />
+                </RippleButton>
+              </Tooltip>
+            </CopyToClipboard>
+          </div>
+        ),
       }),
       尋找球友:
         mode === 'info' ? (

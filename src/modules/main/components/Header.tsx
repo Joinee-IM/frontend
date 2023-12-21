@@ -1,4 +1,4 @@
-import { BellOutlined, UserOutlined } from '@ant-design/icons';
+import { UserOutlined } from '@ant-design/icons';
 import { useCallback, useMemo } from 'react';
 import { useCookies } from 'react-cookie';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -185,9 +185,6 @@ export default function Header() {
                 尋找球友
               </MenuItem>
             </MenuItemWrapper>
-            <MenuItem type="link" category="link" palette="main">
-              <BellOutlined />
-            </MenuItem>
           </>
         )}
         <Select
