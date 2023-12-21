@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import BuildingIcon from '@/assets/icons/Building';
 import { DirectionLeftIcon, DirectionRightIcon } from '@/assets/icons/Direction';
 import PositionIcon from '@/assets/icons/Position';
-import SortIcon from '@/assets/icons/Sort';
 import AllSportIcon from '@/assets/icons/sport';
 import { RippleButton } from '@/components/Button';
 import Select from '@/components/Select';
@@ -67,9 +66,11 @@ export default function Partner() {
     order: 'ASC',
   });
 
-  const { stadiums } = useBrowseStadium({
+  const { stadiums, isFetching } = useBrowseStadium({
     limit: 30,
     offset: 0,
+    city_id: city,
+    district_id: district,
   });
 
   return (
@@ -135,23 +136,16 @@ export default function Partner() {
           filters={
             <>
               <Select
-                title="排序"
-                items={[
-                  '價格由高至低排序',
-                  '價格由低至高排序',
-                  '使用人數由高至低排序',
-                  '使用人數由低至高排序',
-                ].map((label, index) => ({ label, key: String(index + 1) }))}
-                icon={<SortIcon />}
-              />
-              {' · '}
-              <Select
                 loading={loadingCity}
                 title="縣市"
                 selectedKeys={city ? [String(city)] : []}
                 icon={<PositionIcon />}
                 items={cities?.data?.map((city) => ({ label: city.name, key: String(city.id) }))}
-                onSelect={({ key }) => setCity(Number(key))}
+                onSelect={({ key }) => {
+                  setCity(Number(key));
+                  setDistrict(undefined);
+                  setStadiumId(undefined);
+                }}
               />
               <Select
                 title="行政區"
@@ -162,7 +156,10 @@ export default function Partner() {
                   label: district.name,
                   key: String(district.id),
                 }))}
-                onSelect={({ key }) => setDistrict(Number(key))}
+                onSelect={({ key }) => {
+                  setDistrict(Number(key));
+                  setStadiumId(undefined);
+                }}
               />
               <Select
                 title="場館"
@@ -173,6 +170,7 @@ export default function Partner() {
                   key: String(stadium.id),
                 }))}
                 onSelect={({ key }) => setStadiumId(Number(key))}
+                loading={isFetching}
               />
             </>
           }
