@@ -97,7 +97,7 @@ export default function Stadium() {
     googleMapsApiKey: String(import.meta.env.VITE_APP_GOOGLE_MAP_KEY),
   });
   const { stadiums, fetchNextPage, hasNextPage, isFetching, isFetched } = useBrowseStadium({
-    limit: 5,
+    limit: 10,
     offset: 0,
     city_id: city,
     district_id: district,
