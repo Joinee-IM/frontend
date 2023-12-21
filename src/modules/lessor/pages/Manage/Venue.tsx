@@ -13,7 +13,7 @@ import { DirectionRightIcon } from '@/assets/icons/Direction';
 import { RippleButton } from '@/components';
 import { RoundTag, RoundTagWrapper } from '@/components/Tag';
 import { pagination } from '@/modules/lessor/pages/Manage';
-import { useLessorBrowseVenue } from '@/modules/lessor/services';
+import { useLessorBrowseStadium, useLessorBrowseVenue } from '@/modules/lessor/services';
 import theme from '@/provider/theme/theme';
 
 export default function VenueTable({
@@ -26,12 +26,18 @@ export default function VenueTable({
   const [offset, setOffset] = useState(0);
   const [cookies] = useCookies(['id', 'user-role']);
 
+  const { stadiums } = useLessorBrowseStadium({ limit, offset });
   const { venues, count } = useLessorBrowseVenue({ limit, offset });
   const columns: ColumnsType<VenueTableItem> = [
     {
       title: '場館名稱',
       dataIndex: 'stadium_name',
       sorter: (a, b) => a.stadium_name.localeCompare(b.stadium_name),
+      filters: stadiums?.map((stadium) => ({
+        text: stadium.stadium_name,
+        value: stadium.stadium_name,
+      })),
+      onFilter: (value, record) => record.stadium_name === value,
     },
     {
       title: '場地名稱',

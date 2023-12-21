@@ -65,7 +65,7 @@ export default function VenueList() {
                 icon={<SortIcon />}
                 onSelect={({ key }) => {
                   const [s, o] = splitSorter(key);
-                  setSort(s);
+                  setSort(s as 'CURRENT_USER_COUNT' | undefined);
                   setOrder(o);
                 }}
               />

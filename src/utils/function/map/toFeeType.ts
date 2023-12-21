@@ -11,6 +11,7 @@ export default function toFeeType(feeType?: FeeType) {
       return '/人';
     case 'PER_PERSON_PER_HOUR':
       return '/小時每人';
+    case 'PER_RESERVATION':
     case undefined:
     case null:
       return '';
