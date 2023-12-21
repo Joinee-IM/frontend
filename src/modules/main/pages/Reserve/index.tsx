@@ -107,7 +107,12 @@ export default function Reserve() {
         <Card>
           <Title>{mode === 'create' ? '預約場地' : '詳細資料'}</Title>
           <GridForm
-            style={{ padding: `0 ${percentageOfFigma(80).max}`, rowGap: percentageOfFigma(20).max }}
+            style={{
+              padding: `0 ${percentageOfFigma(80).max}`,
+              rowGap: percentageOfFigma(20).max,
+              gridTemplateColumns: '0.7fr 1fr',
+              paddingRight: percentageOfFigma(30).max,
+            }}
             form={form}
             data={data}
             labelStyles={{ ...(mode === 'info' && { 尋找球友: { alignSelf: 'flex-start' } }) }}

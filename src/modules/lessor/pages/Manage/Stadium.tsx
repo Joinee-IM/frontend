@@ -7,9 +7,12 @@ import type { ColumnsType } from 'antd/es/table';
 import type { TableRowSelection } from 'antd/es/table/interface';
 import type { Key } from 'react';
 
+import { DirectionRightIcon } from '@/assets/icons/Direction';
+import { RippleButton } from '@/components/Button';
 import { RoundTag, RoundTagWrapper } from '@/components/Tag';
 import { pagination } from '@/modules/lessor/pages/Manage';
 import { useLessorBrowseStadium } from '@/modules/lessor/services';
+import DetailModal from '@/modules/main/pages/Stadium/components/DetailModal';
 import theme from '@/provider/theme/theme';
 
 export default function StadiumTable({
@@ -17,9 +20,10 @@ export default function StadiumTable({
   selectedRowKeys,
   setSelectedRowKeys,
 }: TableBaseProps) {
-  // const navigate = useNavigate();
   const limit = useMemo(() => 10, []);
   const [offset, setOffset] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [stadiumId, setStadiumId] = useState(0);
 
   const { stadiums, count } = useLessorBrowseStadium({ limit, offset });
   const columns: ColumnsType<StadiumTableItem> = [
@@ -87,6 +91,22 @@ export default function StadiumTable({
       ],
       onFilter: (value, record) => record.is_published === value,
     },
+    {
+      dataIndex: '',
+      key: 'x',
+      render: (_, record) => (
+        <RippleButton
+          category="icon"
+          palette="gray"
+          onClick={() => {
+            setStadiumId(record.stadium_id);
+            setModalOpen(true);
+          }}
+        >
+          <DirectionRightIcon />
+        </RippleButton>
+      ),
+    },
   ];
 
   const dataSource = useMemo(
@@ -109,9 +129,12 @@ export default function StadiumTable({
   }, [dataSource, setData]);
 
   return (
-    <Table
-      pagination={pagination(count ?? 0, limit, offset, setOffset)}
-      {...{ columns, dataSource, rowSelection }}
-    />
+    <>
+      <Table
+        pagination={pagination(count ?? 0, limit, offset, setOffset)}
+        {...{ columns, dataSource, rowSelection }}
+      />
+      <DetailModal stadiumId={stadiumId} open={modalOpen} onCancel={() => setModalOpen(false)} />
+    </>
   );
 }
