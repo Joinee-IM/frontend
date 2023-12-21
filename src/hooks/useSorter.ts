@@ -13,7 +13,7 @@ export const options: { label: string; key: Sorter }[] = [
 ];
 
 export default function useSorter() {
-  const [sort, setSort] = useState<string | undefined>(undefined);
+  const [sort, setSort] = useState<'CURRENT_USER_COUNT' | undefined>(undefined);
   const [order, setOrder] = useState<z.infer<(typeof schemas)['Sorter']> | undefined>(undefined);
 
   function splitSorter(
