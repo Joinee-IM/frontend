@@ -5,14 +5,10 @@ import type { DataType } from '@/modules/lessor/pages/Manage/types';
 import type { TablePaginationConfig } from 'antd';
 import type { Dispatch, Key, SetStateAction } from 'react';
 
-import BuildingIcon from '@/assets/icons/Building';
 import InfoIcon from '@/assets/icons/Info';
-import PositionIcon from '@/assets/icons/Position';
 import { RippleButton } from '@/components';
 import { useLoading } from '@/components/Loading/PageLoading';
 import PopOver from '@/components/Popover';
-import Select from '@/components/Select';
-import useFilter from '@/hooks/useFilter';
 import CourtTable from '@/modules/lessor/pages/Manage/Court';
 import StadiumTable from '@/modules/lessor/pages/Manage/Stadium';
 import VenueTable from '@/modules/lessor/pages/Manage/Venue';
@@ -27,13 +23,10 @@ import {
 import { Container, PageTitle } from '@/modules/main/components';
 import Filter from '@/modules/main/components/Filter';
 import theme from '@/provider/theme/theme';
-import { useCity, useDistrict } from '@/services/useFilters';
 
 type UnitType = '場館' | '場地' | '小單位';
 
 export default function Manage() {
-  const { city, setCity, district, setDistrict, setName } = useFilter();
-  const [word, setWord] = useState<string | undefined>(undefined);
   const [data, setData] = useState<DataType[]>([]);
 
   const { refetch: refetchVenues, isLoading: venuesLoading } = useLessorBrowseVenue({
@@ -48,8 +41,6 @@ export default function Manage() {
     limit: 10,
     offset: 0,
   });
-  const { data: cities, isLoading: loadingCity } = useCity();
-  const { data: districts, isLoading: loadingDistrict } = useDistrict(city);
   const [unitType, setUnitType] = useState<UnitType>('場館');
 
   const units: UnitType[] = ['場館', '場地', '小單位'];
@@ -182,55 +173,30 @@ export default function Manage() {
       <Container>
         <PageTitle>管理現有設施 / {unitType}</PageTitle>
         <Filter
-          searchable={true}
-          word={word}
-          setWord={setWord}
+          searchable={false}
           twoStepsFilter={false}
           customControl={control}
           filters={
-            <>
-              <Radio.Group
-                defaultValue={'場館'}
-                buttonStyle="solid"
-                value={unitType}
-                onChange={({ target }) => {
-                  setUnitType(target.value as UnitType);
-                  setSelectedRowKeys([]);
-                }}
-              >
-                {units.map((unit, index) => (
-                  <Radio.Button
-                    value={unit}
-                    key={index}
-                    style={{ borderColor: theme.sub[500], fontSize: '13px' }}
-                  >
-                    {unit}
-                  </Radio.Button>
-                ))}
-              </Radio.Group>
-              {'  ・  '}
-              <Select
-                loading={loadingCity}
-                title="縣市"
-                selectedKeys={city ? [String(city)] : []}
-                icon={<PositionIcon />}
-                items={cities?.data?.map((city) => ({ label: city.name, key: String(city.id) }))}
-                onSelect={({ key }) => setCity(Number(key))}
-              />
-              <Select
-                title="行政區"
-                selectedKeys={district ? [String(district)] : []}
-                icon={<BuildingIcon />}
-                loading={loadingDistrict && city !== undefined}
-                items={districts?.data?.map((district) => ({
-                  label: district.name,
-                  key: String(district.id),
-                }))}
-                onSelect={({ key }) => setDistrict(Number(key))}
-              />
-            </>
+            <Radio.Group
+              defaultValue={'場館'}
+              buttonStyle="solid"
+              value={unitType}
+              onChange={({ target }) => {
+                setUnitType(target.value as UnitType);
+                setSelectedRowKeys([]);
+              }}
+            >
+              {units.map((unit, index) => (
+                <Radio.Button
+                  value={unit}
+                  key={index}
+                  style={{ borderColor: theme.sub[500], fontSize: '13px' }}
+                >
+                  {unit}
+                </Radio.Button>
+              ))}
+            </Radio.Group>
           }
-          onSearch={(name) => setName(name)}
         >
           {table(unitType)}
         </Filter>
