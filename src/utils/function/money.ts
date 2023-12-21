@@ -10,6 +10,7 @@ export default function calculateTotalCost(feeType?: FeeType) {
       case 'PER_PERSON_PER_HOUR':
         return rate * toll * hour;
       case undefined:
+      case 'PER_RESERVATION':
       case null:
         return '';
       default:
