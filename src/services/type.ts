@@ -442,6 +442,7 @@ const app__processor__http__reservation__BrowseReservationParameters = z
     has_vacancy: z.union([z.boolean(), z.null()]),
     time_ranges: z.union([z.array(DateTimeRange), z.null()]),
     technical_level: z.union([TechnicalType, z.null()]),
+    is_cancelled: z.union([z.boolean(), z.null()]),
     limit: z.union([z.number(), z.null()]),
     offset: z.union([z.number(), z.null()]),
     sort_by: BrowseReservationSortBy.default('time'),
@@ -1542,6 +1543,32 @@ const endpoints = makeApi([
         type: 'Body',
         schema: EditReservationInput,
       },
+      {
+        name: 'reservation_id',
+        type: 'Path',
+        schema: z.number().int(),
+      },
+      {
+        name: 'auth-token',
+        type: 'Header',
+        schema: auth_token,
+      },
+    ],
+    response: Response,
+    errors: [
+      {
+        status: 422,
+        description: `Validation Error`,
+        schema: HTTPValidationError,
+      },
+    ],
+  },
+  {
+    method: 'delete',
+    path: '/api/reservation/:reservation_id/cancel',
+    alias: 'cancel_reservation_api_reservation__reservation_id__cancel_delete',
+    requestFormat: 'json',
+    parameters: [
       {
         name: 'reservation_id',
         type: 'Path',

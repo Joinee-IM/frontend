@@ -62,6 +62,7 @@ export default function Partner() {
     city_id: city,
     district_id: district,
     has_vacancy: true,
+    is_cancelled: false,
     sort_by: 'time',
     order: 'ASC',
   });

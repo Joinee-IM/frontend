@@ -9,6 +9,7 @@ import type { FormInstance } from 'antd';
 import { RippleButton } from '@/components/Button';
 import {
   useBrowseReservationMembers,
+  useCancelReservation,
   useCreateReservation,
   useJoinReservation,
   useLeaveReservation,
@@ -31,21 +32,42 @@ export default function Action({ mode, form, reservation_id }: ActionProps) {
   const [cookie] = useCookies(['id', 'user-role']);
 
   const { data: reservation, refetch } = useReservationInfo(reservation_id);
+  const {
+    data: members,
+    refetch: refetchReservationMembers,
+    isFetched,
+  } = useBrowseReservationMembers(reservation?.data?.id);
+
+  const isMember = useMemo(
+    () => members?.data?.find((member) => member.account_id === cookie.id),
+    [cookie.id, members?.data],
+  );
+
+  const isManager = useMemo(
+    () => members?.data?.find((member) => member.account_id === cookie.id && member.is_manager),
+    [cookie.id, members?.data],
+  );
 
   useEffect(() => {
-    if (reservation?.data?.vacancy && reservation?.data?.vacancy <= 0 && !code)
-      throw new Response('Not Permission', {
-        status: 403,
-      });
-  }, [code, reservation?.data?.vacancy]);
+    if (isFetched) {
+      if (
+        reservation?.data?.vacancy &&
+        reservation?.data?.vacancy <= 0 &&
+        !code &&
+        !isMember &&
+        reservation?.data?.is_cancelled
+      )
+        throw new Response('No Permission', {
+          status: 403,
+        });
+    }
+  }, [code, isFetched, isMember, reservation?.data?.is_cancelled, reservation?.data?.vacancy]);
 
   const court_id = reservation?.data?.court_id ?? searchParams.get('court_id');
 
   const { mutateAsync: createReservation, isLoading: createReservationLoading } =
     useCreateReservation(Number(court_id));
-  const { data: members, refetch: refetchReservationMembers } = useBrowseReservationMembers(
-    reservation?.data?.id,
-  );
+
   const { mutateAsync: joinReservation, isLoading: loadingJoinReservation } = useJoinReservation(
     reservation?.data?.invitation_code ?? '',
   );
@@ -53,10 +75,8 @@ export default function Action({ mode, form, reservation_id }: ActionProps) {
     Number(reservation?.data?.id),
   );
 
-  const isMember = useMemo(
-    () => members?.data?.find((member) => member.account_id === cookie.id),
-    [cookie.id, members?.data],
-  );
+  const { mutateAsync: cancelReservation, isLoading: loadingCancelReservation } =
+    useCancelReservation(Number(reservation?.data?.id));
 
   const handleReserve = async () => {
     try {
@@ -106,6 +126,15 @@ export default function Action({ mode, form, reservation_id }: ActionProps) {
     }
   };
 
+  const handleCancelReserve = async () => {
+    try {
+      await cancelReservation(null as never);
+      navigate(`/history/${cookie.id}`);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   switch (mode) {
     case 'create':
       return (
@@ -139,24 +168,39 @@ export default function Action({ mode, form, reservation_id }: ActionProps) {
         </>
       );
     case 'info':
-      return isMember ? (
-        <>
-          <RippleButton
-            category="outlined"
-            palette="red"
-            onClick={handleLeaveReserve}
-            loading={loadingLeaveReservation}
-          >
-            退出
-          </RippleButton>
-          <RippleButton
-            category="solid"
-            palette="main"
-            onClick={() => navigate(`/reservation/edit/${reservation_id}`)}
-          >
-            編輯預約
-          </RippleButton>
-        </>
+      return reservation?.data?.is_cancelled ? (
+        <></>
+      ) : isMember ? (
+        isManager ? (
+          <>
+            <RippleButton
+              category="outlined"
+              palette="red"
+              onClick={handleCancelReserve}
+              loading={loadingCancelReservation}
+            >
+              取消預約
+            </RippleButton>
+            <RippleButton
+              category="solid"
+              palette="main"
+              onClick={() => navigate(`/reservation/edit/${reservation_id}`)}
+            >
+              編輯預約
+            </RippleButton>
+          </>
+        ) : (
+          <>
+            <RippleButton
+              category="outlined"
+              palette="red"
+              onClick={handleLeaveReserve}
+              loading={loadingLeaveReservation}
+            >
+              退出
+            </RippleButton>
+          </>
+        )
       ) : (
         <RippleButton
           category="solid"

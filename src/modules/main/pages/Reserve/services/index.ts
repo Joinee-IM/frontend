@@ -18,6 +18,9 @@ export const useJoinReservation = (invitation_code: string) =>
 export const useLeaveReservation = (reservation_id: number) =>
   api.useDelete('/api/reservation/:reservation_id/leave', { params: { reservation_id } });
 
+export const useCancelReservation = (reservation_id: number) =>
+  api.useDelete('/api/reservation/:reservation_id/cancel', { params: { reservation_id } });
+
 export const useBrowseReservationMembers = (reservation_id?: number) =>
   api.useGet(
     '/api/reservation/:reservation_id/members',
