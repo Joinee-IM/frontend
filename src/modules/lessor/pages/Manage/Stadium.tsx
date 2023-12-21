@@ -7,8 +7,6 @@ import type { ColumnsType } from 'antd/es/table';
 import type { TableRowSelection } from 'antd/es/table/interface';
 import type { Key } from 'react';
 
-import { DirectionRightIcon } from '@/assets/icons/Direction';
-import { RippleButton } from '@/components';
 import { RoundTag, RoundTagWrapper } from '@/components/Tag';
 import { pagination } from '@/modules/lessor/pages/Manage';
 import { useLessorBrowseStadium } from '@/modules/lessor/services';
@@ -88,20 +86,6 @@ export default function StadiumTable({
         },
       ],
       onFilter: (value, record) => record.is_published === value,
-    },
-    {
-      dataIndex: '',
-      key: 'x',
-      render: () => (
-        <RippleButton
-          category="icon"
-          palette="gray"
-          disabled
-          // onClick={() => navigate(`venue/${record.stadium_id}`)}
-        >
-          <DirectionRightIcon />
-        </RippleButton>
-      ),
     },
   ];
 
