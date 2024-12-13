@@ -15,7 +15,6 @@ import DateTimePickerModal from '@/components/DateTimePicker/Modal';
 import { FullContainerLoading } from '@/components/Loading/RippleLoading';
 import Select from '@/components/Select';
 import { useScrollToEnd } from '@/hooks/useElement';
-import useError from '@/hooks/useError';
 import useFilter from '@/hooks/useFilter';
 import useGeoLocation from '@/hooks/useGeoLocation';
 import { Container, PageTitle } from '@/modules/main/components';
@@ -96,7 +95,7 @@ export default function Stadium() {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: String(import.meta.env.VITE_APP_GOOGLE_MAP_KEY),
   });
-  const { stadiums, fetchNextPage, hasNextPage, isFetching, isFetched } = useBrowseStadium({
+  const { stadiums, fetchNextPage, hasNextPage, isFetching } = useBrowseStadium({
     limit: 10,
     offset: 0,
     city_id: city,
@@ -133,15 +132,15 @@ export default function Stadium() {
     }
   });
 
-  const { context } = useError(
-    stadiums?.length ?? !isFetched ? null : new Error('NoMatch'),
-    { NoMatch: '沒有符合條件的場館' },
-    clearFilter,
-  );
+  // const { context } = useError(
+  //   stadiums?.length ?? !isFetched ? null : new Error('NoMatch'),
+  //   { NoMatch: '沒有符合條件的場館' },
+  //   clearFilter,
+  // );
 
   return (
     <>
-      {context}
+      {/* {context} */}
       <Container>
         <PageTitle>尋找場館</PageTitle>
         <Filter
